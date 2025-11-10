@@ -1,0 +1,346 @@
+---
+title: "Plots for the ISEA use-wear dataset"
+author: "Ivan Calandra"
+date: "`r format(Sys.time(), usetz = TRUE)`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    theme: cerulean
+    highlight: pygments
+    number_sections: true
+  github_document: 
+    toc: true
+    toc_depth: 4
+    html_preview: false
+bibliography: ISEA_3c_STA-plots.bib
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
+---
+
+```{r Knitr Options, include = FALSE}
+knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE)
+```
+
+
+---
+
+
+# Goal of the script
+The script plots all STA variables for the ISEA use-wear dataset.   
+
+```{r}
+dir_in  <- "analysis/derived_data"
+dir_plots <- "analysis/plots"
+```
+
+Input Rbin data file must be located in "`r paste0("./", dir_in)`".  
+Plots will be saved in "`r paste0("./", dir_plots)`".
+
+The knit directory for this script is the project directory.
+
+
+---
+
+
+# Load packages
+```{r}
+library(doBy)
+library(factoextra)
+library(ggplot2)
+library(grateful)
+library(gridExtra)
+library(knitr)
+library(R.utils)
+library(RColorBrewer)
+library(rmarkdown)
+library(tidyverse)
+```
+
+
+---
+
+
+# Read in Rbin file
+```{r}
+STA <- list.files(dir_in, pattern = "STA\\.Rbin$", full.names = TRUE) %>% 
+       loadObject()
+str(STA)
+head(STA)
+```
+
+
+---
+
+
+# Plot each surface parameter in a line plot
+## Format data
+### Calculate the mean per sample
+There are `r length(unique(STA$Sample))` samples, with height maps acquired on `r length(unique(STA$Side))` sides (`r paste(unique(STA$Side), collapse = " and ")`), 2 locations per side, and at `r paste(levels(STA$Strokes), collapse = " and ")` strokes. This equals to `r nrow(STA)` data points.
+
+In order to avoid cluttering the plots, the mean per sample (n = `r length(unique(STA$Sample))` at `r paste(levels(STA$Strokes), collapse = " and ")` strokes) is plotted rather than every single data point.
+
+```{r}
+# Exclude Chert_tool, Location and NMP columns from data because they are numeric yet not relevant for plots
+STA_sel <- select(STA, !c(Chert_tool, Location, NMP))
+
+# Calculate mean based on Sample + Strokes
+# Bamboo_sp and Chert_type are listed as factors in order to keep these columns
+# keep.names = TRUE is important for the matching on names in the next steps
+STA_mean <- summaryBy(.~ Sample + Bamboo_sp + Chert_type + Strokes, data = STA_sel, FUN = mean, keep.names = TRUE)
+```
+
+### Add units to headers for plotting
+```{r}
+# Get units from comment(STA)
+table_units <- comment(STA) %>% 
+               data.frame(Parameter = names(.), Unit = ., row.names = NULL) %>% 
+  
+               # Exclude NMP because it won't be plotted
+               filter(Parameter != "NMP") %>% 
+  
+               # Paste parameter name and unit together in a new column
+               mutate(Param_unit = paste0(Parameter, " [", Unit, "]")) 
+
+# Remove > and < symbols
+table_units$Param_unit <- gsub(">|<", "", table_units$Param_unit)
+
+# Adjust column names
+colnames(STA_mean)[colnames(STA_mean) %in% table_units$Parameter] <- table_units$Param_unit
+```
+
+### Define parameter types for grouping plots
+```{r}
+table_units[table_units$Parameter %in% c("Sq", "Ssk", "Sku", "Sp", "Sv", "Sz", "Sa"), 
+            "Type"] <- "ISO height"
+
+table_units[grepl("^V[a-z]{1,2}", table_units$Parameter), "Type"] <- "ISO volume"
+
+table_units[table_units$Parameter %in% c("Smr", "Smc", "Sxp", "Sal", "Str", "Std", "Ssw", "Sdq", "Sdr"), 
+            "Type"] <- "ISO other"
+
+table_units[grepl("furrows|direction|isotropy", table_units$Parameter), 
+            "Type"] <- "Furrow, direction and isotropy"
+
+table_units[grepl("Asfc|(?i)eplsar|Smfc", table_units$Parameter), "Type"] <- "SSFA"
+
+table_units[c("Param_unit", "Type")]
+```
+
+
+## Define variables
+Here we define which columns are used for the plots.  
+
+```{r}
+# Columns to be used to group on the x-axis
+x_var <- "Strokes"
+
+# colors
+grp_colors <- "Chert_type"
+color_name_leg <- gsub("_", " ", grp_colors)
+
+# shapes
+grp_shapes <- "Bamboo_sp"
+shape_name_leg <- gsub("_", " ", grp_shapes) %>% 
+                  gsub("sp", "species", .)
+```
+
+
+## Create lists to receive the plots
+```{r}
+p_box <- vector(mode = "list", length = length(unique(table_units$Type)))
+names(p_box) <- unique(table_units$Type)
+```
+
+
+## Plots 
+```{r}
+# Plot for every set of parameters
+for (i in names(p_box)) {
+  
+  # Subset parameter names by type
+  y_var_i <- table_units[table_units$Type == i, "Param_unit"]
+  
+  # Select columns that will be used in the plotting
+  data_i <- select(STA_mean, all_of(c("Sample", "Bamboo_sp", x_var, y_var_i, grp_colors, grp_shapes))) %>%
+  
+            # Pivot to longer format for facet plots
+            pivot_longer(all_of(y_var_i), names_to = "Parameter", values_to = "Value")
+  
+  # Plot        # Define aesthetics
+  p_box[[i]] <- ggplot(data_i, aes(x = .data[[x_var]], y = Value,
+                                   color = .data[[grp_colors]], shape = .data[[grp_shapes]])) +
+
+                # Add points
+                geom_point(size = 2) +
+    
+                # Add lines to connect points with identical"Sample ID
+                geom_line(linewidth = 0.5, aes(group = Sample), 
+                          show.legend = FALSE) +
+    
+                # Facet plot by 'Parameter' (= 'y_var_i')
+                facet_wrap(~ Parameter, scales = "free_y") +
+    
+                # Light theme
+                theme_classic() +
+    
+                # Italicize species names in legend
+                guides(shape = guide_legend(theme = theme(legend.text = element_text(face = "italic")))) +
+    
+                # Reduce font size of the facet labels so that they fit in the box
+                theme(strip.text = element_text(size = 6)) +
+  
+                # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+                scale_color_brewer(palette = 'Set2') +
+  
+                # Remove xlab and use the clean name for the legend
+                labs(y = NULL, title = paste0(i, " (mean per sample)"), 
+                     color = color_name_leg, shape = shape_name_leg)
+}
+
+# Print plot
+print(p_box)
+
+# Save list of plots
+ggsave(filename = "ISEA_use-wear_STA-plots.pdf", 
+       path = dir_plots, width = 190, units = "mm", 
+       plot = marrangeGrob(p_box, nrow = 1, ncol = 1, top = NULL))
+```
+
+
+---
+
+
+# PCA
+## Format data
+PCA will be applied to the differences between after (2000 strokes) and before (0 strokes) the experiments, for all surface texture parameter.
+
+The method below works only with 2 values per group, which is the case here.
+
+```{r}
+# Create function to subtract the 1st value from the 2nd value of a vector
+# Returns NA if at least one value is NA
+fun_minus <- function(x) {
+  x[2] - x[1]
+}
+
+# Calculate the difference between 2000 and 0 strokes
+                # Exclude Chert_tool and NMP columns from data because they are numeric yet not relevant for PCA
+STA_pca_data <- select(STA, !c(Chert_tool, NMP)) %>%
+  
+                # Group by Sample, Chert_type, Bamboo_sp, Side, Location (= everything except Strokes)
+                group_by(Sample, Chert_type, Bamboo_sp, Side, Location) %>% 
+  
+                # Apply function fun_minus to each group
+                summarize(across(where(is.numeric), fun_minus)) %>% 
+  
+                # Add column combining Bamboo_sp and Chert_type for plotting
+                mutate(Bamboo_chert = paste(Bamboo_sp, " / ", Chert_type, " chert", sep = "")) %>%
+  
+                mutate(Bamboo_chert = gsub("Bambusa", "B.", Bamboo_chert)) %>%
+  
+                mutate(Bamboo_chert = gsub("Schizostachum", "S.", Bamboo_chert)) %>%
+  
+                # Remove rows with NA
+                na.omit() 
+```
+
+
+## Select surface texture parameters
+The selection is based on the previous plots
+```{r}
+pca_params <- c("Sq", "Vmc", "Sal", "Str", 
+                "Mean.density.of.furrows", "Mean.depth.of.furrows", 
+                "Asfc", "HAsfc9")
+```
+
+
+## PCA
+```{r}
+pca_STA <- prcomp(STA_pca_data[ , pca_params], scale. = TRUE)
+```
+
+
+## Plots
+### Eigenvalues
+```{r}
+pca_STA_eig <- fviz_eig(pca_STA, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_STA_eig)
+```
+
+### Biplots
+#### Plotting function
+```{r}
+custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.pt, mean.pt = FALSE, 
+                              col.pal = brewer.pal(length(unique(datpca[[col.pt]])), "RdYlBu"), 
+                              pt.size = 3, pt.shape = 19, pt.fill = "white",
+                              elli = TRUE, elli.type = "convex", repel.lab = TRUE, 
+                              col.variable = "black", main.title){
+  
+  # Define plotting
+  p_out <- fviz_pca_biplot(dat, axes = pc, 
+                           geom.ind = geom.pt, col.ind = datpca[[col.pt]], mean.point = mean.pt,
+                           palette = col.pal, pointsize = pt.size, pointshape = pt.shape, fill.ind = pt.fill,
+                           addEllipses = elli, ellipse.type = elli.type,  
+                           repel = repel.lab, col.var = col.variable, title = main.title, legend.title = "")
+  
+  p_out <- p_out + theme(legend.position = "bottom")
+
+  # Return plotting object
+  return(p_out)
+}
+```
+
+#### Biplots 
+```{r}
+# Define grouping variable and titles
+grp_PCA <- "Bamboo_chert"
+
+# Biplot of PC1&2
+pca_STA_12 <- custom_pca_biplot(pca_STA, datpca = STA_pca_data, pc = c(1, 2), col.pt = grp_PCA,
+                                main.title = "PC 1&2")
+print(pca_STA_12)
+
+# Biplot of PC1&3
+pca_STA_13 <- custom_pca_biplot(pca_STA, datpca = STA_pca_data, pc = c(1, 3), col.pt = grp_PCA,
+                                main.title = "PC 1&3")
+print(pca_STA_13)
+```
+
+### Combine plots to save them into 1 file
+```{r}
+all_plots <- list(pca_STA_eig, pca_STA_12, pca_STA_13)  
+```
+
+### Save plots
+```{r}
+ggsave(filename = "ISEA_use-wear_STA-PCAplots.pdf", 
+       path = dir_plots, width = 190, units = "mm", 
+       plot = marrangeGrob(all_plots, nrow = 1, ncol = 1, top = NULL))
+```
+
+---
+
+
+# sessionInfo()
+
+```{r}
+sessionInfo()
+```
+
+
+---
+
+
+# Cite R packages used
+
+```{r, echo = FALSE}
+pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "ISEA_3c_STA-plots")
+knitr::kable(pkgs_cite)
+```
+
+
+## References
+

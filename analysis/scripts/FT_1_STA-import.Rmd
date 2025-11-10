@@ -1,0 +1,266 @@
+---
+title: "Import dataset from the surface texture analysis for the Freeze-thaw project"
+author: "Ivan Calandra"
+date: "`r format(Sys.time(), usetz = TRUE)`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cerulean
+    highlight: pygments
+    number_sections: true
+  github_document: 
+    toc: true
+    toc_depth: 3
+    html_preview: false
+bibliography: FT_1_STA-import.bib
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
+---
+
+
+```{r Knitr Options, include = FALSE}
+knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE)
+```
+
+
+---
+
+
+# Goal of the script
+This script formats the output of the resulting files from applying surface texture analysis to a sample of experimental lithics.
+The script will:
+
+1. Read in the original files  
+2. Format the data  
+3. Write XLSX file and save R objects ready for further analysis in R  
+
+```{r}
+dir_in  <- "analysis/raw_data"
+dir_out <- "analysis/derived_data"
+```
+
+Raw data must be located in "`r paste0("./", dir_in)`".  
+Formatted data will be saved in "`r paste0("./", dir_out)`".
+
+The knit directory for this script is the project directory.
+
+
+---
+
+
+# Load packages
+```{r}
+library(grateful)
+library(knitr)
+library(R.utils)
+library(rmarkdown)
+library(tidyverse)
+library(writexl)
+```
+
+
+---
+
+
+# Read and format data
+## Read in CSV file
+```{r}
+FT <- list.files(dir_in, pattern = ".csv$", full.names = TRUE) %>% 
+      read.csv(header = FALSE, na.strings = "*****", fileEncoding = 'WINDOWS-1252')
+```
+
+
+## Select relevant columns and rows
+```{r}
+FT_keep_col  <- c(4, 19:53)                    # Define columns to keep
+FT_keep_rows <- which(FT[[1]] != "#")          # Define rows to keep
+FT_keep      <- FT[FT_keep_rows, FT_keep_col]  # Subset rows and columns
+```
+
+
+## Identify results using frame numbers
+```{r}
+frames <- as.numeric(unlist(FT[1, FT_keep_col]))
+ID <- which(frames %in% c(2, 8))
+ISO <- which(frames == 10)
+diriso <- which(frames %in% 11:12)
+SSFA <- which(frames %in% 14:15)
+furrow <- which(frames == 13)
+```
+
+
+## Add headers
+```{r}
+# Get headers from 2nd row
+colnames(FT_keep) <- FT[2, FT_keep_col] %>% 
+  
+                     # Convert to valid names
+                     make.names() %>% 
+  
+                     # Delete repeated periods
+                     gsub("\\.+", "\\.", x = .) %>% 
+  
+                     # Delete periods at the end of the names
+                     gsub("\\.$", "", x = .)
+  
+# Keep parameter name before the first period for ISO
+colnames(FT_keep)[ISO] <- strsplit(names(FT_keep)[ISO], ".", fixed = TRUE) %>% 
+                          sapply(`[[`, 1)
+
+# Keep parameter name after the last period for SSFA
+colnames(FT_keep)[SSFA] <- gsub("^([A-Za-z0-9]+\\.)+", "", colnames(FT_keep)[SSFA])
+
+# Edit header non-measured point ratios
+colnames(FT_keep)[ID][2] <- "NMP"
+
+# Check results
+str(FT_keep)
+head(FT_keep)
+```
+
+
+## Extract units
+```{r}
+# Filter out rows which contains units
+n_units <- filter(FT, V4 == "<no unit>") %>% 
+          
+           # Keep only unique/distinct rows of units
+           distinct() %>% 
+  
+           # Number of unique/distinct rows of units
+           nrow()
+
+if (n_units != 1) {
+  stop("The different datasets have different units")
+} else {
+  # Extract unit line from 3rd row for considered columns
+  FT_units <- unlist(FT[3, FT_keep_col[-1]])
+
+  # Get names associated to the units
+  names(FT_units) <- colnames(FT_keep)[-1]
+
+  # Combine into a data.frame for export
+  units_table <- data.frame(variable = names(FT_units), units = FT_units)
+  row.names(units_table) <- NULL
+}
+
+# Check results
+units_table
+```
+
+
+## Split column 'Name' 
+```{r}
+FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>% 
+  
+                                               # Split by "_" into a matrix with 10 cols
+                                               str_split_fixed("_", n = 10) %>% 
+  
+                                               # Keep only cols 1, 5 and 8
+                                               .[, c(1, 5, 8)]
+```
+
+
+## Add columns with ...
+```{r}
+# Load Weights dataset
+#weights <- loadObject(paste0(dir_out, "/ISEA_use-wear_Weights.Rbin"))
+
+# Merge the data.frames by chert type and chert tool
+#STA_keep_ID_bamb <- merge(STA_keep, weights[1:4], by = c("Chert_type", "Chert_tool"))
+```
+
+
+## Convert all parameter variables to numeric
+```{r}
+FT_keep <- type_convert(FT_keep)
+```
+
+
+## Add column for NMP categories
+Here we define 3 ranges of non-measured points (NMP):  
+- < 10% NMP: “<10%”  
+- ≥ 10% and < 20% NMP: “10-20%”  
+- ≥ 20% NMP: “≥20%”
+
+```{r}
+# Create new column and fill it
+FT_keep[FT_keep$NMP < 10                    , "NMP_cat"] <- "<10%"
+FT_keep[FT_keep$NMP >= 10 & FT_keep$NMP < 20, "NMP_cat"] <- "10-20%"
+FT_keep[FT_keep$NMP >= 20                   , "NMP_cat"] <- "≥20%"
+
+# Convert to ordered factor
+FT_keep[["NMP_cat"]] <- factor(FT_keep[["NMP_cat"]], levels = c("<10%", "10-20%", "≥20%"), ordered = TRUE)
+```
+
+The number of height maps in each NMP category is:
+```{r}
+table(FT_keep["NMP_cat"])
+```
+
+
+## Re-order columns and add units as comment 
+```{r}
+FT_final <- select(FT_keep, Specimen, State, Location, NMP, NMP_cat, Sq:HAsfc9)
+comment(FT_final) <- FT_units
+```
+
+Type `comment(FT_final)` to check the units of the parameters.
+
+
+## Check the result
+```{r}
+str(FT_final)
+head(FT_final)
+```
+
+
+---
+
+
+# Save data
+## As XLSX
+```{r}
+write_xlsx(list("data" = FT_final, "units" = units_table), 
+           path = paste0(dir_out, "/FT_STA_formatted-data.xlsx"))
+```
+
+
+## As Rbin
+```{r}
+saveObject(FT_final, file = paste0(dir_out, "/FT_STA_formatted-data.Rbin"))
+```
+
+Rbin files (e.g. `FT_STA_formatted-data.Rbin`) can be easily read into an R object (e.g. `rbin_data`) using the following code:
+```{r, eval = FALSE}
+library(R.utils)
+rbin_data <- loadObject("FT_STA_formatted-data.Rbin")
+```
+
+
+---
+
+
+# sessionInfo()
+
+```{r}
+sessionInfo()
+```
+
+
+---
+
+
+# Cite R packages used
+
+```{r, echo = FALSE}
+pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "FT_1_STA-import")
+knitr::kable(pkgs_cite)
+```
+
+
+## References
+
