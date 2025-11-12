@@ -175,9 +175,13 @@ FT_keep_sed_cy <- merge(FT_keep, FT_samples, by = "Specimen")
 ```
 
 
-## Convert all parameter variables to numeric
+## Convert variables
 ```{r}
+# Convert parameter variables to numeric
 FT_keep_sed_cy <- type_convert(FT_keep_sed_cy)
+
+# Convert state to factor and re-order it (1 = before, 2 = after)
+FT_keep_sed_cy$State <- factor(FT_keep_sed_cy$State, levels = c("before", "after"))
 ```
 
 

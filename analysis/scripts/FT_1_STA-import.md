@@ -2,7 +2,7 @@ Import dataset from the surface texture analysis for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-12 08:27:33 CET
+2025-11-12 08:46:05 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -17,8 +17,7 @@ Ivan Calandra
   - [Split column ‘Name’](#split-column-name)
   - [Add columns for sediment type and freeze-thaw
     cycles](#add-columns-for-sediment-type-and-freeze-thaw-cycles)
-  - [Convert all parameter variables to
-    numeric](#convert-all-parameter-variables-to-numeric)
+  - [Convert variables](#convert-variables)
   - [Add column for NMP categories](#add-column-for-nmp-categories)
   - [Re-order columns and add units as
     comment](#re-order-columns-and-add-units-as-comment)
@@ -328,10 +327,14 @@ FT_samples
 FT_keep_sed_cy <- merge(FT_keep, FT_samples, by = "Specimen")
 ```
 
-## Convert all parameter variables to numeric
+## Convert variables
 
 ``` r
+# Convert parameter variables to numeric
 FT_keep_sed_cy <- type_convert(FT_keep_sed_cy)
+
+# Convert state to factor and re-order it (1 = before, 2 = after)
+FT_keep_sed_cy$State <- factor(FT_keep_sed_cy$State, levels = c("before", "after"))
 ```
 
 ## Add column for NMP categories
@@ -381,7 +384,7 @@ str(FT_final)
      $ Specimen                : chr  "Scra11" "Scra11" "Scra11" "Scra11" ...
      $ Sediment                : chr  "Quincay" "Quincay" "Quincay" "Quincay" ...
      $ Cycles                  : int  276 276 276 276 276 276 276 276 330 330 ...
-     $ State                   : chr  "after" "after" "after" "after" ...
+     $ State                   : Factor w/ 2 levels "before","after": 2 2 2 2 1 1 1 1 2 2 ...
      $ Location                : chr  "loc1" "loc2" "loc3" "loc4" ...
      $ NMP                     : num  6.21 8.99 9.36 7.09 5.59 ...
      $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-17%"<..: 1 1 1 1 1 1 1 1 2 2 ...
