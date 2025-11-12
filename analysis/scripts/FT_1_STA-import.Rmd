@@ -67,7 +67,7 @@ library(writexl)
 # Read and format data
 ## Read in CSV file
 ```{r}
-FT <- list.files(dir_in, pattern = ".csv$", full.names = TRUE) %>% 
+FT <- list.files(dir_in, pattern = ".*STA.*\\.csv$", full.names = TRUE) %>% 
       read.csv(header = FALSE, na.strings = "*****", fileEncoding = 'WINDOWS-1252')
 ```
 
@@ -163,47 +163,50 @@ FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>%
 ```
 
 
-## Add columns with ...
+## Add columns for sediment type and freeze-thaw cycles
 ```{r}
-# Load Weights dataset
-#weights <- loadObject(paste0(dir_out, "/ISEA_use-wear_Weights.Rbin"))
+# Load CSV file with information on samples
+FT_samples <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE) %>% 
+              read.csv()
+FT_samples
 
 # Merge the data.frames by chert type and chert tool
-#STA_keep_ID_bamb <- merge(STA_keep, weights[1:4], by = c("Chert_type", "Chert_tool"))
+FT_keep_sed_cy <- merge(FT_keep, FT_samples, by = "Specimen")
 ```
 
 
 ## Convert all parameter variables to numeric
 ```{r}
-FT_keep <- type_convert(FT_keep)
+FT_keep_sed_cy <- type_convert(FT_keep_sed_cy)
 ```
 
 
 ## Add column for NMP categories
 Here we define 3 ranges of non-measured points (NMP):  
 - < 10% NMP: “<10%”  
-- ≥ 10% and < 20% NMP: “10-20%”  
-- ≥ 20% NMP: “≥20%”
+- ≥ 10% and ≤ 17% NMP: “10-17%”  
+- > 17% NMP: “>17%”
 
 ```{r}
 # Create new column and fill it
-FT_keep[FT_keep$NMP < 10                    , "NMP_cat"] <- "<10%"
-FT_keep[FT_keep$NMP >= 10 & FT_keep$NMP < 20, "NMP_cat"] <- "10-20%"
-FT_keep[FT_keep$NMP >= 20                   , "NMP_cat"] <- "≥20%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP <  10                           , "NMP_cat"] <- "<10%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP >= 10 & FT_keep_sed_cy$NMP <= 17, "NMP_cat"] <- "10-17%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP >  17                           , "NMP_cat"] <- ">17%"
 
 # Convert to ordered factor
-FT_keep[["NMP_cat"]] <- factor(FT_keep[["NMP_cat"]], levels = c("<10%", "10-20%", "≥20%"), ordered = TRUE)
+FT_keep_sed_cy[["NMP_cat"]] <- factor(FT_keep_sed_cy[["NMP_cat"]], 
+                                      levels = c("<10%", "10-17%", ">17%"), ordered = TRUE)
 ```
 
 The number of height maps in each NMP category is:
 ```{r}
-table(FT_keep["NMP_cat"])
+table(FT_keep_sed_cy["NMP_cat"])
 ```
 
 
 ## Re-order columns and add units as comment 
 ```{r}
-FT_final <- select(FT_keep, Specimen, State, Location, NMP, NMP_cat, Sq:HAsfc9)
+FT_final <- select(FT_keep_sed_cy, Specimen, Sediment, Cycles, State, Location, NMP, NMP_cat, Sq:HAsfc9)
 comment(FT_final) <- FT_units
 ```
 
