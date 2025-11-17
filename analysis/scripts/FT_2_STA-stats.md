@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-17 10:03:59 CET
+2025-11-17 10:13:35 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -236,7 +236,7 @@ stats_sed_cy[1:2]
           Sediment Cycles
     1         Clay      0
     2         Clay    330
-    3         Clay    476
+    3         Clay    560
     4  Coarse sand      0
     5  Coarse sand    330
     6  Coarse sand    600
@@ -263,7 +263,7 @@ stats_sed_cy_NMP[1:3]
     4         Clay    330    <10%
     5         Clay    330  10-17%
     6         Clay    330    >17%
-    7         Clay    476  10-17%
+    7         Clay    560  10-17%
     8  Coarse sand      0    <10%
     9  Coarse sand      0  10-17%
     10 Coarse sand    330  10-17%
@@ -298,7 +298,7 @@ stats_sed_cy_st[1:3]
           Sediment Cycles  State
     1         Clay      0 before
     2         Clay    330  after
-    3         Clay    476  after
+    3         Clay    560  after
     4  Coarse sand      0 before
     5  Coarse sand    330  after
     6  Coarse sand    600  after
@@ -325,7 +325,7 @@ stats_sed_cy_st_NMP[1:4]
     4         Clay    330  after    <10%
     5         Clay    330  after  10-17%
     6         Clay    330  after    >17%
-    7         Clay    476  after  10-17%
+    7         Clay    560  after  10-17%
     8  Coarse sand      0 before    <10%
     9  Coarse sand      0 before  10-17%
     10 Coarse sand    330  after  10-17%

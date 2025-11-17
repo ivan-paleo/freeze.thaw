@@ -164,8 +164,6 @@ FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>%
 
 
 ## Add columns for sediment type and freeze-thaw cycles
-Scra14 was planned for 600 cycles but the tube opened beofre the end of the experiment. Hence, only 476 cycles were conducted for that sample.
-
 ```{r}
 # Load CSV file with information on samples
 FT_samples <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE) %>% 
@@ -175,6 +173,8 @@ FT_samples
 # Merge the data.frames by chert type and chert tool
 FT_keep_sed_cy <- merge(FT_keep, FT_samples, by = "Specimen")
 ```
+
+Scra14 was planned for 600 cycles but the tube opened before the end of the experiment. Hence, only `r FT_samples[FT_samples$Specimen == "Scra14", "Cycles"]` cycles were conducted for that sample.
 
 
 ## Convert variables

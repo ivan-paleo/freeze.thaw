@@ -2,7 +2,7 @@ Import dataset from the surface texture analysis for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-17 10:03:35 CET
+2025-11-17 10:12:52 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -305,9 +305,6 @@ FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>%
 
 ## Add columns for sediment type and freeze-thaw cycles
 
-Scra14 was planned for 600 cycles but the tube opened beofre the end of
-the experiment. Hence, only 476 cycles were conducted for that sample.
-
 ``` r
 # Load CSV file with information on samples
 FT_samples <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE) %>% 
@@ -319,7 +316,7 @@ FT_samples
     1     Scra7      Gravel    600
     2     Scra8      Gravel    330
     3    Scra21        Clay    330
-    4    Scra14        Clay    476
+    4    Scra14        Clay    560
     5    Scra25     Quincay    330
     6    Scra11     Quincay    600
     7    Scra17   Fine sand    330
@@ -331,6 +328,9 @@ FT_samples
 # Merge the data.frames by chert type and chert tool
 FT_keep_sed_cy <- merge(FT_keep, FT_samples, by = "Specimen")
 ```
+
+Scra14 was planned for 600 cycles but the tube opened before the end of
+the experiment. Hence, only 560 cycles were conducted for that sample.
 
 ## Convert variables
 
@@ -369,10 +369,10 @@ FT_keep_sed_cy[c("Specimen", "State", "Cycles")]
     14   Scra12 before      0
     15   Scra12 before      0
     16   Scra12 before      0
-    17   Scra14  after    476
-    18   Scra14  after    476
-    19   Scra14  after    476
-    20   Scra14  after    476
+    17   Scra14  after    560
+    18   Scra14  after    560
+    19   Scra14  after    560
+    20   Scra14  after    560
     21   Scra14 before      0
     22   Scra14 before      0
     23   Scra14 before      0

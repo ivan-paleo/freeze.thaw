@@ -1577,7 +1577,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Import dataset from the surface texture
 analysis for the Freeze-thaw project</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2025-11-17 10:03:31 CET</h4>
+<h4 class="date">2025-11-17 10:12:48 CET</h4>
 
 </div>
 
@@ -1851,9 +1851,6 @@ using frame numbers</h2>
 <div id="add-columns-for-sediment-type-and-freeze-thaw-cycles" class="section level2" number="3.7">
 <h2><span class="header-section-number">3.7</span> Add columns for
 sediment type and freeze-thaw cycles</h2>
-<p>Scra14 was planned for 600 cycles but the tube opened beofre the end
-of the experiment. Hence, only 476 cycles were conducted for that
-sample.</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co"># Load CSV file with information on samples</span></span>
 <span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>FT_samples <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*samples.*</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>              <span class="fu">read.csv</span>()</span>
@@ -1862,7 +1859,7 @@ sample.</p>
 1     Scra7      Gravel    600
 2     Scra8      Gravel    330
 3    Scra21        Clay    330
-4    Scra14        Clay    476
+4    Scra14        Clay    560
 5    Scra25     Quincay    330
 6    Scra11     Quincay    600
 7    Scra17   Fine sand    330
@@ -1871,6 +1868,9 @@ sample.</p>
 10   Scra26 Coarse sand    600</code></pre>
 <div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># Merge the data.frames by chert type and chert tool</span></span>
 <span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>FT_keep_sed_cy <span class="ot">&lt;-</span> <span class="fu">merge</span>(FT_keep, FT_samples, <span class="at">by =</span> <span class="st">&quot;Specimen&quot;</span>)</span></code></pre></div>
+<p>Scra14 was planned for 600 cycles but the tube opened before the end
+of the experiment. Hence, only 560 cycles were conducted for that
+sample.</p>
 </div>
 <div id="convert-variables" class="section level2" number="3.8">
 <h2><span class="header-section-number">3.8</span> Convert
@@ -1906,10 +1906,10 @@ state before</h2>
 14   Scra12 before      0
 15   Scra12 before      0
 16   Scra12 before      0
-17   Scra14  after    476
-18   Scra14  after    476
-19   Scra14  after    476
-20   Scra14  after    476
+17   Scra14  after    560
+18   Scra14  after    560
+19   Scra14  after    560
+20   Scra14  after    560
 21   Scra14 before      0
 22   Scra14 before      0
 23   Scra14 before      0
