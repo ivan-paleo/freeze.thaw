@@ -164,6 +164,8 @@ FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>%
 
 
 ## Add columns for sediment type and freeze-thaw cycles
+Scra14 was planned for 600 cycles but the tube opened beofre the end of the experiment. Hence, only 476 cycles were conducted for that sample.
+
 ```{r}
 # Load CSV file with information on samples
 FT_samples <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE) %>% 
@@ -185,16 +187,26 @@ FT_keep_sed_cy$State <- factor(FT_keep_sed_cy$State, levels = c("before", "after
 ```
 
 
+## Set Cycles to 0 for state before
+```{r}
+# Replace
+FT_keep_sed_cy[FT_keep_sed_cy[["State"]] == "before", "Cycles"] <- 0
+
+# Check
+FT_keep_sed_cy[c("Specimen", "State", "Cycles")]
+```
+
+
 ## Add column for NMP categories
 Here we define 3 ranges of non-measured points (NMP):  
-- < 10% NMP: “<10%”  
-- ≥ 10% and ≤ 17% NMP: “10-17%”  
+- ≤ 10% NMP: “<10%”  
+- > 10% and ≤ 17% NMP: “10-17%”  
 - > 17% NMP: “>17%”
 
 ```{r}
 # Create new column and fill it
-FT_keep_sed_cy[FT_keep_sed_cy$NMP <  10                           , "NMP_cat"] <- "<10%"
-FT_keep_sed_cy[FT_keep_sed_cy$NMP >= 10 & FT_keep_sed_cy$NMP <= 17, "NMP_cat"] <- "10-17%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP <= 10                           , "NMP_cat"] <- "<10%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP >  10 & FT_keep_sed_cy$NMP <= 17, "NMP_cat"] <- "10-17%"
 FT_keep_sed_cy[FT_keep_sed_cy$NMP >  17                           , "NMP_cat"] <- ">17%"
 
 # Convert to ordered factor

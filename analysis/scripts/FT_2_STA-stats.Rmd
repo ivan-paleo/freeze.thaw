@@ -107,6 +107,14 @@ nminmaxmeanmedsd <- function(x){
 
 ## Compute summary statistics
 ```{r}
+# Compute summary statistics based on Sediment
+stats_sed <- summaryBy(. ~ Sediment, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed[1]
+
+# Compute summary statistics based on Sediment and NMP_cat
+stats_sed_NMP <- summaryBy(. ~ Sediment + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed_NMP[1:2]
+
 # Compute summary statistics based on Sediment and Cycles
 stats_sed_cy <- summaryBy(. ~ Sediment + Cycles, data = FT, FUN = nminmaxmeanmedsd)
 stats_sed_cy[1:2]
@@ -127,8 +135,9 @@ stats_sed_cy_st_NMP[1:4]
 
 ## Save as XLSX
 ```{r}
-write_xlsx(list("Sediment+Cycles" = stats_sed_cy, "Sediment+Cycles+NMP" = stats_sed_cy_NMP, 
-                "Sediment+Cycles+State" = stats_sed_cy_st, "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
+write_xlsx(list("Sediment" = stats_sed, "Sediment+NMP" = stats_sed_NMP, "Sediment+Cycles" = stats_sed_cy, 
+                "Sediment+Cycles+NMP" = stats_sed_cy_NMP, "Sediment+Cycles+State" = stats_sed_cy_st,
+                "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
            path = paste0(dir_stats, "/FT_STA-stats.xlsx"))
 ```
 

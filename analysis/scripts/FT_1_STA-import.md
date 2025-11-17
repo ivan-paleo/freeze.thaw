@@ -2,7 +2,7 @@ Import dataset from the surface texture analysis for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-12 08:46:05 CET
+2025-11-17 10:03:35 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -18,6 +18,8 @@ Ivan Calandra
   - [Add columns for sediment type and freeze-thaw
     cycles](#add-columns-for-sediment-type-and-freeze-thaw-cycles)
   - [Convert variables](#convert-variables)
+  - [Set Cycles to 0 for state
+    before](#set-cycles-to-0-for-state-before)
   - [Add column for NMP categories](#add-column-for-nmp-categories)
   - [Re-order columns and add units as
     comment](#re-order-columns-and-add-units-as-comment)
@@ -303,6 +305,9 @@ FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>%
 
 ## Add columns for sediment type and freeze-thaw cycles
 
+Scra14 was planned for 600 cycles but the tube opened beofre the end of
+the experiment. Hence, only 476 cycles were conducted for that sample.
+
 ``` r
 # Load CSV file with information on samples
 FT_samples <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE) %>% 
@@ -316,7 +321,7 @@ FT_samples
     3    Scra21        Clay    330
     4    Scra14        Clay    476
     5    Scra25     Quincay    330
-    6    Scra11     Quincay    276
+    6    Scra11     Quincay    600
     7    Scra17   Fine sand    330
     8    Scra16   Fine sand    600
     9    Scra12 Coarse sand    330
@@ -337,17 +342,109 @@ FT_keep_sed_cy <- type_convert(FT_keep_sed_cy)
 FT_keep_sed_cy$State <- factor(FT_keep_sed_cy$State, levels = c("before", "after"))
 ```
 
+## Set Cycles to 0 for state before
+
+``` r
+# Replace
+FT_keep_sed_cy[FT_keep_sed_cy[["State"]] == "before", "Cycles"] <- 0
+
+# Check
+FT_keep_sed_cy[c("Specimen", "State", "Cycles")]
+```
+
+       Specimen  State Cycles
+    1    Scra11  after    600
+    2    Scra11  after    600
+    3    Scra11  after    600
+    4    Scra11  after    600
+    5    Scra11 before      0
+    6    Scra11 before      0
+    7    Scra11 before      0
+    8    Scra11 before      0
+    9    Scra12  after    330
+    10   Scra12  after    330
+    11   Scra12  after    330
+    12   Scra12  after    330
+    13   Scra12 before      0
+    14   Scra12 before      0
+    15   Scra12 before      0
+    16   Scra12 before      0
+    17   Scra14  after    476
+    18   Scra14  after    476
+    19   Scra14  after    476
+    20   Scra14  after    476
+    21   Scra14 before      0
+    22   Scra14 before      0
+    23   Scra14 before      0
+    24   Scra14 before      0
+    25   Scra16  after    600
+    26   Scra16  after    600
+    27   Scra16  after    600
+    28   Scra16  after    600
+    29   Scra16 before      0
+    30   Scra16 before      0
+    31   Scra16 before      0
+    32   Scra16 before      0
+    33   Scra17  after    330
+    34   Scra17  after    330
+    35   Scra17  after    330
+    36   Scra17  after    330
+    37   Scra17 before      0
+    38   Scra17 before      0
+    39   Scra17 before      0
+    40   Scra17 before      0
+    41   Scra21  after    330
+    42   Scra21  after    330
+    43   Scra21  after    330
+    44   Scra21  after    330
+    45   Scra21 before      0
+    46   Scra21 before      0
+    47   Scra21 before      0
+    48   Scra21 before      0
+    49   Scra25  after    330
+    50   Scra25  after    330
+    51   Scra25  after    330
+    52   Scra25  after    330
+    53   Scra25 before      0
+    54   Scra25 before      0
+    55   Scra25 before      0
+    56   Scra25 before      0
+    57   Scra26  after    600
+    58   Scra26  after    600
+    59   Scra26  after    600
+    60   Scra26  after    600
+    61   Scra26 before      0
+    62   Scra26 before      0
+    63   Scra26 before      0
+    64   Scra26 before      0
+    65    Scra7  after    600
+    66    Scra7  after    600
+    67    Scra7  after    600
+    68    Scra7  after    600
+    69    Scra7 before      0
+    70    Scra7 before      0
+    71    Scra7 before      0
+    72    Scra7 before      0
+    73    Scra8  after    330
+    74    Scra8  after    330
+    75    Scra8  after    330
+    76    Scra8  after    330
+    77    Scra8 before      0
+    78    Scra8 before      0
+    79    Scra8 before      0
+    80    Scra8 before      0
+
 ## Add column for NMP categories
 
 Here we define 3 ranges of non-measured points (NMP):  
-- \< 10% NMP: “\<10%”  
-- ≥ 10% and ≤ 17% NMP: “10-17%”  
+- ≤ 10% NMP: “\<10%”  
+- \> 10% and ≤ 17% NMP: “10-17%”  
 - \> 17% NMP: “\>17%”
 
 ``` r
 # Create new column and fill it
-FT_keep_sed_cy[FT_keep_sed_cy$NMP <  10                           , "NMP_cat"] <- "<10%"
-FT_keep_sed_cy[FT_keep_sed_cy$NMP >= 10 & FT_keep_sed_cy$NMP <= 17, "NMP_cat"] <- "10-17%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP <= 10                           , "NMP_cat"] <- "<10%"
+FT_keep_sed_cy[FT_keep_sed_cy$NMP >  10 & FT_keep_sed_cy$NMP <= 17, "NMP_cat"] <- "10-17%"
 FT_keep_sed_cy[FT_keep_sed_cy$NMP >  17                           , "NMP_cat"] <- ">17%"
 
 # Convert to ordered factor
@@ -383,7 +480,7 @@ str(FT_final)
     'data.frame':   80 obs. of  41 variables:
      $ Specimen                : chr  "Scra11" "Scra11" "Scra11" "Scra11" ...
      $ Sediment                : chr  "Quincay" "Quincay" "Quincay" "Quincay" ...
-     $ Cycles                  : int  276 276 276 276 276 276 276 276 330 330 ...
+     $ Cycles                  : num  600 600 600 600 0 0 0 0 330 330 ...
      $ State                   : Factor w/ 2 levels "before","after": 2 2 2 2 1 1 1 1 2 2 ...
      $ Location                : chr  "loc1" "loc2" "loc3" "loc4" ...
      $ NMP                     : num  6.21 8.99 9.36 7.09 5.59 ...
@@ -430,12 +527,12 @@ head(FT_final)
 ```
 
       Specimen Sediment Cycles  State Location      NMP NMP_cat       Sq        Ssk
-    1   Scra11  Quincay    276  after     loc1 6.210140    <10% 510.3147  0.2082995
-    2   Scra11  Quincay    276  after     loc2 8.988605    <10% 599.4221  0.1038576
-    3   Scra11  Quincay    276  after     loc3 9.360195    <10% 626.8703 -1.3491279
-    4   Scra11  Quincay    276  after     loc4 7.087054    <10% 535.8293  0.3066295
-    5   Scra11  Quincay    276 before     loc1 5.585075    <10% 461.3625  0.3644242
-    6   Scra11  Quincay    276 before     loc2 7.824051    <10% 537.4528 -0.3339857
+    1   Scra11  Quincay    600  after     loc1 6.210140    <10% 510.3147  0.2082995
+    2   Scra11  Quincay    600  after     loc2 8.988605    <10% 599.4221  0.1038576
+    3   Scra11  Quincay    600  after     loc3 9.360195    <10% 626.8703 -1.3491279
+    4   Scra11  Quincay    600  after     loc4 7.087054    <10% 535.8293  0.3066295
+    5   Scra11  Quincay      0 before     loc1 5.585075    <10% 461.3625  0.3644242
+    6   Scra11  Quincay      0 before     loc2 7.824051    <10% 537.4528 -0.3339857
             Sku       Sp       Sv       Sz       Sa       Smr      Smc       Sxp
     1  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984  959.4634
     2  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265 1299.1056
@@ -514,17 +611,17 @@ sessionInfo()
 
     R version 4.5.1 (2025-06-13 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 11 x64 (build 26100)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=English_United Kingdom.utf8 
+    [2] LC_CTYPE=English_United Kingdom.utf8   
+    [3] LC_MONETARY=English_United Kingdom.utf8
+    [4] LC_NUMERIC=C                           
+    [5] LC_TIME=English_United Kingdom.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal

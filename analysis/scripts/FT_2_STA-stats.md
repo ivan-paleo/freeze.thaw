@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-12 08:50:52 CET
+2025-11-17 10:03:59 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -73,7 +73,7 @@ str(FT)
     'data.frame':   80 obs. of  41 variables:
      $ Specimen                : chr  "Scra11" "Scra11" "Scra11" "Scra11" ...
      $ Sediment                : chr  "Quincay" "Quincay" "Quincay" "Quincay" ...
-     $ Cycles                  : int  276 276 276 276 276 276 276 276 330 330 ...
+     $ Cycles                  : num  600 600 600 600 0 0 0 0 330 330 ...
      $ State                   : Factor w/ 2 levels "before","after": 2 2 2 2 1 1 1 1 2 2 ...
      $ Location                : chr  "loc1" "loc2" "loc3" "loc4" ...
      $ NMP                     : num  6.21 8.99 9.36 7.09 5.59 ...
@@ -120,12 +120,12 @@ head(FT)
 ```
 
       Specimen Sediment Cycles  State Location      NMP NMP_cat       Sq        Ssk
-    1   Scra11  Quincay    276  after     loc1 6.210140    <10% 510.3147  0.2082995
-    2   Scra11  Quincay    276  after     loc2 8.988605    <10% 599.4221  0.1038576
-    3   Scra11  Quincay    276  after     loc3 9.360195    <10% 626.8703 -1.3491279
-    4   Scra11  Quincay    276  after     loc4 7.087054    <10% 535.8293  0.3066295
-    5   Scra11  Quincay    276 before     loc1 5.585075    <10% 461.3625  0.3644242
-    6   Scra11  Quincay    276 before     loc2 7.824051    <10% 537.4528 -0.3339857
+    1   Scra11  Quincay    600  after     loc1 6.210140    <10% 510.3147  0.2082995
+    2   Scra11  Quincay    600  after     loc2 8.988605    <10% 599.4221  0.1038576
+    3   Scra11  Quincay    600  after     loc3 9.360195    <10% 626.8703 -1.3491279
+    4   Scra11  Quincay    600  after     loc4 7.087054    <10% 535.8293  0.3066295
+    5   Scra11  Quincay      0 before     loc1 5.585075    <10% 461.3625  0.3644242
+    6   Scra11  Quincay      0 before     loc2 7.824051    <10% 537.4528 -0.3339857
             Sku       Sp       Sv       Sz       Sa       Smr      Smc       Sxp
     1  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984  959.4634
     2  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265 1299.1056
@@ -193,22 +193,62 @@ nminmaxmeanmedsd <- function(x){
 ## Compute summary statistics
 
 ``` r
+# Compute summary statistics based on Sediment
+stats_sed <- summaryBy(. ~ Sediment, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed[1]
+```
+
+         Sediment
+    1        Clay
+    2 Coarse sand
+    3   Fine sand
+    4      Gravel
+    5     Quincay
+
+``` r
+# Compute summary statistics based on Sediment and NMP_cat
+stats_sed_NMP <- summaryBy(. ~ Sediment + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed_NMP[1:2]
+```
+
+          Sediment NMP_cat
+    1         Clay    <10%
+    2         Clay  10-17%
+    3         Clay    >17%
+    4  Coarse sand    <10%
+    5  Coarse sand  10-17%
+    6    Fine sand    <10%
+    7    Fine sand  10-17%
+    8    Fine sand    >17%
+    9       Gravel    <10%
+    10      Gravel  10-17%
+    11      Gravel    >17%
+    12     Quincay    <10%
+    13     Quincay  10-17%
+    14     Quincay    >17%
+
+``` r
 # Compute summary statistics based on Sediment and Cycles
 stats_sed_cy <- summaryBy(. ~ Sediment + Cycles, data = FT, FUN = nminmaxmeanmedsd)
 stats_sed_cy[1:2]
 ```
 
           Sediment Cycles
-    1         Clay    330
-    2         Clay    476
-    3  Coarse sand    330
-    4  Coarse sand    600
-    5    Fine sand    330
-    6    Fine sand    600
-    7       Gravel    330
-    8       Gravel    600
-    9      Quincay    276
-    10     Quincay    330
+    1         Clay      0
+    2         Clay    330
+    3         Clay    476
+    4  Coarse sand      0
+    5  Coarse sand    330
+    6  Coarse sand    600
+    7    Fine sand      0
+    8    Fine sand    330
+    9    Fine sand    600
+    10      Gravel      0
+    11      Gravel    330
+    12      Gravel    600
+    13     Quincay      0
+    14     Quincay    330
+    15     Quincay    600
 
 ``` r
 # Compute summary statistics based on Sediment, Cycles and NMP_cat
@@ -217,29 +257,37 @@ stats_sed_cy_NMP[1:3]
 ```
 
           Sediment Cycles NMP_cat
-    1         Clay    330    <10%
-    2         Clay    330  10-17%
-    3         Clay    330    >17%
-    4         Clay    476    <10%
-    5         Clay    476  10-17%
-    6  Coarse sand    330    <10%
-    7  Coarse sand    330  10-17%
-    8  Coarse sand    600    <10%
-    9  Coarse sand    600  10-17%
-    10   Fine sand    330  10-17%
-    11   Fine sand    600    <10%
-    12   Fine sand    600  10-17%
-    13   Fine sand    600    >17%
-    14      Gravel    330    <10%
-    15      Gravel    330  10-17%
-    16      Gravel    330    >17%
-    17      Gravel    600    <10%
-    18      Gravel    600  10-17%
-    19      Gravel    600    >17%
-    20     Quincay    276    <10%
-    21     Quincay    330    <10%
-    22     Quincay    330  10-17%
-    23     Quincay    330    >17%
+    1         Clay      0    <10%
+    2         Clay      0  10-17%
+    3         Clay      0    >17%
+    4         Clay    330    <10%
+    5         Clay    330  10-17%
+    6         Clay    330    >17%
+    7         Clay    476  10-17%
+    8  Coarse sand      0    <10%
+    9  Coarse sand      0  10-17%
+    10 Coarse sand    330  10-17%
+    11 Coarse sand    600    <10%
+    12   Fine sand      0    <10%
+    13   Fine sand      0  10-17%
+    14   Fine sand    330  10-17%
+    15   Fine sand    600    <10%
+    16   Fine sand    600  10-17%
+    17   Fine sand    600    >17%
+    18      Gravel      0    <10%
+    19      Gravel      0  10-17%
+    20      Gravel      0    >17%
+    21      Gravel    330    <10%
+    22      Gravel    330  10-17%
+    23      Gravel    330    >17%
+    24      Gravel    600    <10%
+    25      Gravel    600  10-17%
+    26      Gravel    600    >17%
+    27     Quincay      0    <10%
+    28     Quincay      0  10-17%
+    29     Quincay    330    <10%
+    30     Quincay    330    >17%
+    31     Quincay    600    <10%
 
 ``` r
 # Compute summary statistics based on Sediment, Cycles and State
@@ -248,26 +296,21 @@ stats_sed_cy_st[1:3]
 ```
 
           Sediment Cycles  State
-    1         Clay    330 before
+    1         Clay      0 before
     2         Clay    330  after
-    3         Clay    476 before
-    4         Clay    476  after
-    5  Coarse sand    330 before
-    6  Coarse sand    330  after
-    7  Coarse sand    600 before
-    8  Coarse sand    600  after
-    9    Fine sand    330 before
-    10   Fine sand    330  after
-    11   Fine sand    600 before
-    12   Fine sand    600  after
-    13      Gravel    330 before
-    14      Gravel    330  after
-    15      Gravel    600 before
-    16      Gravel    600  after
-    17     Quincay    276 before
-    18     Quincay    276  after
-    19     Quincay    330 before
-    20     Quincay    330  after
+    3         Clay    476  after
+    4  Coarse sand      0 before
+    5  Coarse sand    330  after
+    6  Coarse sand    600  after
+    7    Fine sand      0 before
+    8    Fine sand    330  after
+    9    Fine sand    600  after
+    10      Gravel      0 before
+    11      Gravel    330  after
+    12      Gravel    600  after
+    13     Quincay      0 before
+    14     Quincay    330  after
+    15     Quincay    600  after
 
 ``` r
 # Compute summary statistics based on Sediment, Cycles, State and NMP_cat
@@ -276,51 +319,44 @@ stats_sed_cy_st_NMP[1:4]
 ```
 
           Sediment Cycles  State NMP_cat
-    1         Clay    330 before    <10%
-    2         Clay    330 before  10-17%
-    3         Clay    330 before    >17%
+    1         Clay      0 before    <10%
+    2         Clay      0 before  10-17%
+    3         Clay      0 before    >17%
     4         Clay    330  after    <10%
     5         Clay    330  after  10-17%
     6         Clay    330  after    >17%
-    7         Clay    476 before    <10%
-    8         Clay    476 before  10-17%
-    9         Clay    476  after  10-17%
-    10 Coarse sand    330 before    <10%
-    11 Coarse sand    330 before  10-17%
-    12 Coarse sand    330  after  10-17%
-    13 Coarse sand    600 before    <10%
-    14 Coarse sand    600 before  10-17%
-    15 Coarse sand    600  after    <10%
-    16   Fine sand    330 before  10-17%
-    17   Fine sand    330  after  10-17%
-    18   Fine sand    600 before    <10%
-    19   Fine sand    600 before  10-17%
-    20   Fine sand    600  after    <10%
-    21   Fine sand    600  after  10-17%
-    22   Fine sand    600  after    >17%
-    23      Gravel    330 before    <10%
-    24      Gravel    330 before  10-17%
-    25      Gravel    330 before    >17%
-    26      Gravel    330  after    <10%
-    27      Gravel    330  after  10-17%
-    28      Gravel    330  after    >17%
-    29      Gravel    600 before    <10%
-    30      Gravel    600 before  10-17%
-    31      Gravel    600  after    <10%
-    32      Gravel    600  after  10-17%
-    33      Gravel    600  after    >17%
-    34     Quincay    276 before    <10%
-    35     Quincay    276  after    <10%
-    36     Quincay    330 before    <10%
-    37     Quincay    330 before  10-17%
-    38     Quincay    330  after    <10%
-    39     Quincay    330  after    >17%
+    7         Clay    476  after  10-17%
+    8  Coarse sand      0 before    <10%
+    9  Coarse sand      0 before  10-17%
+    10 Coarse sand    330  after  10-17%
+    11 Coarse sand    600  after    <10%
+    12   Fine sand      0 before    <10%
+    13   Fine sand      0 before  10-17%
+    14   Fine sand    330  after  10-17%
+    15   Fine sand    600  after    <10%
+    16   Fine sand    600  after  10-17%
+    17   Fine sand    600  after    >17%
+    18      Gravel      0 before    <10%
+    19      Gravel      0 before  10-17%
+    20      Gravel      0 before    >17%
+    21      Gravel    330  after    <10%
+    22      Gravel    330  after  10-17%
+    23      Gravel    330  after    >17%
+    24      Gravel    600  after    <10%
+    25      Gravel    600  after  10-17%
+    26      Gravel    600  after    >17%
+    27     Quincay      0 before    <10%
+    28     Quincay      0 before  10-17%
+    29     Quincay    330  after    <10%
+    30     Quincay    330  after    >17%
+    31     Quincay    600  after    <10%
 
 ## Save as XLSX
 
 ``` r
-write_xlsx(list("Sediment+Cycles" = stats_sed_cy, "Sediment+Cycles+NMP" = stats_sed_cy_NMP, 
-                "Sediment+Cycles+State" = stats_sed_cy_st, "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
+write_xlsx(list("Sediment" = stats_sed, "Sediment+NMP" = stats_sed_NMP, "Sediment+Cycles" = stats_sed_cy, 
+                "Sediment+Cycles+NMP" = stats_sed_cy_NMP, "Sediment+Cycles+State" = stats_sed_cy_st,
+                "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
            path = paste0(dir_stats, "/FT_STA-stats.xlsx"))
 ```
 
@@ -334,17 +370,17 @@ sessionInfo()
 
     R version 4.5.1 (2025-06-13 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 11 x64 (build 26100)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=English_United Kingdom.utf8 
+    [2] LC_CTYPE=English_United Kingdom.utf8   
+    [3] LC_MONETARY=English_United Kingdom.utf8
+    [4] LC_NUMERIC=C                           
+    [5] LC_TIME=English_United Kingdom.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -364,12 +400,12 @@ sessionInfo()
      [4] lattice_0.22-7       hms_1.1.4            digest_0.6.37       
      [7] magrittr_2.0.4       timechange_0.3.0     evaluate_1.0.5      
     [10] grid_4.5.1           RColorBrewer_1.1-3   fastmap_1.2.0       
-    [13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-3        
+    [13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-4        
     [16] backports_1.5.0      scales_1.4.0         modelr_0.1.11       
     [19] microbenchmark_1.5.0 jquerylib_0.1.4      cli_3.6.5           
     [22] rlang_1.1.6          cowplot_1.2.0        withr_3.0.2         
     [25] cachem_1.1.0         yaml_2.3.10          tools_4.5.1         
-    [28] tzdb_0.5.0           boot_1.3-31          Deriv_4.2.0         
+    [28] tzdb_0.5.0           boot_1.3-32          Deriv_4.2.0         
     [31] broom_1.0.10         vctrs_0.6.5          R6_2.6.1            
     [34] lifecycle_1.0.4      MASS_7.3-65          pkgconfig_2.0.3     
     [37] pillar_1.11.1        bslib_0.9.0          gtable_0.3.6        

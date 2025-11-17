@@ -1577,7 +1577,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Import dataset from the surface texture
 analysis for the Freeze-thaw project</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2025-11-12 08:46:03 CET</h4>
+<h4 class="date">2025-11-17 10:03:31 CET</h4>
 
 </div>
 
@@ -1617,15 +1617,13 @@ Formatted data will be saved in “./analysis/derived_data”.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
 <pre><code>Warning: package &#39;tidyverse&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
-<pre><code>Warning: package &#39;tibble&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;tidyr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;readr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;purrr&#39; was built under R version 4.5.2</code></pre>
-<pre><code>Warning: package &#39;dplyr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;stringr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;forcats&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;lubridate&#39; was built under R version 4.5.2</code></pre>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">library</span>(writexl)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">library</span>(writexl)</span></code></pre></div>
 <pre><code>Warning: package &#39;writexl&#39; was built under R version 4.5.2</code></pre>
 <hr />
 </div>
@@ -1634,52 +1632,52 @@ Formatted data will be saved in “./analysis/derived_data”.</p>
 data</h1>
 <div id="read-in-csv-file" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Read in CSV file</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>FT <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*STA.*</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>      <span class="fu">read.csv</span>(<span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">na.strings =</span> <span class="st">&quot;*****&quot;</span>, <span class="at">fileEncoding =</span> <span class="st">&#39;WINDOWS-1252&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>FT <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*STA.*</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>      <span class="fu">read.csv</span>(<span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">na.strings =</span> <span class="st">&quot;*****&quot;</span>, <span class="at">fileEncoding =</span> <span class="st">&#39;WINDOWS-1252&#39;</span>)</span></code></pre></div>
 </div>
 <div id="select-relevant-columns-and-rows" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Select relevant
 columns and rows</h2>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>FT_keep_col  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">19</span><span class="sc">:</span><span class="dv">53</span>)                    <span class="co"># Define columns to keep</span></span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>FT_keep_rows <span class="ot">&lt;-</span> <span class="fu">which</span>(FT[[<span class="dv">1</span>]] <span class="sc">!=</span> <span class="st">&quot;#&quot;</span>)          <span class="co"># Define rows to keep</span></span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>FT_keep      <span class="ot">&lt;-</span> FT[FT_keep_rows, FT_keep_col]  <span class="co"># Subset rows and columns</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>FT_keep_col  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">19</span><span class="sc">:</span><span class="dv">53</span>)                    <span class="co"># Define columns to keep</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>FT_keep_rows <span class="ot">&lt;-</span> <span class="fu">which</span>(FT[[<span class="dv">1</span>]] <span class="sc">!=</span> <span class="st">&quot;#&quot;</span>)          <span class="co"># Define rows to keep</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>FT_keep      <span class="ot">&lt;-</span> FT[FT_keep_rows, FT_keep_col]  <span class="co"># Subset rows and columns</span></span></code></pre></div>
 </div>
 <div id="identify-results-using-frame-numbers" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span> Identify results
 using frame numbers</h2>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>frames <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">unlist</span>(FT[<span class="dv">1</span>, FT_keep_col]))</span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>ID <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>))</span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>ISO <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">==</span> <span class="dv">10</span>)</span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>diriso <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="dv">11</span><span class="sc">:</span><span class="dv">12</span>)</span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a>SSFA <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span>)</span>
-<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>furrow <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">==</span> <span class="dv">13</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>frames <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">unlist</span>(FT[<span class="dv">1</span>, FT_keep_col]))</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>ID <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">8</span>))</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>ISO <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">==</span> <span class="dv">10</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a>diriso <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="dv">11</span><span class="sc">:</span><span class="dv">12</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a>SSFA <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="dv">14</span><span class="sc">:</span><span class="dv">15</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" tabindex="-1"></a>furrow <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">==</span> <span class="dv">13</span>)</span></code></pre></div>
 </div>
 <div id="add-headers" class="section level2" number="3.4">
 <h2><span class="header-section-number">3.4</span> Add headers</h2>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co"># Get headers from 2nd row</span></span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep) <span class="ot">&lt;-</span> FT[<span class="dv">2</span>, FT_keep_col] <span class="sc">%&gt;%</span> </span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  </span>
-<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>                     <span class="co"># Convert to valid names</span></span>
-<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>                     <span class="fu">make.names</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>  </span>
-<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>                     <span class="co"># Delete repeated periods</span></span>
-<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>                     <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.+&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="at">x =</span> .) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a>  </span>
-<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a>                     <span class="co"># Delete periods at the end of the names</span></span>
-<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a>                     <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.$&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="at">x =</span> .)</span>
-<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a>  </span>
-<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a><span class="co"># Keep parameter name before the first period for ISO</span></span>
-<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep)[ISO] <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">names</span>(FT_keep)[ISO], <span class="st">&quot;.&quot;</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a>                          <span class="fu">sapply</span>(<span class="st">`</span><span class="at">[[</span><span class="st">`</span>, <span class="dv">1</span>)</span>
-<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a></span>
-<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a><span class="co"># Keep parameter name after the last period for SSFA</span></span>
-<span id="cb26-18"><a href="#cb26-18" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep)[SSFA] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;^([A-Za-z0-9]+</span><span class="sc">\\</span><span class="st">.)+&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">colnames</span>(FT_keep)[SSFA])</span>
-<span id="cb26-19"><a href="#cb26-19" tabindex="-1"></a></span>
-<span id="cb26-20"><a href="#cb26-20" tabindex="-1"></a><span class="co"># Edit header non-measured point ratios</span></span>
-<span id="cb26-21"><a href="#cb26-21" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep)[ID][<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;NMP&quot;</span></span>
-<span id="cb26-22"><a href="#cb26-22" tabindex="-1"></a></span>
-<span id="cb26-23"><a href="#cb26-23" tabindex="-1"></a><span class="co"># Check results</span></span>
-<span id="cb26-24"><a href="#cb26-24" tabindex="-1"></a><span class="fu">str</span>(FT_keep)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># Get headers from 2nd row</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep) <span class="ot">&lt;-</span> FT[<span class="dv">2</span>, FT_keep_col] <span class="sc">%&gt;%</span> </span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  </span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>                     <span class="co"># Convert to valid names</span></span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a>                     <span class="fu">make.names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a>  </span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a>                     <span class="co"># Delete repeated periods</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>                     <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.+&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="at">x =</span> .) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>  </span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a>                     <span class="co"># Delete periods at the end of the names</span></span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>                     <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.$&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="at">x =</span> .)</span>
+<span id="cb24-12"><a href="#cb24-12" tabindex="-1"></a>  </span>
+<span id="cb24-13"><a href="#cb24-13" tabindex="-1"></a><span class="co"># Keep parameter name before the first period for ISO</span></span>
+<span id="cb24-14"><a href="#cb24-14" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep)[ISO] <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">names</span>(FT_keep)[ISO], <span class="st">&quot;.&quot;</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-15"><a href="#cb24-15" tabindex="-1"></a>                          <span class="fu">sapply</span>(<span class="st">`</span><span class="at">[[</span><span class="st">`</span>, <span class="dv">1</span>)</span>
+<span id="cb24-16"><a href="#cb24-16" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" tabindex="-1"></a><span class="co"># Keep parameter name after the last period for SSFA</span></span>
+<span id="cb24-18"><a href="#cb24-18" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep)[SSFA] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;^([A-Za-z0-9]+</span><span class="sc">\\</span><span class="st">.)+&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">colnames</span>(FT_keep)[SSFA])</span>
+<span id="cb24-19"><a href="#cb24-19" tabindex="-1"></a></span>
+<span id="cb24-20"><a href="#cb24-20" tabindex="-1"></a><span class="co"># Edit header non-measured point ratios</span></span>
+<span id="cb24-21"><a href="#cb24-21" tabindex="-1"></a><span class="fu">colnames</span>(FT_keep)[ID][<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;NMP&quot;</span></span>
+<span id="cb24-22"><a href="#cb24-22" tabindex="-1"></a></span>
+<span id="cb24-23"><a href="#cb24-23" tabindex="-1"></a><span class="co"># Check results</span></span>
+<span id="cb24-24"><a href="#cb24-24" tabindex="-1"></a><span class="fu">str</span>(FT_keep)</span></code></pre></div>
 <pre><code>&#39;data.frame&#39;:   80 obs. of  36 variables:
  $ Name                    : chr  &quot;Scra11_LSM_20x-0.7_LSM_after_mold_ventral_loc1_mean_extracted&quot; &quot;Scra11_LSM_20x-0.7_LSM_after_mold_ventral_loc2_mean_extracted&quot; &quot;Scra11_LSM_20x-0.7_LSM_after_mold_ventral_loc3_mean_extracted&quot; &quot;Scra11_LSM_20x-0.7_LSM_after_mold_ventral_loc4_mean_extracted&quot; ...
  $ NMP                     : chr  &quot;6.210140306&quot; &quot;8.988605008&quot; &quot;9.360194971&quot; &quot;7.087053571&quot; ...
@@ -1717,7 +1715,7 @@ using frame numbers</h2>
  $ Asfc                    : chr  &quot;49.92665862&quot; &quot;13.83171789&quot; &quot;19.82068691&quot; &quot;13.0605013&quot; ...
  $ Smfc                    : chr  &quot;1.080586533&quot; &quot;1.15307539&quot; &quot;1.49503139&quot; &quot;1.15307539&quot; ...
  $ HAsfc9                  : chr  &quot;0.1333228463&quot; &quot;0.4437028233&quot; &quot;0.9494296848&quot; &quot;0.3135671868&quot; ...</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">head</span>(FT_keep)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">head</span>(FT_keep)</span></code></pre></div>
 <pre><code>                                                            Name         NMP
 4  Scra11_LSM_20x-0.7_LSM_after_mold_ventral_loc1_mean_extracted 6.210140306
 5  Scra11_LSM_20x-0.7_LSM_after_mold_ventral_loc2_mean_extracted 8.988605008
@@ -1777,31 +1775,31 @@ using frame numbers</h2>
 </div>
 <div id="extract-units" class="section level2" number="3.5">
 <h2><span class="header-section-number">3.5</span> Extract units</h2>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># Filter out rows which contains units</span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>n_units <span class="ot">&lt;-</span> <span class="fu">filter</span>(FT, V4 <span class="sc">==</span> <span class="st">&quot;&lt;no unit&gt;&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>          </span>
-<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>           <span class="co"># Keep only unique/distinct rows of units</span></span>
-<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>           <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>  </span>
-<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>           <span class="co"># Number of unique/distinct rows of units</span></span>
-<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a>           <span class="fu">nrow</span>()</span>
-<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a></span>
-<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a><span class="cf">if</span> (n_units <span class="sc">!=</span> <span class="dv">1</span>) {</span>
-<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;The different datasets have different units&quot;</span>)</span>
-<span id="cb30-12"><a href="#cb30-12" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb30-13"><a href="#cb30-13" tabindex="-1"></a>  <span class="co"># Extract unit line from 3rd row for considered columns</span></span>
-<span id="cb30-14"><a href="#cb30-14" tabindex="-1"></a>  FT_units <span class="ot">&lt;-</span> <span class="fu">unlist</span>(FT[<span class="dv">3</span>, FT_keep_col[<span class="sc">-</span><span class="dv">1</span>]])</span>
-<span id="cb30-15"><a href="#cb30-15" tabindex="-1"></a></span>
-<span id="cb30-16"><a href="#cb30-16" tabindex="-1"></a>  <span class="co"># Get names associated to the units</span></span>
-<span id="cb30-17"><a href="#cb30-17" tabindex="-1"></a>  <span class="fu">names</span>(FT_units) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(FT_keep)[<span class="sc">-</span><span class="dv">1</span>]</span>
-<span id="cb30-18"><a href="#cb30-18" tabindex="-1"></a></span>
-<span id="cb30-19"><a href="#cb30-19" tabindex="-1"></a>  <span class="co"># Combine into a data.frame for export</span></span>
-<span id="cb30-20"><a href="#cb30-20" tabindex="-1"></a>  units_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">variable =</span> <span class="fu">names</span>(FT_units), <span class="at">units =</span> FT_units)</span>
-<span id="cb30-21"><a href="#cb30-21" tabindex="-1"></a>  <span class="fu">row.names</span>(units_table) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb30-22"><a href="#cb30-22" tabindex="-1"></a>}</span>
-<span id="cb30-23"><a href="#cb30-23" tabindex="-1"></a></span>
-<span id="cb30-24"><a href="#cb30-24" tabindex="-1"></a><span class="co"># Check results</span></span>
-<span id="cb30-25"><a href="#cb30-25" tabindex="-1"></a>units_table</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co"># Filter out rows which contains units</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>n_units <span class="ot">&lt;-</span> <span class="fu">filter</span>(FT, V4 <span class="sc">==</span> <span class="st">&quot;&lt;no unit&gt;&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>          </span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>           <span class="co"># Keep only unique/distinct rows of units</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>           <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>  </span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>           <span class="co"># Number of unique/distinct rows of units</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>           <span class="fu">nrow</span>()</span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a><span class="cf">if</span> (n_units <span class="sc">!=</span> <span class="dv">1</span>) {</span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;The different datasets have different units&quot;</span>)</span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a>  <span class="co"># Extract unit line from 3rd row for considered columns</span></span>
+<span id="cb28-14"><a href="#cb28-14" tabindex="-1"></a>  FT_units <span class="ot">&lt;-</span> <span class="fu">unlist</span>(FT[<span class="dv">3</span>, FT_keep_col[<span class="sc">-</span><span class="dv">1</span>]])</span>
+<span id="cb28-15"><a href="#cb28-15" tabindex="-1"></a></span>
+<span id="cb28-16"><a href="#cb28-16" tabindex="-1"></a>  <span class="co"># Get names associated to the units</span></span>
+<span id="cb28-17"><a href="#cb28-17" tabindex="-1"></a>  <span class="fu">names</span>(FT_units) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(FT_keep)[<span class="sc">-</span><span class="dv">1</span>]</span>
+<span id="cb28-18"><a href="#cb28-18" tabindex="-1"></a></span>
+<span id="cb28-19"><a href="#cb28-19" tabindex="-1"></a>  <span class="co"># Combine into a data.frame for export</span></span>
+<span id="cb28-20"><a href="#cb28-20" tabindex="-1"></a>  units_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">variable =</span> <span class="fu">names</span>(FT_units), <span class="at">units =</span> FT_units)</span>
+<span id="cb28-21"><a href="#cb28-21" tabindex="-1"></a>  <span class="fu">row.names</span>(units_table) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb28-22"><a href="#cb28-22" tabindex="-1"></a>}</span>
+<span id="cb28-23"><a href="#cb28-23" tabindex="-1"></a></span>
+<span id="cb28-24"><a href="#cb28-24" tabindex="-1"></a><span class="co"># Check results</span></span>
+<span id="cb28-25"><a href="#cb28-25" tabindex="-1"></a>units_table</span></code></pre></div>
 <pre><code>                   variable     units
 1                       NMP         %
 2                        Sq        nm
@@ -1842,54 +1840,147 @@ using frame numbers</h2>
 <div id="split-column-name" class="section level2" number="3.6">
 <h2><span class="header-section-number">3.6</span> Split column
 ‘Name’</h2>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>FT_keep[<span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;State&quot;</span>, <span class="st">&quot;Location&quot;</span>)] <span class="ot">&lt;-</span> FT_keep<span class="sc">$</span>Name <span class="sc">%&gt;%</span> </span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>  </span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>                                               <span class="co"># Split by &quot;_&quot; into a matrix with 10 cols</span></span>
-<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>                                               <span class="fu">str_split_fixed</span>(<span class="st">&quot;_&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>  </span>
-<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a>                                               <span class="co"># Keep only cols 1, 5 and 8</span></span>
-<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a>                                               .[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">8</span>)]</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>FT_keep[<span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;State&quot;</span>, <span class="st">&quot;Location&quot;</span>)] <span class="ot">&lt;-</span> FT_keep<span class="sc">$</span>Name <span class="sc">%&gt;%</span> </span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>  </span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>                                               <span class="co"># Split by &quot;_&quot; into a matrix with 10 cols</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>                                               <span class="fu">str_split_fixed</span>(<span class="st">&quot;_&quot;</span>, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>  </span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a>                                               <span class="co"># Keep only cols 1, 5 and 8</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>                                               .[, <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">8</span>)]</span></code></pre></div>
 </div>
 <div id="add-columns-for-sediment-type-and-freeze-thaw-cycles" class="section level2" number="3.7">
 <h2><span class="header-section-number">3.7</span> Add columns for
 sediment type and freeze-thaw cycles</h2>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># Load CSV file with information on samples</span></span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>FT_samples <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*samples.*</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>              <span class="fu">read.csv</span>()</span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>FT_samples</span></code></pre></div>
+<p>Scra14 was planned for 600 cycles but the tube opened beofre the end
+of the experiment. Hence, only 476 cycles were conducted for that
+sample.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co"># Load CSV file with information on samples</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>FT_samples <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*samples.*</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>              <span class="fu">read.csv</span>()</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>FT_samples</span></code></pre></div>
 <pre><code>   Specimen    Sediment Cycles
 1     Scra7      Gravel    600
 2     Scra8      Gravel    330
 3    Scra21        Clay    330
 4    Scra14        Clay    476
 5    Scra25     Quincay    330
-6    Scra11     Quincay    276
+6    Scra11     Quincay    600
 7    Scra17   Fine sand    330
 8    Scra16   Fine sand    600
 9    Scra12 Coarse sand    330
 10   Scra26 Coarse sand    600</code></pre>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co"># Merge the data.frames by chert type and chert tool</span></span>
-<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>FT_keep_sed_cy <span class="ot">&lt;-</span> <span class="fu">merge</span>(FT_keep, FT_samples, <span class="at">by =</span> <span class="st">&quot;Specimen&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># Merge the data.frames by chert type and chert tool</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>FT_keep_sed_cy <span class="ot">&lt;-</span> <span class="fu">merge</span>(FT_keep, FT_samples, <span class="at">by =</span> <span class="st">&quot;Specimen&quot;</span>)</span></code></pre></div>
 </div>
 <div id="convert-variables" class="section level2" number="3.8">
 <h2><span class="header-section-number">3.8</span> Convert
 variables</h2>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co"># Convert parameter variables to numeric</span></span>
-<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>FT_keep_sed_cy <span class="ot">&lt;-</span> <span class="fu">type_convert</span>(FT_keep_sed_cy)</span>
-<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a></span>
-<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a><span class="co"># Convert state to factor and re-order it (1 = before, 2 = after)</span></span>
-<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>FT_keep_sed_cy<span class="sc">$</span>State <span class="ot">&lt;-</span> <span class="fu">factor</span>(FT_keep_sed_cy<span class="sc">$</span>State, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;before&quot;</span>, <span class="st">&quot;after&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># Convert parameter variables to numeric</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>FT_keep_sed_cy <span class="ot">&lt;-</span> <span class="fu">type_convert</span>(FT_keep_sed_cy)</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a><span class="co"># Convert state to factor and re-order it (1 = before, 2 = after)</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>FT_keep_sed_cy<span class="sc">$</span>State <span class="ot">&lt;-</span> <span class="fu">factor</span>(FT_keep_sed_cy<span class="sc">$</span>State, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;before&quot;</span>, <span class="st">&quot;after&quot;</span>))</span></code></pre></div>
 </div>
-<div id="add-column-for-nmp-categories" class="section level2" number="3.9">
-<h2><span class="header-section-number">3.9</span> Add column for NMP
+<div id="set-cycles-to-0-for-state-before" class="section level2" number="3.9">
+<h2><span class="header-section-number">3.9</span> Set Cycles to 0 for
+state before</h2>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co"># Replace</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>FT_keep_sed_cy[FT_keep_sed_cy[[<span class="st">&quot;State&quot;</span>]] <span class="sc">==</span> <span class="st">&quot;before&quot;</span>, <span class="st">&quot;Cycles&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="co"># Check</span></span>
+<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a>FT_keep_sed_cy[<span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;State&quot;</span>, <span class="st">&quot;Cycles&quot;</span>)]</span></code></pre></div>
+<pre><code>   Specimen  State Cycles
+1    Scra11  after    600
+2    Scra11  after    600
+3    Scra11  after    600
+4    Scra11  after    600
+5    Scra11 before      0
+6    Scra11 before      0
+7    Scra11 before      0
+8    Scra11 before      0
+9    Scra12  after    330
+10   Scra12  after    330
+11   Scra12  after    330
+12   Scra12  after    330
+13   Scra12 before      0
+14   Scra12 before      0
+15   Scra12 before      0
+16   Scra12 before      0
+17   Scra14  after    476
+18   Scra14  after    476
+19   Scra14  after    476
+20   Scra14  after    476
+21   Scra14 before      0
+22   Scra14 before      0
+23   Scra14 before      0
+24   Scra14 before      0
+25   Scra16  after    600
+26   Scra16  after    600
+27   Scra16  after    600
+28   Scra16  after    600
+29   Scra16 before      0
+30   Scra16 before      0
+31   Scra16 before      0
+32   Scra16 before      0
+33   Scra17  after    330
+34   Scra17  after    330
+35   Scra17  after    330
+36   Scra17  after    330
+37   Scra17 before      0
+38   Scra17 before      0
+39   Scra17 before      0
+40   Scra17 before      0
+41   Scra21  after    330
+42   Scra21  after    330
+43   Scra21  after    330
+44   Scra21  after    330
+45   Scra21 before      0
+46   Scra21 before      0
+47   Scra21 before      0
+48   Scra21 before      0
+49   Scra25  after    330
+50   Scra25  after    330
+51   Scra25  after    330
+52   Scra25  after    330
+53   Scra25 before      0
+54   Scra25 before      0
+55   Scra25 before      0
+56   Scra25 before      0
+57   Scra26  after    600
+58   Scra26  after    600
+59   Scra26  after    600
+60   Scra26  after    600
+61   Scra26 before      0
+62   Scra26 before      0
+63   Scra26 before      0
+64   Scra26 before      0
+65    Scra7  after    600
+66    Scra7  after    600
+67    Scra7  after    600
+68    Scra7  after    600
+69    Scra7 before      0
+70    Scra7 before      0
+71    Scra7 before      0
+72    Scra7 before      0
+73    Scra8  after    330
+74    Scra8  after    330
+75    Scra8  after    330
+76    Scra8  after    330
+77    Scra8 before      0
+78    Scra8 before      0
+79    Scra8 before      0
+80    Scra8 before      0</code></pre>
+</div>
+<div id="add-column-for-nmp-categories" class="section level2" number="3.10">
+<h2><span class="header-section-number">3.10</span> Add column for NMP
 categories</h2>
 <p>Here we define 3 ranges of non-measured points (NMP):<br />
-- &lt; 10% NMP: “&lt;10%”<br />
-- ≥ 10% and ≤ 17% NMP: “10-17%”<br />
+- ≤ 10% NMP: “&lt;10%”<br />
+- &gt; 10% and ≤ 17% NMP: “10-17%”<br />
 - &gt; 17% NMP: “&gt;17%”</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co"># Create new column and fill it</span></span>
-<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>FT_keep_sed_cy[FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&lt;</span>  <span class="dv">10</span>                           , <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;&lt;10%&quot;</span></span>
-<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>FT_keep_sed_cy[FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&gt;=</span> <span class="dv">10</span> <span class="sc">&amp;</span> FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&lt;=</span> <span class="dv">17</span>, <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;10-17%&quot;</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>FT_keep_sed_cy[FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&lt;=</span> <span class="dv">10</span>                           , <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;&lt;10%&quot;</span></span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>FT_keep_sed_cy[FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&gt;</span>  <span class="dv">10</span> <span class="sc">&amp;</span> FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&lt;=</span> <span class="dv">17</span>, <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;10-17%&quot;</span></span>
 <span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>FT_keep_sed_cy[FT_keep_sed_cy<span class="sc">$</span>NMP <span class="sc">&gt;</span>  <span class="dv">17</span>                           , <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;&gt;17%&quot;</span></span>
 <span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a></span>
 <span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a><span class="co"># Convert to ordered factor</span></span>
@@ -1901,22 +1992,22 @@ categories</h2>
   &lt;10% 10-17%   &gt;17% 
     35     37      8 </code></pre>
 </div>
-<div id="re-order-columns-and-add-units-as-comment" class="section level2" number="3.10">
-<h2><span class="header-section-number">3.10</span> Re-order columns and
+<div id="re-order-columns-and-add-units-as-comment" class="section level2" number="3.11">
+<h2><span class="header-section-number">3.11</span> Re-order columns and
 add units as comment</h2>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>FT_final <span class="ot">&lt;-</span> <span class="fu">select</span>(FT_keep_sed_cy, Specimen, Sediment, Cycles, State, Location, NMP, NMP_cat, Sq<span class="sc">:</span>HAsfc9)</span>
 <span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a><span class="fu">comment</span>(FT_final) <span class="ot">&lt;-</span> FT_units</span></code></pre></div>
 <p>Type <code>comment(FT_final)</code> to check the units of the
 parameters.</p>
 </div>
-<div id="check-the-result" class="section level2" number="3.11">
-<h2><span class="header-section-number">3.11</span> Check the
+<div id="check-the-result" class="section level2" number="3.12">
+<h2><span class="header-section-number">3.12</span> Check the
 result</h2>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">str</span>(FT_final)</span></code></pre></div>
 <pre><code>&#39;data.frame&#39;:   80 obs. of  41 variables:
  $ Specimen                : chr  &quot;Scra11&quot; &quot;Scra11&quot; &quot;Scra11&quot; &quot;Scra11&quot; ...
  $ Sediment                : chr  &quot;Quincay&quot; &quot;Quincay&quot; &quot;Quincay&quot; &quot;Quincay&quot; ...
- $ Cycles                  : int  276 276 276 276 276 276 276 276 330 330 ...
+ $ Cycles                  : num  600 600 600 600 0 0 0 0 330 330 ...
  $ State                   : Factor w/ 2 levels &quot;before&quot;,&quot;after&quot;: 2 2 2 2 1 1 1 1 2 2 ...
  $ Location                : chr  &quot;loc1&quot; &quot;loc2&quot; &quot;loc3&quot; &quot;loc4&quot; ...
  $ NMP                     : num  6.21 8.99 9.36 7.09 5.59 ...
@@ -1959,12 +2050,12 @@ result</h2>
   ..- attr(*, &quot;names&quot;)= chr [1:35] &quot;NMP&quot; &quot;Sq&quot; &quot;Ssk&quot; &quot;Sku&quot; ...</code></pre>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">head</span>(FT_final)</span></code></pre></div>
 <pre><code>  Specimen Sediment Cycles  State Location      NMP NMP_cat       Sq        Ssk
-1   Scra11  Quincay    276  after     loc1 6.210140    &lt;10% 510.3147  0.2082995
-2   Scra11  Quincay    276  after     loc2 8.988605    &lt;10% 599.4221  0.1038576
-3   Scra11  Quincay    276  after     loc3 9.360195    &lt;10% 626.8703 -1.3491279
-4   Scra11  Quincay    276  after     loc4 7.087054    &lt;10% 535.8293  0.3066295
-5   Scra11  Quincay    276 before     loc1 5.585075    &lt;10% 461.3625  0.3644242
-6   Scra11  Quincay    276 before     loc2 7.824051    &lt;10% 537.4528 -0.3339857
+1   Scra11  Quincay    600  after     loc1 6.210140    &lt;10% 510.3147  0.2082995
+2   Scra11  Quincay    600  after     loc2 8.988605    &lt;10% 599.4221  0.1038576
+3   Scra11  Quincay    600  after     loc3 9.360195    &lt;10% 626.8703 -1.3491279
+4   Scra11  Quincay    600  after     loc4 7.087054    &lt;10% 535.8293  0.3066295
+5   Scra11  Quincay      0 before     loc1 5.585075    &lt;10% 461.3625  0.3644242
+6   Scra11  Quincay      0 before     loc2 7.824051    &lt;10% 537.4528 -0.3339857
         Sku       Sp       Sv       Sz       Sa       Smr      Smc       Sxp
 1  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984  959.4634
 2  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265 1299.1056
@@ -2033,17 +2124,17 @@ following code:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.5.1 (2025-06-13 ucrt)
 Platform: x86_64-w64-mingw32/x64
-Running under: Windows 11 x64 (build 26100)
+Running under: Windows 10 x64 (build 19045)
 
 Matrix products: default
   LAPACK version 3.12.1
 
 locale:
-[1] LC_COLLATE=English_United States.utf8 
-[2] LC_CTYPE=English_United States.utf8   
-[3] LC_MONETARY=English_United States.utf8
-[4] LC_NUMERIC=C                          
-[5] LC_TIME=English_United States.utf8    
+[1] LC_COLLATE=English_United Kingdom.utf8 
+[2] LC_CTYPE=English_United Kingdom.utf8   
+[3] LC_MONETARY=English_United Kingdom.utf8
+[4] LC_NUMERIC=C                           
+[5] LC_TIME=English_United Kingdom.utf8    
 
 time zone: Europe/Berlin
 tzcode source: internal
