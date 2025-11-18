@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-17 10:13:35 CET
+2025-11-18 16:33:06 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -142,7 +142,7 @@ head(FT)
     6 5.961985 0.6743632 86.99719 0.4249085 0.4060171  7.404031 0.02403996
              Vv        Vmp       Vmc       Vvc        Vvv First.direction
     1 0.6632383 0.03220712 0.4298770 0.6058456 0.05739273        44.99067
-    2 0.7468693 0.04181877 0.4518377 0.6665194 0.08034989        89.99559
+    2 0.7468693 0.04181877 0.4518377 0.6665194 0.08034988        89.99559
     3 0.6350726 0.04105984 0.3806123 0.5465987 0.08847389        90.00050
     4 0.7030889 0.03305849 0.4670876 0.6490426 0.05404634        44.98490
     5 0.5983675 0.03014862 0.4005538 0.5514198 0.04694766        89.99058
@@ -154,20 +154,20 @@ head(FT)
     4      90.01423227       135.00686         71.81574                 3943.282
     5     135.02619380       179.99602         72.18861                 3051.558
     6      89.99811744        63.56398         57.93184                 4003.873
-      Mean.depth.of.furrows Mean.density.of.furrows       epLsar  NewEplsar
-    1              1714.284                6492.159 0.0005855797 0.01748435
-    2              1899.377                6945.496 0.0028073607 0.01681894
-    3              3459.689                7121.221 0.0017361474 0.01787320
-    4              1857.354                6632.412 0.0023834012 0.01666934
-    5              1527.908                6748.034 0.0024736287 0.01686902
-    6              1607.176                7054.717 0.0012932325 0.01710849
-          Asfc      Smfc    HAsfc9
-    1 49.92666 1.0805865 0.1333228
-    2 13.83172 1.1530754 0.4437028
-    3 19.82069 1.4950314 0.9494297
-    4 13.06050 1.1530754 0.3135672
-    5 13.10260 0.9489935 0.1773680
-    6 26.90327 0.8893344 0.2908531
+      Mean.depth.of.furrows Mean.density.of.furrows      epLsar  NewEplsar     Asfc
+    1              1714.284                6492.159 0.000585580 0.01748435 49.92666
+    2              1899.377                6945.496 0.002807361 0.01681894 13.83172
+    3              3459.689                7121.221 0.001736147 0.01787320 19.82069
+    4              1857.354                6632.412 0.002383401 0.01666934 13.06050
+    5              1527.908                6748.034 0.002473629 0.01686902 13.10260
+    6              1607.176                7054.717 0.001293233 0.01710849 26.90327
+           Smfc    HAsfc9
+    1 1.0805865 0.1333228
+    2 1.1530754 0.4437028
+    3 1.4950314 0.9494297
+    4 1.1530754 0.3135672
+    5 0.9489935 0.1773680
+    6 0.8893344 0.2908531
 
 ------------------------------------------------------------------------
 
@@ -370,17 +370,17 @@ sessionInfo()
 
     R version 4.5.1 (2025-06-13 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 10 x64 (build 19045)
+    Running under: Windows 11 x64 (build 26100)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United Kingdom.utf8 
-    [2] LC_CTYPE=English_United Kingdom.utf8   
-    [3] LC_MONETARY=English_United Kingdom.utf8
-    [4] LC_NUMERIC=C                           
-    [5] LC_TIME=English_United Kingdom.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -400,12 +400,12 @@ sessionInfo()
      [4] lattice_0.22-7       hms_1.1.4            digest_0.6.37       
      [7] magrittr_2.0.4       timechange_0.3.0     evaluate_1.0.5      
     [10] grid_4.5.1           RColorBrewer_1.1-3   fastmap_1.2.0       
-    [13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-4        
+    [13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-3        
     [16] backports_1.5.0      scales_1.4.0         modelr_0.1.11       
     [19] microbenchmark_1.5.0 jquerylib_0.1.4      cli_3.6.5           
     [22] rlang_1.1.6          cowplot_1.2.0        withr_3.0.2         
     [25] cachem_1.1.0         yaml_2.3.10          tools_4.5.1         
-    [28] tzdb_0.5.0           boot_1.3-32          Deriv_4.2.0         
+    [28] tzdb_0.5.0           boot_1.3-31          Deriv_4.2.0         
     [31] broom_1.0.10         vctrs_0.6.5          R6_2.6.1            
     [34] lifecycle_1.0.4      MASS_7.3-65          pkgconfig_2.0.3     
     [37] pillar_1.11.1        bslib_0.9.0          gtable_0.3.6        
