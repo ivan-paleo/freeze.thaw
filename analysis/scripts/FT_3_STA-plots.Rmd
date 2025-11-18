@@ -1,5 +1,5 @@
 ---
-title: "Plots for the ISEA use-wear dataset"
+title: "Plots for the the Freeze-thaw project"
 author: "Ivan Calandra"
 date: "`r format(Sys.time(), usetz = TRUE)`"
 output:
@@ -14,7 +14,7 @@ output:
     toc: true
     toc_depth: 4
     html_preview: false
-bibliography: ISEA_3c_STA-plots.bib
+bibliography: FT_3_STA-plots.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE)
 
 
 # Goal of the script
-The script plots all STA variables for the ISEA use-wear dataset.   
+The script plots all STA variables for the Freeze-thaw dataset.   
 
 ```{r}
 dir_in  <- "analysis/derived_data"
@@ -64,17 +64,38 @@ library(tidyverse)
 
 # Read in Rbin file
 ```{r}
-STA <- list.files(dir_in, pattern = "STA\\.Rbin$", full.names = TRUE) %>% 
-       loadObject()
-str(STA)
-head(STA)
+FT <- list.files(dir_in, pattern = ".*STA.*\\.Rbin$", full.names = TRUE) %>% 
+      loadObject()
+str(FT)
+head(FT)
 ```
 
 
 ---
 
 
-# Plot each surface parameter in a line plot
+# Plots
+## Filter data based on NMP_cat
+```{r}
+FT <- mutate(FT, SpecLoc = paste(Specimen, Location, sep = "-"))
+FT_NMP10 <- filter(FT, NMP_cat == "<10%")
+FT_NMP17 <- filter(FT, NMP_cat %in% c("<10%", "10-17%"))
+```
+
+When considering only height maps with 10% NMP or less, `r nrow(FT) - nrow(FT_NMP10)` height maps are excluded and `r nrow(FT_NMP10)` are kept for further analysis.  
+When considering only height maps with 17% NMP or less, `r nrow(FT) - nrow(FT_NMP17)` height maps are excluded and `r nrow(FT_NMP17)` are kept for further analysis.  
+
+
+## Line plots
+
+```{r}
+# Not very readable -> plot means instead?
+p <- ggplot(data = FT_NMP17, aes(x = Cycles, y = Sq, color = Sediment)) + 
+     geom_point() + 
+     geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE)
+print(p)
+```
+
 ## Format data
 ### Calculate the mean per sample
 There are `r length(unique(STA$Sample))` samples, with height maps acquired on `r length(unique(STA$Side))` sides (`r paste(unique(STA$Side), collapse = " and ")`), 2 locations per side, and at `r paste(levels(STA$Strokes), collapse = " and ")` strokes. This equals to `r nrow(STA)` data points.
@@ -337,7 +358,7 @@ sessionInfo()
 
 ```{r, echo = FALSE}
 pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
-                           out.dir = "analysis/scripts", bib.file = "ISEA_3c_STA-plots")
+                           out.dir = "analysis/scripts", bib.file = "FT_3_STA-plots")
 knitr::kable(pkgs_cite)
 ```
 
