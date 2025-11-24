@@ -67,9 +67,11 @@ library(writexl)
 # Read and format data
 ## Read in CSV file
 ```{r}
-FT <- list.files(dir_in, pattern = ".*STA.*\\.csv$", full.names = TRUE) %>% 
-      read.csv(header = FALSE, na.strings = "*****", fileEncoding = 'WINDOWS-1252')
+FT_file <- list.files(dir_in, pattern = ".*STA.*\\.csv$", full.names = TRUE) 
+FT <- read.csv(FT_file, header = FALSE, na.strings = "*****", fileEncoding = 'WINDOWS-1252')
 ```
+
+The following raw data file has been read: "`r FT_file`"
 
 
 ## Select relevant columns and rows
@@ -166,13 +168,14 @@ FT_keep[c("Specimen", "State", "Location")] <- FT_keep$Name %>%
 ## Add columns for sediment type and freeze-thaw cycles
 ```{r}
 # Load CSV file with information on samples
-FT_samples <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE) %>% 
-              read.csv()
-FT_samples
+FT_samples_file <- list.files(dir_in, pattern = ".*samples.*\\.csv$", full.names = TRUE)
+FT_samples <- read.csv(FT_samples_file)
 
 # Merge the data.frames by chert type and chert tool
 FT_keep_sed_cy <- merge(FT_keep, FT_samples, by = "Specimen")
 ```
+
+The file containing the info on samples is: "`r FT_samples_file`"
 
 Scra14 was planned for 600 cycles but the tube opened before the end of the experiment. Hence, only `r FT_samples[FT_samples$Specimen == "Scra14", "Cycles"]` cycles were conducted for that sample.
 

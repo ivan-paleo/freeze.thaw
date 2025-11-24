@@ -76,12 +76,17 @@ library(writexl)
 
 # Read in data
 ```{r}
-FT <- list.files(dir_in, pattern = ".*STA.*\\.Rbin$", full.names = TRUE) %>% 
-      loadObject()
+FT_file <- list.files(dir_in, pattern = ".*STA.*\\.Rbin$", full.names = TRUE)
+FT <- loadObject(FT_file)
+```
+
+The following data file has been read: "`r FT_file`"  
+
+Below are its structure and first lines:
+```{r}
 str(FT)
 head(FT)
 ```
-
 
 ---
 

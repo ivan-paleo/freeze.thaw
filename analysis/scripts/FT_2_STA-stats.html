@@ -1577,7 +1577,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Summary statistics on the surface texture
 parameters for the Freeze-thaw project</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2025-11-18 16:33:01 CET</h4>
+<h4 class="date">2025-11-24 15:42:25 CET</h4>
 
 </div>
 
@@ -1632,23 +1632,24 @@ Summary statistics will be saved in “./analysis/derived_data”.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
 <pre><code>Warning: package &#39;tidyverse&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;ggplot2&#39; was built under R version 4.5.2</code></pre>
-<pre><code>Warning: package &#39;tibble&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;tidyr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;readr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;purrr&#39; was built under R version 4.5.2</code></pre>
-<pre><code>Warning: package &#39;dplyr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;stringr&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;forcats&#39; was built under R version 4.5.2</code></pre>
 <pre><code>Warning: package &#39;lubridate&#39; was built under R version 4.5.2</code></pre>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">library</span>(writexl)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">library</span>(writexl)</span></code></pre></div>
 <pre><code>Warning: package &#39;writexl&#39; was built under R version 4.5.2</code></pre>
 <hr />
 </div>
 <div id="read-in-data" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Read in data</h1>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>FT <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*STA.*</span><span class="sc">\\</span><span class="st">.Rbin$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>      <span class="fu">loadObject</span>()</span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="fu">str</span>(FT)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>FT_file <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;.*STA.*</span><span class="sc">\\</span><span class="st">.Rbin$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>FT <span class="ot">&lt;-</span> <span class="fu">loadObject</span>(FT_file)</span></code></pre></div>
+<p>The following data file has been read:
+“analysis/derived_data/FT_STA_formatted-data.Rbin”</p>
+<p>Below are its structure and first lines:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">str</span>(FT)</span></code></pre></div>
 <pre><code>&#39;data.frame&#39;:   80 obs. of  41 variables:
  $ Specimen                : chr  &quot;Scra11&quot; &quot;Scra11&quot; &quot;Scra11&quot; &quot;Scra11&quot; ...
  $ Sediment                : chr  &quot;Quincay&quot; &quot;Quincay&quot; &quot;Quincay&quot; &quot;Quincay&quot; ...
@@ -1693,7 +1694,7 @@ Summary statistics will be saved in “./analysis/derived_data”.</p>
  $ HAsfc9                  : num  0.133 0.444 0.949 0.314 0.177 ...
  - attr(*, &quot;comment&quot;)= Named chr [1:35] &quot;%&quot; &quot;nm&quot; &quot;&lt;no unit&gt;&quot; &quot;&lt;no unit&gt;&quot; ...
   ..- attr(*, &quot;names&quot;)= chr [1:35] &quot;NMP&quot; &quot;Sq&quot; &quot;Ssk&quot; &quot;Sku&quot; ...</code></pre>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">head</span>(FT)</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">head</span>(FT)</span></code></pre></div>
 <pre><code>  Specimen Sediment Cycles  State Location      NMP NMP_cat       Sq        Ssk
 1   Scra11  Quincay    600  after     loc1 6.210140    &lt;10% 510.3147  0.2082995
 2   Scra11  Quincay    600  after     loc2 8.988605    &lt;10% 599.4221  0.1038576
@@ -1717,7 +1718,7 @@ Summary statistics will be saved in “./analysis/derived_data”.</p>
 6 5.961985 0.6743632 86.99719 0.4249085 0.4060171  7.404031 0.02403996
          Vv        Vmp       Vmc       Vvc        Vvv First.direction
 1 0.6632383 0.03220712 0.4298770 0.6058456 0.05739273        44.99067
-2 0.7468693 0.04181877 0.4518377 0.6665194 0.08034988        89.99559
+2 0.7468693 0.04181877 0.4518377 0.6665194 0.08034989        89.99559
 3 0.6350726 0.04105984 0.3806123 0.5465987 0.08847389        90.00050
 4 0.7030889 0.03305849 0.4670876 0.6490426 0.05404634        44.98490
 5 0.5983675 0.03014862 0.4005538 0.5514198 0.04694766        89.99058
@@ -1729,20 +1730,20 @@ Summary statistics will be saved in “./analysis/derived_data”.</p>
 4      90.01423227       135.00686         71.81574                 3943.282
 5     135.02619380       179.99602         72.18861                 3051.558
 6      89.99811744        63.56398         57.93184                 4003.873
-  Mean.depth.of.furrows Mean.density.of.furrows      epLsar  NewEplsar     Asfc
-1              1714.284                6492.159 0.000585580 0.01748435 49.92666
-2              1899.377                6945.496 0.002807361 0.01681894 13.83172
-3              3459.689                7121.221 0.001736147 0.01787320 19.82069
-4              1857.354                6632.412 0.002383401 0.01666934 13.06050
-5              1527.908                6748.034 0.002473629 0.01686902 13.10260
-6              1607.176                7054.717 0.001293233 0.01710849 26.90327
-       Smfc    HAsfc9
-1 1.0805865 0.1333228
-2 1.1530754 0.4437028
-3 1.4950314 0.9494297
-4 1.1530754 0.3135672
-5 0.9489935 0.1773680
-6 0.8893344 0.2908531</code></pre>
+  Mean.depth.of.furrows Mean.density.of.furrows       epLsar  NewEplsar
+1              1714.284                6492.159 0.0005855797 0.01748435
+2              1899.377                6945.496 0.0028073607 0.01681894
+3              3459.689                7121.221 0.0017361474 0.01787320
+4              1857.354                6632.412 0.0023834012 0.01666934
+5              1527.908                6748.034 0.0024736287 0.01686902
+6              1607.176                7054.717 0.0012932325 0.01710849
+      Asfc      Smfc    HAsfc9
+1 49.92666 1.0805865 0.1333228
+2 13.83172 1.1530754 0.4437028
+3 19.82069 1.4950314 0.9494297
+4 13.06050 1.1530754 0.3135672
+5 13.10260 0.9489935 0.1773680
+6 26.90327 0.8893344 0.2908531</code></pre>
 <hr />
 </div>
 <div id="summary-statistics" class="section level1" number="4">
@@ -1750,34 +1751,34 @@ Summary statistics will be saved in “./analysis/derived_data”.</p>
 <div id="create-function-to-compute-the-statistics-at-once" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Create function to
 compute the statistics at once</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>nminmaxmeanmedsd <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>    y <span class="ot">&lt;-</span> x[<span class="sc">!</span><span class="fu">is.na</span>(x)]     <span class="co"># Exclude NAs</span></span>
-<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>    n_test <span class="ot">&lt;-</span> <span class="fu">length</span>(y)   <span class="co"># Sample size (n)</span></span>
-<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>    min_test <span class="ot">&lt;-</span> <span class="fu">min</span>(y)    <span class="co"># Minimum</span></span>
-<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>    max_test <span class="ot">&lt;-</span> <span class="fu">max</span>(y)    <span class="co"># Maximum</span></span>
-<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>    mean_test <span class="ot">&lt;-</span> <span class="fu">mean</span>(y)  <span class="co"># Mean</span></span>
-<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>    med_test <span class="ot">&lt;-</span> <span class="fu">median</span>(y) <span class="co"># Median</span></span>
-<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a>    sd_test <span class="ot">&lt;-</span> <span class="fu">sd</span>(y)      <span class="co"># Standard deviation</span></span>
-<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">c</span>(n_test, min_test, max_test, mean_test, med_test, sd_test) <span class="co"># Concatenate</span></span>
-<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a>    <span class="fu">names</span>(out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;n&quot;</span>, <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;median&quot;</span>, <span class="st">&quot;sd&quot;</span>)         <span class="co"># Name values</span></span>
-<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a>    <span class="fu">return</span>(out)                                                        <span class="co"># Object to return</span></span>
-<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>nminmaxmeanmedsd <span class="ot">&lt;-</span> <span class="cf">function</span>(x){</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>    y <span class="ot">&lt;-</span> x[<span class="sc">!</span><span class="fu">is.na</span>(x)]     <span class="co"># Exclude NAs</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    n_test <span class="ot">&lt;-</span> <span class="fu">length</span>(y)   <span class="co"># Sample size (n)</span></span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>    min_test <span class="ot">&lt;-</span> <span class="fu">min</span>(y)    <span class="co"># Minimum</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>    max_test <span class="ot">&lt;-</span> <span class="fu">max</span>(y)    <span class="co"># Maximum</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>    mean_test <span class="ot">&lt;-</span> <span class="fu">mean</span>(y)  <span class="co"># Mean</span></span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>    med_test <span class="ot">&lt;-</span> <span class="fu">median</span>(y) <span class="co"># Median</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>    sd_test <span class="ot">&lt;-</span> <span class="fu">sd</span>(y)      <span class="co"># Standard deviation</span></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a>    out <span class="ot">&lt;-</span> <span class="fu">c</span>(n_test, min_test, max_test, mean_test, med_test, sd_test) <span class="co"># Concatenate</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a>    <span class="fu">names</span>(out) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;n&quot;</span>, <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>, <span class="st">&quot;mean&quot;</span>, <span class="st">&quot;median&quot;</span>, <span class="st">&quot;sd&quot;</span>)         <span class="co"># Name values</span></span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a>    <span class="fu">return</span>(out)                                                        <span class="co"># Object to return</span></span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="compute-summary-statistics" class="section level2" number="4.2">
 <h2><span class="header-section-number">4.2</span> Compute summary
 statistics</h2>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment</span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>stats_sed <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>stats_sed[<span class="dv">1</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>stats_sed <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>stats_sed[<span class="dv">1</span>]</span></code></pre></div>
 <pre><code>     Sediment
 1        Clay
 2 Coarse sand
 3   Fine sand
 4      Gravel
 5     Quincay</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment and NMP_cat</span></span>
-<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>stats_sed_NMP <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> NMP_cat, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
-<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>stats_sed_NMP[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment and NMP_cat</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>stats_sed_NMP <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> NMP_cat, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>stats_sed_NMP[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
 <pre><code>      Sediment NMP_cat
 1         Clay    &lt;10%
 2         Clay  10-17%
@@ -1793,9 +1794,9 @@ statistics</h2>
 12     Quincay    &lt;10%
 13     Quincay  10-17%
 14     Quincay    &gt;17%</code></pre>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment and Cycles</span></span>
-<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>stats_sed_cy <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
-<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>stats_sed_cy[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment and Cycles</span></span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>stats_sed_cy <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>stats_sed_cy[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>]</span></code></pre></div>
 <pre><code>      Sediment Cycles
 1         Clay      0
 2         Clay    330
@@ -1812,9 +1813,9 @@ statistics</h2>
 13     Quincay      0
 14     Quincay    330
 15     Quincay    600</code></pre>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment, Cycles and NMP_cat</span></span>
-<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>stats_sed_cy_NMP <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles <span class="sc">+</span> NMP_cat, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
-<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>stats_sed_cy_NMP[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment, Cycles and NMP_cat</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>stats_sed_cy_NMP <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles <span class="sc">+</span> NMP_cat, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>stats_sed_cy_NMP[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div>
 <pre><code>      Sediment Cycles NMP_cat
 1         Clay      0    &lt;10%
 2         Clay      0  10-17%
@@ -1847,9 +1848,9 @@ statistics</h2>
 29     Quincay    330    &lt;10%
 30     Quincay    330    &gt;17%
 31     Quincay    600    &lt;10%</code></pre>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment, Cycles and State</span></span>
-<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a>stats_sed_cy_st <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles <span class="sc">+</span> State, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
-<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a>stats_sed_cy_st[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment, Cycles and State</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>stats_sed_cy_st <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles <span class="sc">+</span> State, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>stats_sed_cy_st[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code></pre></div>
 <pre><code>      Sediment Cycles  State
 1         Clay      0 before
 2         Clay    330  after
@@ -1866,9 +1867,9 @@ statistics</h2>
 13     Quincay      0 before
 14     Quincay    330  after
 15     Quincay    600  after</code></pre>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment, Cycles, State and NMP_cat</span></span>
-<span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a>stats_sed_cy_st_NMP <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles <span class="sc">+</span> State <span class="sc">+</span> NMP_cat, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
-<span id="cb40-3"><a href="#cb40-3" tabindex="-1"></a>stats_sed_cy_st_NMP[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co"># Compute summary statistics based on Sediment, Cycles, State and NMP_cat</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>stats_sed_cy_st_NMP <span class="ot">&lt;-</span> <span class="fu">summaryBy</span>(. <span class="sc">~</span> Sediment <span class="sc">+</span> Cycles <span class="sc">+</span> State <span class="sc">+</span> NMP_cat, <span class="at">data =</span> FT, <span class="at">FUN =</span> nminmaxmeanmedsd)</span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>stats_sed_cy_st_NMP[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span></code></pre></div>
 <pre><code>      Sediment Cycles  State NMP_cat
 1         Clay      0 before    &lt;10%
 2         Clay      0 before  10-17%
@@ -1904,29 +1905,29 @@ statistics</h2>
 </div>
 <div id="save-as-xlsx" class="section level2" number="4.3">
 <h2><span class="header-section-number">4.3</span> Save as XLSX</h2>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="fu">write_xlsx</span>(<span class="fu">list</span>(<span class="st">&quot;Sediment&quot;</span> <span class="ot">=</span> stats_sed, <span class="st">&quot;Sediment+NMP&quot;</span> <span class="ot">=</span> stats_sed_NMP, <span class="st">&quot;Sediment+Cycles&quot;</span> <span class="ot">=</span> stats_sed_cy, </span>
-<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>                <span class="st">&quot;Sediment+Cycles+NMP&quot;</span> <span class="ot">=</span> stats_sed_cy_NMP, <span class="st">&quot;Sediment+Cycles+State&quot;</span> <span class="ot">=</span> stats_sed_cy_st,</span>
-<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a>                <span class="st">&quot;Sediment+Cycles+State+NMP&quot;</span> <span class="ot">=</span> stats_sed_cy_st_NMP),</span>
-<span id="cb42-4"><a href="#cb42-4" tabindex="-1"></a>           <span class="at">path =</span> <span class="fu">paste0</span>(dir_stats, <span class="st">&quot;/FT_STA-stats.xlsx&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">write_xlsx</span>(<span class="fu">list</span>(<span class="st">&quot;Sediment&quot;</span> <span class="ot">=</span> stats_sed, <span class="st">&quot;Sediment+NMP&quot;</span> <span class="ot">=</span> stats_sed_NMP, <span class="st">&quot;Sediment+Cycles&quot;</span> <span class="ot">=</span> stats_sed_cy, </span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>                <span class="st">&quot;Sediment+Cycles+NMP&quot;</span> <span class="ot">=</span> stats_sed_cy_NMP, <span class="st">&quot;Sediment+Cycles+State&quot;</span> <span class="ot">=</span> stats_sed_cy_st,</span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>                <span class="st">&quot;Sediment+Cycles+State+NMP&quot;</span> <span class="ot">=</span> stats_sed_cy_st_NMP),</span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>           <span class="at">path =</span> <span class="fu">paste0</span>(dir_stats, <span class="st">&quot;/FT_STA-stats.xlsx&quot;</span>))</span></code></pre></div>
 <hr />
 </div>
 </div>
 <div id="sessioninfo" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> sessionInfo()</h1>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.5.1 (2025-06-13 ucrt)
 Platform: x86_64-w64-mingw32/x64
-Running under: Windows 11 x64 (build 26100)
+Running under: Windows 10 x64 (build 19045)
 
 Matrix products: default
   LAPACK version 3.12.1
 
 locale:
-[1] LC_COLLATE=English_United States.utf8 
-[2] LC_CTYPE=English_United States.utf8   
-[3] LC_MONETARY=English_United States.utf8
-[4] LC_NUMERIC=C                          
-[5] LC_TIME=English_United States.utf8    
+[1] LC_COLLATE=English_United Kingdom.utf8 
+[2] LC_CTYPE=English_United Kingdom.utf8   
+[3] LC_MONETARY=English_United Kingdom.utf8
+[4] LC_NUMERIC=C                           
+[5] LC_TIME=English_United Kingdom.utf8    
 
 time zone: Europe/Berlin
 tzcode source: internal
@@ -1946,12 +1947,12 @@ loaded via a namespace (and not attached):
  [4] lattice_0.22-7       hms_1.1.4            digest_0.6.37       
  [7] magrittr_2.0.4       timechange_0.3.0     evaluate_1.0.5      
 [10] grid_4.5.1           RColorBrewer_1.1-3   fastmap_1.2.0       
-[13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-3        
+[13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-4        
 [16] backports_1.5.0      scales_1.4.0         modelr_0.1.11       
 [19] microbenchmark_1.5.0 jquerylib_0.1.4      cli_3.6.5           
 [22] rlang_1.1.6          cowplot_1.2.0        withr_3.0.2         
 [25] cachem_1.1.0         yaml_2.3.10          tools_4.5.1         
-[28] tzdb_0.5.0           boot_1.3-31          Deriv_4.2.0         
+[28] tzdb_0.5.0           boot_1.3-32          Deriv_4.2.0         
 [31] broom_1.0.10         vctrs_0.6.5          R6_2.6.1            
 [34] lifecycle_1.0.4      MASS_7.3-65          pkgconfig_2.0.3     
 [37] pillar_1.11.1        bslib_0.9.0          gtable_0.3.6        
