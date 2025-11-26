@@ -1,27 +1,39 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2025-11-24 16:35:55 CET
+2025-11-26 12:31:41 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
 - [Read in data](#read-in-data)
-- [Line plots](#line-plots)
-  - [Filter data based on NMP_cat](#filter-data-based-on-nmp_cat)
-  - [Plotting](#plotting)
-- [PCA](#pca)
-  - [Format data](#format-data)
+- [Format data](#format-data)
+  - [Exclude NMP, and combine Specimen and Location in one
+    column](#exclude-nmp-and-combine-specimen-and-location-in-one-column)
+  - [Create new datasets based on
+    NMP_cat](#create-new-datasets-based-on-nmp_cat)
+  - [Calculate the mean per specimen per
+    cycle](#calculate-the-mean-per-specimen-per-cycle)
+  - [Add units to headers for
+    plotting](#add-units-to-headers-for-plotting)
+- [Line plots for height maps with \<17%
+  NMP](#line-plots-for-height-maps-with-17-nmp)
+  - [Create list to receive the
+    plots](#create-list-to-receive-the-plots)
+  - [Plots](#plots)
+  - [Save plots](#save-plots)
+- [PCA for height maps with \<17% NMP](#pca-for-height-maps-with-17-nmp)
+  - [Format data](#format-data-1)
   - [Select surface texture
     parameters](#select-surface-texture-parameters)
-  - [PCA](#pca-1)
-  - [Plots](#plots)
+  - [PCA](#pca)
+  - [Plots](#plots-1)
     - [Eigenvalues](#eigenvalues)
     - [Biplots](#biplots)
       - [Plotting function](#plotting-function)
       - [Biplots](#biplots-1)
     - [Combine plots to save them into 1
       file](#combine-plots-to-save-them-into-1-file)
-    - [Save plots](#save-plots)
+    - [Save plots](#save-plots-1)
 - [sessionInfo()](#sessioninfo)
 - [Cite R packages used](#cite-r-packages-used)
   - [References](#references)
@@ -53,6 +65,7 @@ library(ggplot2)
 library(grateful)
 library(gridExtra)
 library(knitr)
+library(patchwork)
 library(R.utils)
 library(RColorBrewer)
 library(rmarkdown)
@@ -178,17 +191,26 @@ head(FT)
 
 ------------------------------------------------------------------------
 
-# Line plots
+# Format data
 
-## Filter data based on NMP_cat
+## Exclude NMP, and combine Specimen and Location in one column
 
 ``` r
+# Exclude NMP
 FT <- select(FT, !NMP)  %>% 
   
-      # necessary only when plotting individual points and not means
+      # Combine Specimen and Location in one column
+      # Necessary to connect points when plotting individual points
       mutate(SpecLoc = paste(Specimen, Location, sep = "-"))
+```
 
+## Create new datasets based on NMP_cat
+
+``` r
+# Select all rows with NMP_cat ≤ 10% 
 FT_NMP10 <- filter(FT, NMP_cat == "<10%")
+
+# Select all rows with NMP_cat ≤ 10% or 10-17%
 FT_NMP17 <- filter(FT, NMP_cat %in% c("<10%", "10-17%"))
 ```
 
@@ -197,43 +219,334 @@ are excluded and 35 are kept for further analysis.
 When considering only height maps with 17% NMP or less, 8 height maps
 are excluded and 72 are kept for further analysis.
 
-## Plotting
+## Calculate the mean per specimen per cycle
 
 ``` r
-# Not very readable -> plot means instead?
-p <- ggplot(data = FT_NMP17, aes(x = Cycles, y = Sq, color = Sediment)) + 
-     geom_point(size = 3) + 
-     geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE) +
-     theme_classic() +
-     
-     # Set2 may be a problem for some, but not all folks with color vision impairment.
-     # However, there is no colorblind safe qualitative set with 5 data classes.
-     scale_color_brewer(palette = 'Set2')
-print(p)
-```
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
-
-``` r
-# Calculate mean based on Specimen + Cycles
+# Calculate means based on Specimen + Cycles
 # Sediment is listed as factor in order to keep this column
-# keep.names = TRUE is important for the matching on names in the next steps
+# keep.names = TRUE is important for the matching on names in the plots
+FT_NMP10_mean <- summaryBy(.~ Specimen + Sediment + Cycles, data = FT_NMP10,
+                           FUN = mean, keep.names = TRUE)
 FT_NMP17_mean <- summaryBy(.~ Specimen + Sediment + Cycles, data = FT_NMP17,
                            FUN = mean, keep.names = TRUE)
-
-p <- ggplot(data = FT_NMP17_mean, aes(x = Cycles, y = Sq, color = Sediment)) + 
-     geom_point(size = 3) + 
-     geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
-     theme_classic() +
-     scale_color_brewer(palette = 'Set2')
-print(p)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+## Add units to headers for plotting
+
+This cannot be done before on `FT` because it create problems during the
+calculations of the means due to the column names with spaces and
+special characters (for units).  
+Also, for `FT_NMP10` and `FT_NMP17`, a copy is created here because such
+column names are also problematic for the PCA (see below).
+
+``` r
+# Get units from comment(FT)
+table_units <- comment(FT) %>% 
+               data.frame(Parameter = names(.), Unit = ., row.names = NULL) %>% 
+  
+               # Exclude NMP because it won't be plotted
+               filter(Parameter != "NMP") %>% 
+  
+               # Paste parameter name and unit together in a new column
+               mutate(Param_unit = paste0(Parameter, " [", Unit, "]")) 
+
+# Remove > and < symbols
+table_units$Param_unit <- gsub(">|<", "", table_units$Param_unit)
+
+# Create copies of FT_NMP10 and FT_NMP17
+FT_NMP10_units <- FT_NMP10
+FT_NMP17_units <- FT_NMP17
+
+# Adjust column names
+colnames(FT_NMP10_units)[colnames(FT_NMP10_units) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP17_units)[colnames(FT_NMP17_units) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP10_mean)[colnames(FT_NMP10_mean) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP17_mean)[colnames(FT_NMP17_mean) %in% table_units$Parameter] <- table_units$Param_unit
+```
+
+These are the new column names for the plots:
+
+    Sq [nm]
+    Ssk [no unit]
+    Sku [no unit]
+    Sp [nm]
+    Sv [nm]
+    Sz [nm]
+    Sa [nm]
+    Smr [%]
+    Smc [nm]
+    Sxp [nm]
+    Sal [µm]
+    Str [no unit]
+    Std [°]
+    Ssw [µm]
+    Sdq [no unit]
+    Sdr [%]
+    Vm [µm³/µm²]
+    Vv [µm³/µm²]
+    Vmp [µm³/µm²]
+    Vmc [µm³/µm²]
+    Vvc [µm³/µm²]
+    Vvv [µm³/µm²]
+    First.direction [°]
+    Second.direction [°]
+    Third.direction [°]
+    Texture.isotropy [%]
+    Maximum.depth.of.furrows [nm]
+    Mean.depth.of.furrows [nm]
+    Mean.density.of.furrows [cm/cm2]
+    epLsar [no unit]
+    NewEplsar [no unit]
+    Asfc [no unit]
+    Smfc [µm²]
+    HAsfc9 [no unit]
 
 ------------------------------------------------------------------------
 
-# PCA
+# Line plots for height maps with \<17% NMP
+
+## Create list to receive the plots
+
+``` r
+p_line <- vector(mode = "list", length = nrow(table_units))
+names(p_line) <- table_units$Param_unit
+```
+
+## Plots
+
+``` r
+# Design for patchwork combination of plots (see below)
+design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 2))
+
+# Plot for every parameters
+for (i in names(p_line)) {
+  
+  # Define y-axis limits based on the range of the y-variable
+  # This ensures that both plots have the same y-range
+  #range_y <- range(FT_NMP17_units[[i]])
+  
+  # Plot of individual data points
+             #  Define aesthetics 
+  p_indiv <- ggplot(data = FT_NMP17_units, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+             
+             # Add points
+             geom_point(size = 3) + 
+     
+             # Facet plot by 'Sediment'
+             facet_wrap(~ Sediment) +
+    
+             # Add lines to connect points with identical "SpecLoc"
+             geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE) +
+    
+             # Light theme
+             theme_classic() +
+     
+             # Set2 "may be a problem for some, but not all folks with color vision impairment".
+             # However, there is no colorblind safe qualitative set with 5 data classes.
+             scale_color_brewer(palette = 'Set2') +
+    
+             # Set y-limits
+             #ylim(range_y[1], range_y[2]) +
+    
+             # Add title to plot
+             labs(title = "Individual data points")
+
+  # Plot of means per sample and cycle
+  p_mean <- ggplot(data = FT_NMP17_mean, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+            geom_point(size = 3) + 
+            geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
+            theme_classic() +
+            scale_color_brewer(palette = 'Set2') +
+            #ylim(range_y[1], range_y[2]) +
+            labs(title = "Mean per sample and cycle")
+
+  # Combine both plots with patchwork
+  p_line[[i]] <- p_indiv / p_mean + guide_area() + plot_layout(guides = 'collect', design = design_patch)
+}
+
+# Print all plots
+print(p_line)
+```
+
+    $`Sq [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+
+    $`Ssk [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
+
+
+    $`Sku [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-3.png)<!-- -->
+
+
+    $`Sp [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-4.png)<!-- -->
+
+
+    $`Sv [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-5.png)<!-- -->
+
+
+    $`Sz [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-6.png)<!-- -->
+
+
+    $`Sa [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-7.png)<!-- -->
+
+
+    $`Smr [%]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-8.png)<!-- -->
+
+
+    $`Smc [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-9.png)<!-- -->
+
+
+    $`Sxp [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-10.png)<!-- -->
+
+
+    $`Sal [µm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-11.png)<!-- -->
+
+
+    $`Str [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-12.png)<!-- -->
+
+
+    $`Std [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-13.png)<!-- -->
+
+
+    $`Ssw [µm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-14.png)<!-- -->
+
+
+    $`Sdq [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-15.png)<!-- -->
+
+
+    $`Sdr [%]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-16.png)<!-- -->
+
+
+    $`Vm [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-17.png)<!-- -->
+
+
+    $`Vv [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-18.png)<!-- -->
+
+
+    $`Vmp [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-19.png)<!-- -->
+
+
+    $`Vmc [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-20.png)<!-- -->
+
+
+    $`Vvc [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-21.png)<!-- -->
+
+
+    $`Vvv [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-22.png)<!-- -->
+
+
+    $`First.direction [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-23.png)<!-- -->
+
+
+    $`Second.direction [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-24.png)<!-- -->
+
+
+    $`Third.direction [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-25.png)<!-- -->
+
+
+    $`Texture.isotropy [%]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-26.png)<!-- -->
+
+
+    $`Maximum.depth.of.furrows [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-27.png)<!-- -->
+
+
+    $`Mean.depth.of.furrows [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-28.png)<!-- -->
+
+
+    $`Mean.density.of.furrows [cm/cm2]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-29.png)<!-- -->
+
+
+    $`epLsar [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-30.png)<!-- -->
+
+
+    $`NewEplsar [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-31.png)<!-- -->
+
+
+    $`Asfc [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-32.png)<!-- -->
+
+
+    $`Smfc [µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-33.png)<!-- -->
+
+
+    $`HAsfc9 [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-34.png)<!-- -->
+
+## Save plots
+
+``` r
+ggsave(filename = "FT_STA-plots.pdf", path = dir_plots, plot = p_line, 
+       width = 190, height = 200, units = "mm")
+```
+
+------------------------------------------------------------------------
+
+# PCA for height maps with \<17% NMP
 
 ## Format data
 
@@ -270,13 +583,37 @@ FT_NMP17_pca_data <- select(FT_NMP17, !c(Cycles, NMP_cat)) %>%
 
 ## Select surface texture parameters
 
-The selection is based on the previous plots
-
 ``` r
-pca_params <- c("Sq", "Vmc", "Sal", "Str", 
-                "Mean.density.of.furrows", "Mean.depth.of.furrows", 
+pca_params <- c("Sq", "Ssk", "Sv", "Sxp",
+                "Vv", "Vvc", "Vm",
+                "Sal", "Str", "epLsar",
+                "Mean.density.of.furrows", "Mean.depth.of.furrows", "Maximum.depth.of.furrows",
                 "Asfc", "HAsfc9")
 ```
+
+The following parameters are selected for the PCA:
+
+    Sq
+    Ssk
+    Sv
+    Sxp
+    Vv
+    Vvc
+    Vm
+    Sal
+    Str
+    epLsar
+    Mean.density.of.furrows
+    Mean.depth.of.furrows
+    Maximum.depth.of.furrows
+    Asfc
+    HAsfc9
+
+The selection was based on a PCA with all the parameters, trying to
+select parameters that contribute most to the first 4 PCs and trying to
+avoid parameters that correspond to the same property of the surface
+texture (e.g. Sa and Sq), although some surprisingly provide a different
+signal (e.g. Str correlating with PC1 and epLsar with PC2).
 
 ## PCA
 
@@ -302,7 +639,7 @@ pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_cla
 print(pca_FT_NMP17_eig)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ### Biplots
 
@@ -341,7 +678,7 @@ pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, p
 print(pca_FT_NMP17_12)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 # Biplot of PC3&4
@@ -350,7 +687,7 @@ pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, p
 print(pca_FT_NMP17_34)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
 
 ### Combine plots to save them into 1 file
 
@@ -361,9 +698,8 @@ all_plots <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)
 ### Save plots
 
 ``` r
-#ggsave(filename = "FT_STA-PCAplots.pdf", 
-#       path = dir_plots, width = 190, units = "mm", 
-#       plot = marrangeGrob(all_plots, nrow = 1, ncol = 1, top = NULL))
+ggsave(filename = "FT_PCA-plots.pdf", path = dir_plots, plot = all_plots, 
+       width = 190, units = "mm")
 ```
 
 ------------------------------------------------------------------------
@@ -376,17 +712,17 @@ sessionInfo()
 
     R version 4.5.1 (2025-06-13 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 10 x64 (build 19045)
+    Running under: Windows 11 x64 (build 26100)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United Kingdom.utf8 
-    [2] LC_CTYPE=English_United Kingdom.utf8   
-    [3] LC_MONETARY=English_United Kingdom.utf8
-    [4] LC_NUMERIC=C                           
-    [5] LC_TIME=English_United Kingdom.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -398,29 +734,31 @@ sessionInfo()
      [1] lubridate_1.9.4    forcats_1.0.1      stringr_1.6.0      dplyr_1.1.4       
      [5] purrr_1.2.0        readr_2.1.5        tidyr_1.3.1        tibble_3.3.0      
      [9] tidyverse_2.0.0    rmarkdown_2.30     RColorBrewer_1.1-3 R.utils_2.13.0    
-    [13] R.oo_1.27.1        R.methodsS3_1.8.2  knitr_1.50         gridExtra_2.3     
-    [17] grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.0      doBy_4.7.0        
+    [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.50        
+    [17] gridExtra_2.3      grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.0     
+    [21] doBy_4.7.0        
 
     loaded via a namespace (and not attached):
      [1] gtable_0.3.6         xfun_0.54            bslib_0.9.0         
      [4] rstatix_0.7.3        ggrepel_0.9.6        lattice_0.22-7      
      [7] tzdb_0.5.0           vctrs_0.6.5          tools_4.5.1         
-    [10] generics_0.1.4       pkgconfig_2.0.3      Matrix_1.7-4        
+    [10] generics_0.1.4       pkgconfig_2.0.3      Matrix_1.7-3        
     [13] S7_0.2.0             lifecycle_1.0.4      compiler_4.5.1      
-    [16] farver_2.1.2         microbenchmark_1.5.0 carData_3.0-5       
-    [19] htmltools_0.5.8.1    sass_0.4.10          yaml_2.3.10         
-    [22] Formula_1.2-5        crayon_1.5.3         car_3.1-3           
-    [25] pillar_1.11.1        ggpubr_0.6.2         jquerylib_0.1.4     
-    [28] MASS_7.3-65          cachem_1.1.0         abind_1.4-8         
-    [31] boot_1.3-32          Deriv_4.2.0          tidyselect_1.2.1    
-    [34] digest_0.6.37        stringi_1.8.7        labeling_0.4.3      
-    [37] cowplot_1.2.0        rprojroot_2.1.1      fastmap_1.2.0       
-    [40] grid_4.5.1           cli_3.6.5            magrittr_2.0.4      
-    [43] broom_1.0.10         withr_3.0.2          scales_1.4.0        
-    [46] backports_1.5.0      timechange_0.3.0     modelr_0.1.11       
-    [49] ggsignif_0.6.4       hms_1.1.4            evaluate_1.0.5      
-    [52] rlang_1.1.6          Rcpp_1.1.0           glue_1.8.0          
-    [55] rstudioapi_0.17.1    jsonlite_2.0.0       R6_2.6.1            
+    [16] farver_2.1.2         textshaping_1.0.4    microbenchmark_1.5.0
+    [19] carData_3.0-5        htmltools_0.5.8.1    sass_0.4.10         
+    [22] yaml_2.3.10          Formula_1.2-5        crayon_1.5.3        
+    [25] car_3.1-3            ggpubr_0.6.2         pillar_1.11.1       
+    [28] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
+    [31] abind_1.4-8          boot_1.3-31          Deriv_4.2.0         
+    [34] tidyselect_1.2.1     digest_0.6.37        stringi_1.8.7       
+    [37] labeling_0.4.3       cowplot_1.2.0        rprojroot_2.1.1     
+    [40] fastmap_1.2.0        grid_4.5.1           cli_3.6.5           
+    [43] magrittr_2.0.4       broom_1.0.10         withr_3.0.2         
+    [46] scales_1.4.0         backports_1.5.0      timechange_0.3.0    
+    [49] modelr_0.1.11        ggsignif_0.6.4       ragg_1.5.0          
+    [52] hms_1.1.4            evaluate_1.0.5       rlang_1.1.6         
+    [55] Rcpp_1.1.0           glue_1.8.0           rstudioapi_0.17.1   
+    [58] jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   
 
 ------------------------------------------------------------------------
 
@@ -434,13 +772,14 @@ sessionInfo()
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
 | gridExtra | 2.3 | Auguie (2017) |
 | knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
+| patchwork | 1.3.2 | Pedersen (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
 | R.oo | 1.27.1 | Bengtsson (2003b) |
 | R.utils | 2.13.0 | Bengtsson (2025) |
 | RColorBrewer | 1.1.3 | Neuwirth (2022) |
 | rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
-| RStudio | 2025.9.0.387 | Posit team (2025) |
+| RStudio | 2025.9.2.418 | Posit team (2025) |
 
 ## References
 
@@ -516,6 +855,13 @@ Results of Multivariate Data Analyses*.
 
 Neuwirth, Erich. 2022. *RColorBrewer: ColorBrewer Palettes*.
 <https://doi.org/10.32614/CRAN.package.RColorBrewer>.
+
+</div>
+
+<div id="ref-patchwork" class="csl-entry">
+
+Pedersen, Thomas Lin. 2025. *<span class="nocase">patchwork</span>: The
+Composer of Plots*. <https://doi.org/10.32614/CRAN.package.patchwork>.
 
 </div>
 

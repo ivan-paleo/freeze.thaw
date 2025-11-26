@@ -52,6 +52,7 @@ library(ggplot2)
 library(grateful)
 library(gridExtra)
 library(knitr)
+library(patchwork)
 library(R.utils)
 library(RColorBrewer)
 library(rmarkdown)
@@ -80,15 +81,24 @@ head(FT)
 ---
 
 
-# Line plots
-## Filter data based on NMP_cat
+# Format data
+## Exclude NMP, and combine Specimen and Location in one column
 ```{r}
+# Exclude NMP
 FT <- select(FT, !NMP)  %>% 
   
-      # necessary only when plotting individual points and not means
+      # Combine Specimen and Location in one column
+      # Necessary to connect points when plotting individual points
       mutate(SpecLoc = paste(Specimen, Location, sep = "-"))
+```
 
+
+## Create new datasets based on NMP_cat
+```{r}
+# Select all rows with NMP_cat ≤ 10% 
 FT_NMP10 <- filter(FT, NMP_cat == "<10%")
+
+# Select all rows with NMP_cat ≤ 10% or 10-17%
 FT_NMP17 <- filter(FT, NMP_cat %in% c("<10%", "10-17%"))
 ```
 
@@ -96,40 +106,130 @@ When considering only height maps with 10% NMP or less, `r nrow(FT) - nrow(FT_NM
 When considering only height maps with 17% NMP or less, `r nrow(FT) - nrow(FT_NMP17)` height maps are excluded and `r nrow(FT_NMP17)` are kept for further analysis.  
 
 
-## Plotting
+## Calculate the mean per specimen per cycle
 ```{r}
-# Not very readable -> plot means instead?
-p <- ggplot(data = FT_NMP17, aes(x = Cycles, y = Sq, color = Sediment)) + 
-     geom_point(size = 3) + 
-     geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE) +
-     theme_classic() +
-     
-     # Set2 may be a problem for some, but not all folks with color vision impairment.
-     # However, there is no colorblind safe qualitative set with 5 data classes.
-     scale_color_brewer(palette = 'Set2')
-print(p)
-```
-
-```{r}
-# Calculate mean based on Specimen + Cycles
+# Calculate means based on Specimen + Cycles
 # Sediment is listed as factor in order to keep this column
-# keep.names = TRUE is important for the matching on names in the next steps
+# keep.names = TRUE is important for the matching on names in the plots
+FT_NMP10_mean <- summaryBy(.~ Specimen + Sediment + Cycles, data = FT_NMP10,
+                           FUN = mean, keep.names = TRUE)
 FT_NMP17_mean <- summaryBy(.~ Specimen + Sediment + Cycles, data = FT_NMP17,
                            FUN = mean, keep.names = TRUE)
+```
 
-p <- ggplot(data = FT_NMP17_mean, aes(x = Cycles, y = Sq, color = Sediment)) + 
-     geom_point(size = 3) + 
-     geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
-     theme_classic() +
-     scale_color_brewer(palette = 'Set2')
-print(p)
+
+## Add units to headers for plotting
+This cannot be done before on `FT` because it create problems during the calculations of the means due to the column names with spaces and special characters (for units).  
+Also, for `FT_NMP10` and `FT_NMP17`, a copy is created here because such column names are also problematic for the PCA (see below).
+
+```{r}
+# Get units from comment(FT)
+table_units <- comment(FT) %>% 
+               data.frame(Parameter = names(.), Unit = ., row.names = NULL) %>% 
+  
+               # Exclude NMP because it won't be plotted
+               filter(Parameter != "NMP") %>% 
+  
+               # Paste parameter name and unit together in a new column
+               mutate(Param_unit = paste0(Parameter, " [", Unit, "]")) 
+
+# Remove > and < symbols
+table_units$Param_unit <- gsub(">|<", "", table_units$Param_unit)
+
+# Create copies of FT_NMP10 and FT_NMP17
+FT_NMP10_units <- FT_NMP10
+FT_NMP17_units <- FT_NMP17
+
+# Adjust column names
+colnames(FT_NMP10_units)[colnames(FT_NMP10_units) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP17_units)[colnames(FT_NMP17_units) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP10_mean)[colnames(FT_NMP10_mean) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP17_mean)[colnames(FT_NMP17_mean) %in% table_units$Parameter] <- table_units$Param_unit
+```
+
+These are the new column names for the plots:  
+```{r, echo =FALSE}
+cat(paste0(table_units$Param_unit, "\n"), sep = "")
+```
+
+---
+
+
+# Line plots for height maps with <17% NMP
+## Create list to receive the plots
+```{r}
+p_line <- vector(mode = "list", length = nrow(table_units))
+names(p_line) <- table_units$Param_unit
+```
+
+
+## Plots
+```{r}
+# Design for patchwork combination of plots (see below)
+design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 2))
+
+# Plot for every parameters
+for (i in names(p_line)) {
+  
+  # Define y-axis limits based on the range of the y-variable
+  # This ensures that both plots have the same y-range
+  #range_y <- range(FT_NMP17_units[[i]])
+  
+  # Plot of individual data points
+             #  Define aesthetics 
+  p_indiv <- ggplot(data = FT_NMP17_units, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+             
+             # Add points
+             geom_point(size = 3) + 
+     
+             # Facet plot by 'Sediment'
+             facet_wrap(~ Sediment) +
+    
+             # Add lines to connect points with identical "SpecLoc"
+             geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE) +
+    
+             # Light theme
+             theme_classic() +
+     
+             # Set2 "may be a problem for some, but not all folks with color vision impairment".
+             # However, there is no colorblind safe qualitative set with 5 data classes.
+             scale_color_brewer(palette = 'Set2') +
+    
+             # Set y-limits
+             #ylim(range_y[1], range_y[2]) +
+    
+             # Add title to plot
+             labs(title = "Individual data points")
+
+  # Plot of means per sample and cycle
+  p_mean <- ggplot(data = FT_NMP17_mean, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+            geom_point(size = 3) + 
+            geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
+            theme_classic() +
+            scale_color_brewer(palette = 'Set2') +
+            #ylim(range_y[1], range_y[2]) +
+            labs(title = "Mean per sample and cycle")
+
+  # Combine both plots with patchwork
+  p_line[[i]] <- p_indiv / p_mean + guide_area() + plot_layout(guides = 'collect', design = design_patch)
+}
+
+# Print all plots
+print(p_line)
+```
+
+
+## Save plots
+```{r}
+ggsave(filename = "FT_STA-plots.pdf", path = dir_plots, plot = p_line, 
+       width = 190, height = 200, units = "mm")
 ```
 
 
 ---
 
 
-# PCA
+# PCA for height maps with <17% NMP
 ## Format data
 PCA will be applied to the differences between after and before the experiments, for all surface texture parameter.
 
@@ -162,12 +262,20 @@ FT_NMP17_pca_data <- select(FT_NMP17, !c(Cycles, NMP_cat)) %>%
 
 
 ## Select surface texture parameters
-The selection is based on the previous plots
 ```{r}
-pca_params <- c("Sq", "Vmc", "Sal", "Str", 
-                "Mean.density.of.furrows", "Mean.depth.of.furrows", 
+pca_params <- c("Sq", "Ssk", "Sv", "Sxp",
+                "Vv", "Vvc", "Vm",
+                "Sal", "Str", "epLsar",
+                "Mean.density.of.furrows", "Mean.depth.of.furrows", "Maximum.depth.of.furrows",
                 "Asfc", "HAsfc9")
 ```
+
+The following parameters are selected for the PCA:
+```{r, echo =FALSE}
+cat(paste0(pca_params, "\n"), sep = "")
+```
+
+The selection was based on a PCA with all the parameters, trying to select parameters that contribute most to the first 4 PCs and trying to avoid parameters that correspond to the same property of the surface texture (e.g. Sa and Sq), although some surprisingly provide a different signal (e.g. Str correlating with PC1 and epLsar with PC2).  
 
 
 ## PCA
@@ -231,9 +339,8 @@ all_plots <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)
 
 ### Save plots
 ```{r}
-#ggsave(filename = "FT_STA-PCAplots.pdf", 
-#       path = dir_plots, width = 190, units = "mm", 
-#       plot = marrangeGrob(all_plots, nrow = 1, ncol = 1, top = NULL))
+ggsave(filename = "FT_PCA-plots.pdf", path = dir_plots, plot = all_plots, 
+       width = 190, units = "mm")
 ```
 
 
