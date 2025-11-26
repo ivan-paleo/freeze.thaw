@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2025-11-26 12:31:41 CET
+2025-11-26 14:11:47 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -23,17 +23,21 @@ Ivan Calandra
   - [Save plots](#save-plots)
 - [PCA for height maps with \<17% NMP](#pca-for-height-maps-with-17-nmp)
   - [Format data](#format-data-1)
-  - [Select surface texture
-    parameters](#select-surface-texture-parameters)
-  - [PCA](#pca)
-  - [Plots](#plots-1)
-    - [Eigenvalues](#eigenvalues)
-    - [Biplots](#biplots)
-      - [Plotting function](#plotting-function)
-      - [Biplots](#biplots-1)
-    - [Combine plots to save them into 1
-      file](#combine-plots-to-save-them-into-1-file)
-    - [Save plots](#save-plots-1)
+  - [Custom plotting function](#custom-plotting-function)
+  - [Run PCA with all parameters](#run-pca-with-all-parameters)
+  - [PCA on selected parameters](#pca-on-selected-parameters)
+    - [Select surface texture
+      parameters](#select-surface-texture-parameters)
+    - [PCA](#pca)
+    - [Plots](#plots-1)
+      - [Eigenvalues](#eigenvalues)
+      - [Biplots](#biplots)
+      - [Combine plots to save them into 1
+        file](#combine-plots-to-save-them-into-1-file)
+      - [Save plots](#save-plots-1)
+- [Line plots for height maps with \<10%
+  NMP](#line-plots-for-height-maps-with-10-nmp)
+- [PCA for height maps with \<10% NMP](#pca-for-height-maps-with-10-nmp)
 - [sessionInfo()](#sessioninfo)
 - [Cite R packages used](#cite-r-packages-used)
   - [References](#references)
@@ -63,7 +67,6 @@ library(doBy)
 library(factoextra)
 library(ggplot2)
 library(grateful)
-library(gridExtra)
 library(knitr)
 library(patchwork)
 library(R.utils)
@@ -308,8 +311,8 @@ These are the new column names for the plots:
 ## Create list to receive the plots
 
 ``` r
-p_line <- vector(mode = "list", length = nrow(table_units))
-names(p_line) <- table_units$Param_unit
+p_line_NMP17 <- vector(mode = "list", length = nrow(table_units))
+names(p_line_NMP17) <- table_units$Param_unit
 ```
 
 ## Plots
@@ -319,7 +322,7 @@ names(p_line) <- table_units$Param_unit
 design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 2))
 
 # Plot for every parameters
-for (i in names(p_line)) {
+for (i in names(p_line_NMP17)) {
   
   # Define y-axis limits based on the range of the y-variable
   # This ensures that both plots have the same y-range
@@ -361,11 +364,12 @@ for (i in names(p_line)) {
             labs(title = "Mean per sample and cycle")
 
   # Combine both plots with patchwork
-  p_line[[i]] <- p_indiv / p_mean + guide_area() + plot_layout(guides = 'collect', design = design_patch)
+  p_line_NMP17[[i]] <- p_indiv / p_mean + guide_area() + 
+                       plot_layout(guides = 'collect', design = design_patch)
 }
 
 # Print all plots
-print(p_line)
+print(p_line_NMP17)
 ```
 
     $`Sq [nm]`
@@ -540,7 +544,7 @@ print(p_line)
 ## Save plots
 
 ``` r
-ggsave(filename = "FT_STA-plots.pdf", path = dir_plots, plot = p_line, 
+ggsave(filename = "FT_STA-plots_NMP17.pdf", path = dir_plots, plot = p_line_NMP17, 
        width = 190, height = 200, units = "mm")
 ```
 
@@ -581,69 +585,10 @@ FT_NMP17_pca_data <- select(FT_NMP17, !c(Cycles, NMP_cat)) %>%
                      na.omit() 
 ```
 
-## Select surface texture parameters
-
-``` r
-pca_params <- c("Sq", "Ssk", "Sv", "Sxp",
-                "Vv", "Vvc", "Vm",
-                "Sal", "Str", "epLsar",
-                "Mean.density.of.furrows", "Mean.depth.of.furrows", "Maximum.depth.of.furrows",
-                "Asfc", "HAsfc9")
-```
-
-The following parameters are selected for the PCA:
-
-    Sq
-    Ssk
-    Sv
-    Sxp
-    Vv
-    Vvc
-    Vm
-    Sal
-    Str
-    epLsar
-    Mean.density.of.furrows
-    Mean.depth.of.furrows
-    Maximum.depth.of.furrows
-    Asfc
-    HAsfc9
-
-The selection was based on a PCA with all the parameters, trying to
-select parameters that contribute most to the first 4 PCs and trying to
-avoid parameters that correspond to the same property of the surface
-texture (e.g. Sa and Sq), although some surprisingly provide a different
-signal (e.g. Str correlating with PC1 and epLsar with PC2).
-
-## PCA
-
-``` r
-pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE)
-```
-
-## Plots
+## Custom plotting function
 
 The library `factoextra` is not maintained anymore so there are some
 warnings due to issues with newer versions of ggplot2.
-
-### Eigenvalues
-
-``` r
-pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
-```
-
-    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
-    Ignoring empty aesthetic: `width`.
-
-``` r
-print(pca_FT_NMP17_eig)
-```
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
-
-### Biplots
-
-#### Plotting function
 
 ``` r
 custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.pt, mean.pt = FALSE, 
@@ -666,6 +611,111 @@ custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.
 }
 ```
 
+## Run PCA with all parameters
+
+This PCA is only meant to select the most informative parameters.  
+For comments on the code, see section [PCA on selected
+parameters](#pca-on-selected-parameters).
+
+``` r
+pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[4:37], scale. = TRUE)
+
+pca_FT_NMP17_all_eig <- fviz_eig(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
+```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
+
+``` r
+print(pca_FT_NMP17_all_eig)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
+grp_PCA <- "Sediment"
+pca_FT_NMP17_all_12 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
+                                         col.pt = grp_PCA, main.title = "PC 1&2")
+print(pca_FT_NMP17_all_12)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
+
+``` r
+pca_FT_NMP17_all_34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
+                                         col.pt = grp_PCA, main.title = "PC 3&4")
+print(pca_FT_NMP17_all_34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->
+
+``` r
+all_plots_all <- list(pca_FT_NMP17_all_eig, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
+ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_all, 
+       width = 190, units = "mm")
+```
+
+## PCA on selected parameters
+
+### Select surface texture parameters
+
+The following parameters are selected for the PCA:
+
+``` r
+pca_params <- c("Sq", "Ssk", "Sv", "Sxp",
+                "Vv", "Vvc", "Vm",
+                "Sal", "Str", "epLsar",
+                "Mean.density.of.furrows", "Mean.depth.of.furrows", "Maximum.depth.of.furrows",
+                "Asfc", "HAsfc9")
+cat(paste0(pca_params, "\n"), sep = "")
+```
+
+    Sq
+    Ssk
+    Sv
+    Sxp
+    Vv
+    Vvc
+    Vm
+    Sal
+    Str
+    epLsar
+    Mean.density.of.furrows
+    Mean.depth.of.furrows
+    Maximum.depth.of.furrows
+    Asfc
+    HAsfc9
+
+The selection was based on the [PCA with all
+parameters](#run-pca-with-all-parameters), trying to select parameters
+that contribute most to the first 4 PCs and trying to avoid parameters
+that correspond to the same property of the surface texture (e.g. Sa and
+Sq), although some surprisingly provide a different signal (e.g. Str
+correlating with PC1 and epLsar with PC2).
+
+### PCA
+
+``` r
+pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE)
+```
+
+### Plots
+
+#### Eigenvalues
+
+``` r
+pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
+```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
+
+``` r
+print(pca_FT_NMP17_eig)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
 #### Biplots
 
 ``` r
@@ -673,8 +723,8 @@ custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.
 grp_PCA <- "Sediment"
 
 # Biplot of PC1&2
-pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(1, 2), col.pt = grp_PCA,
-                                main.title = "PC 1&2")
+pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
+                                     col.pt = grp_PCA, main.title = "PC 1&2")
 print(pca_FT_NMP17_12)
 ```
 
@@ -682,25 +732,43 @@ print(pca_FT_NMP17_12)
 
 ``` r
 # Biplot of PC3&4
-pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(3, 4), col.pt = grp_PCA,
-                                main.title = "PC 3&4")
+pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
+                                     col.pt = grp_PCA, main.title = "PC 3&4")
 print(pca_FT_NMP17_34)
 ```
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
 
-### Combine plots to save them into 1 file
+#### Combine plots to save them into 1 file
 
 ``` r
 all_plots <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)  
 ```
 
-### Save plots
+#### Save plots
 
 ``` r
-ggsave(filename = "FT_PCA-plots.pdf", path = dir_plots, plot = all_plots, 
+ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots, 
        width = 190, units = "mm")
 ```
+
+------------------------------------------------------------------------
+
+# Line plots for height maps with \<10% NMP
+
+For comments on the code, see section [Line plots for height maps with
+\<17% NMP](#line-plots-for-height-maps-with-17-nmp).
+
+WIP
+
+------------------------------------------------------------------------
+
+# PCA for height maps with \<10% NMP
+
+For comments on the code, see section [PCA for height maps with \<17%
+NMP](#pca-for-height-maps-with-17-nmp).
+
+WIP
 
 ------------------------------------------------------------------------
 
@@ -735,8 +803,7 @@ sessionInfo()
      [5] purrr_1.2.0        readr_2.1.5        tidyr_1.3.1        tibble_3.3.0      
      [9] tidyverse_2.0.0    rmarkdown_2.30     RColorBrewer_1.1-3 R.utils_2.13.0    
     [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.50        
-    [17] gridExtra_2.3      grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.0     
-    [21] doBy_4.7.0        
+    [17] grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.0      doBy_4.7.0        
 
     loaded via a namespace (and not attached):
      [1] gtable_0.3.6         xfun_0.54            bslib_0.9.0         
@@ -770,7 +837,6 @@ sessionInfo()
 | doBy | 4.7.0 | Halekoh and Højsgaard (2025) |
 | factoextra | 1.0.7 | Kassambara and Mundt (2020) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
-| gridExtra | 2.3 | Auguie (2017) |
 | knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
 | patchwork | 1.3.2 | Pedersen (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
@@ -792,14 +858,6 @@ Allaire, JJ, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
 Luraschi, Kevin Ushey, Aron Atkins, et al. 2025.
 *<span class="nocase">rmarkdown</span>: Dynamic Documents for r*.
 <https://github.com/rstudio/rmarkdown>.
-
-</div>
-
-<div id="ref-gridExtra" class="csl-entry">
-
-Auguie, Baptiste. 2017. *<span class="nocase">gridExtra</span>:
-Miscellaneous Functions for “Grid” Graphics*.
-<https://doi.org/10.32614/CRAN.package.gridExtra>.
 
 </div>
 
