@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2025-11-26 14:11:47 CET
+2025-11-27 14:19:18 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -23,6 +23,10 @@ Ivan Calandra
   - [Save plots](#save-plots)
 - [PCA for height maps with \<17% NMP](#pca-for-height-maps-with-17-nmp)
   - [Format data](#format-data-1)
+    - [Define function to calculate
+      difference](#define-function-to-calculate-difference)
+    - [Calculate the difference between after and
+      before](#calculate-the-difference-between-after-and-before)
   - [Custom plotting function](#custom-plotting-function)
   - [Run PCA with all parameters](#run-pca-with-all-parameters)
   - [PCA on selected parameters](#pca-on-selected-parameters)
@@ -263,8 +267,8 @@ FT_NMP17_units <- FT_NMP17
 # Adjust column names
 colnames(FT_NMP10_units)[colnames(FT_NMP10_units) %in% table_units$Parameter] <- table_units$Param_unit
 colnames(FT_NMP17_units)[colnames(FT_NMP17_units) %in% table_units$Parameter] <- table_units$Param_unit
-colnames(FT_NMP10_mean)[colnames(FT_NMP10_mean) %in% table_units$Parameter] <- table_units$Param_unit
-colnames(FT_NMP17_mean)[colnames(FT_NMP17_mean) %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP10_mean)[colnames(FT_NMP10_mean)   %in% table_units$Parameter] <- table_units$Param_unit
+colnames(FT_NMP17_mean)[colnames(FT_NMP17_mean)   %in% table_units$Parameter] <- table_units$Param_unit
 ```
 
 These are the new column names for the plots:
@@ -560,14 +564,19 @@ experiments, for all surface texture parameter.
 The method below works only with 2 values per group, which is the case
 here.
 
+### Define function to calculate difference
+
 ``` r
 # Create function to subtract the 1st value from the 2nd value of a vector
 # Returns NA if at least one value is NA
 fun_minus <- function(x) {
   x[2] - x[1]
 }
+```
 
-# Calculate the difference between after and before
+### Calculate the difference between after and before
+
+``` r
                      # Exclude Cycles
 FT_NMP17_pca_data <- select(FT_NMP17, !c(Cycles, NMP_cat)) %>% 
   
@@ -630,7 +639,7 @@ pca_FT_NMP17_all_eig <- fviz_eig(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = t
 print(pca_FT_NMP17_all_eig)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ``` r
 grp_PCA <- "Sediment"
@@ -639,7 +648,7 @@ pca_FT_NMP17_all_12 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca
 print(pca_FT_NMP17_all_12)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-2.png)<!-- -->
 
 ``` r
 pca_FT_NMP17_all_34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
@@ -647,12 +656,12 @@ pca_FT_NMP17_all_34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca
 print(pca_FT_NMP17_all_34)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-3.png)<!-- -->
 
 ``` r
-all_plots_all <- list(pca_FT_NMP17_all_eig, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
-ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_all, 
-       width = 190, units = "mm")
+all_plots_17_all <- list(pca_FT_NMP17_all_eig, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
+ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_17_all, 
+       width = 190, height = 125, units = "mm")
 ```
 
 ## PCA on selected parameters
@@ -714,7 +723,7 @@ pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_cla
 print(pca_FT_NMP17_eig)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 #### Biplots
 
@@ -728,7 +737,7 @@ pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, p
 print(pca_FT_NMP17_12)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ``` r
 # Biplot of PC3&4
@@ -737,19 +746,19 @@ pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, p
 print(pca_FT_NMP17_34)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
 
 #### Combine plots to save them into 1 file
 
 ``` r
-all_plots <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)  
+all_plots_17 <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)  
 ```
 
 #### Save plots
 
 ``` r
-ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots, 
-       width = 190, units = "mm")
+ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots_17, 
+       width = 190, height = 125, units = "mm")
 ```
 
 ------------------------------------------------------------------------
@@ -759,7 +768,204 @@ ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots,
 For comments on the code, see section [Line plots for height maps with
 \<17% NMP](#line-plots-for-height-maps-with-17-nmp).
 
-WIP
+``` r
+p_line_NMP10 <- vector(mode = "list", length = nrow(table_units))
+names(p_line_NMP10) <- table_units$Param_unit
+design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 2))
+for (i in names(p_line_NMP10)) {
+  p_indiv <- ggplot(data = FT_NMP10_units, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+             geom_point(size = 3) + 
+             facet_wrap(~ Sediment) +
+             geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE) +
+             theme_classic() +
+             scale_color_brewer(palette = 'Set2') +
+             labs(title = "Individual data points")
+  p_mean <- ggplot(data = FT_NMP10_mean, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+            geom_point(size = 3) + 
+            geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
+            theme_classic() +
+            scale_color_brewer(palette = 'Set2') +
+            labs(title = "Mean per sample and cycle")
+
+  p_line_NMP10[[i]] <- p_indiv / p_mean + guide_area() + 
+                       plot_layout(guides = 'collect', design = design_patch)
+}
+print(p_line_NMP10)
+```
+
+    $`Sq [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+
+    $`Ssk [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-2.png)<!-- -->
+
+
+    $`Sku [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-3.png)<!-- -->
+
+
+    $`Sp [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-4.png)<!-- -->
+
+
+    $`Sv [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-5.png)<!-- -->
+
+
+    $`Sz [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-6.png)<!-- -->
+
+
+    $`Sa [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-7.png)<!-- -->
+
+
+    $`Smr [%]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-8.png)<!-- -->
+
+
+    $`Smc [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-9.png)<!-- -->
+
+
+    $`Sxp [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-10.png)<!-- -->
+
+
+    $`Sal [µm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-11.png)<!-- -->
+
+
+    $`Str [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-12.png)<!-- -->
+
+
+    $`Std [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-13.png)<!-- -->
+
+
+    $`Ssw [µm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-14.png)<!-- -->
+
+
+    $`Sdq [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-15.png)<!-- -->
+
+
+    $`Sdr [%]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-16.png)<!-- -->
+
+
+    $`Vm [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-17.png)<!-- -->
+
+
+    $`Vv [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-18.png)<!-- -->
+
+
+    $`Vmp [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-19.png)<!-- -->
+
+
+    $`Vmc [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-20.png)<!-- -->
+
+
+    $`Vvc [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-21.png)<!-- -->
+
+
+    $`Vvv [µm³/µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-22.png)<!-- -->
+
+
+    $`First.direction [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-23.png)<!-- -->
+
+
+    $`Second.direction [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-24.png)<!-- -->
+
+
+    $`Third.direction [°]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-25.png)<!-- -->
+
+
+    $`Texture.isotropy [%]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-26.png)<!-- -->
+
+
+    $`Maximum.depth.of.furrows [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-27.png)<!-- -->
+
+
+    $`Mean.depth.of.furrows [nm]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-28.png)<!-- -->
+
+
+    $`Mean.density.of.furrows [cm/cm2]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-29.png)<!-- -->
+
+
+    $`epLsar [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-30.png)<!-- -->
+
+
+    $`NewEplsar [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-31.png)<!-- -->
+
+
+    $`Asfc [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-32.png)<!-- -->
+
+
+    $`Smfc [µm²]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-33.png)<!-- -->
+
+
+    $`HAsfc9 [no unit]`
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-34.png)<!-- -->
+
+``` r
+ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP10, 
+       width = 190, height = 200, units = "mm")
+```
 
 ------------------------------------------------------------------------
 
@@ -768,7 +974,85 @@ WIP
 For comments on the code, see section [PCA for height maps with \<17%
 NMP](#pca-for-height-maps-with-17-nmp).
 
-WIP
+``` r
+FT_NMP10_pca_data <- select(FT_NMP10, !c(Cycles, NMP_cat))           %>% 
+                     arrange(Specimen, Location, State)              %>% 
+                     group_by(Specimen, Sediment, Location)          %>%
+                     summarize(across(where(is.numeric), fun_minus)) %>% 
+                     na.omit() 
+
+pca_FT_NMP10_all <- prcomp(FT_NMP10_pca_data[4:37], scale. = TRUE)
+pca_FT_NMP10_all_eig <- fviz_eig(pca_FT_NMP10_all, addlabels = TRUE, ggtheme = theme_classic())
+```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
+
+``` r
+print(pca_FT_NMP10_all_eig)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+``` r
+grp_PCA <- "Sediment"
+pca_FT_NMP10_all_12 <- custom_pca_biplot(pca_FT_NMP10_all, datpca = FT_NMP10_pca_data, pc = c(1, 2), 
+                                         col.pt = grp_PCA, main.title = "PC 1&2")
+print(pca_FT_NMP10_all_12)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
+
+``` r
+pca_FT_NMP10_all_34 <- custom_pca_biplot(pca_FT_NMP10_all, datpca = FT_NMP10_pca_data, pc = c(3, 4), 
+                                         col.pt = grp_PCA, main.title = "PC 3&4")
+print(pca_FT_NMP10_all_34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-3.png)<!-- -->
+
+``` r
+all_plots_10_all <- list(pca_FT_NMP10_all_eig, pca_FT_NMP10_all_12, pca_FT_NMP10_all_34)  
+ggsave(filename = "FT_PCA-plots_NMP10_all-params.pdf", path = dir_plots, plot = all_plots_10_all, 
+       width = 190, height = 125, units = "mm")
+
+pca_FT_NMP10 <- prcomp(FT_NMP10_pca_data[ , pca_params], scale. = TRUE)
+
+pca_FT_NMP10_eig <- fviz_eig(pca_FT_NMP10, addlabels = TRUE, ggtheme = theme_classic())
+```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
+
+``` r
+print(pca_FT_NMP10_eig)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-4.png)<!-- -->
+
+``` r
+grp_PCA <- "Sediment"
+pca_FT_NMP10_12 <- custom_pca_biplot(pca_FT_NMP10, datpca = FT_NMP10_pca_data, pc = c(1, 2), 
+                                     col.pt = grp_PCA, main.title = "PC 1&2")
+print(pca_FT_NMP10_12)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-5.png)<!-- -->
+
+``` r
+pca_FT_NMP10_34 <- custom_pca_biplot(pca_FT_NMP10, datpca = FT_NMP10_pca_data, pc = c(3, 4), 
+                                     col.pt = grp_PCA, main.title = "PC 3&4")
+print(pca_FT_NMP10_34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-6.png)<!-- -->
+
+``` r
+all_plots_10 <- list(pca_FT_NMP10_eig, pca_FT_NMP10_12, pca_FT_NMP10_34)  
+
+ggsave(filename = "FT_PCA-plots_NMP10.pdf", path = dir_plots, plot = all_plots_10, 
+       width = 190, height = 125, units = "mm")
+```
 
 ------------------------------------------------------------------------
 
@@ -780,17 +1064,17 @@ sessionInfo()
 
     R version 4.5.1 (2025-06-13 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 11 x64 (build 26100)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=English_United Kingdom.utf8 
+    [2] LC_CTYPE=English_United Kingdom.utf8   
+    [3] LC_MONETARY=English_United Kingdom.utf8
+    [4] LC_NUMERIC=C                           
+    [5] LC_TIME=English_United Kingdom.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -809,14 +1093,14 @@ sessionInfo()
      [1] gtable_0.3.6         xfun_0.54            bslib_0.9.0         
      [4] rstatix_0.7.3        ggrepel_0.9.6        lattice_0.22-7      
      [7] tzdb_0.5.0           vctrs_0.6.5          tools_4.5.1         
-    [10] generics_0.1.4       pkgconfig_2.0.3      Matrix_1.7-3        
+    [10] generics_0.1.4       pkgconfig_2.0.3      Matrix_1.7-4        
     [13] S7_0.2.0             lifecycle_1.0.4      compiler_4.5.1      
     [16] farver_2.1.2         textshaping_1.0.4    microbenchmark_1.5.0
     [19] carData_3.0-5        htmltools_0.5.8.1    sass_0.4.10         
     [22] yaml_2.3.10          Formula_1.2-5        crayon_1.5.3        
     [25] car_3.1-3            ggpubr_0.6.2         pillar_1.11.1       
     [28] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
-    [31] abind_1.4-8          boot_1.3-31          Deriv_4.2.0         
+    [31] abind_1.4-8          boot_1.3-32          Deriv_4.2.0         
     [34] tidyselect_1.2.1     digest_0.6.37        stringi_1.8.7       
     [37] labeling_0.4.3       cowplot_1.2.0        rprojroot_2.1.1     
     [40] fastmap_1.2.0        grid_4.5.1           cli_3.6.5           
