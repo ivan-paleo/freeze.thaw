@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-11-24 15:42:30 CET
+2025-12-18 16:58:13 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -26,6 +26,7 @@ The groups are based on:
 - Sediment type  
 - Freeze-thaw cycles  
 - State  
+- Use  
 - NMP_cat
 
 It computes the following statistics:
@@ -78,12 +79,13 @@ Below are its structure and first lines:
 str(FT)
 ```
 
-    'data.frame':   80 obs. of  41 variables:
+    'data.frame':   80 obs. of  42 variables:
      $ Specimen                : chr  "Scra11" "Scra11" "Scra11" "Scra11" ...
      $ Sediment                : chr  "Quincay" "Quincay" "Quincay" "Quincay" ...
      $ Cycles                  : num  600 600 600 600 0 0 0 0 330 330 ...
      $ State                   : Factor w/ 2 levels "before","after": 2 2 2 2 1 1 1 1 2 2 ...
      $ Location                : chr  "loc1" "loc2" "loc3" "loc4" ...
+     $ Use                     : chr  "used" "used" "used" "unused" ...
      $ NMP                     : num  6.21 8.99 9.36 7.09 5.59 ...
      $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-17%"<..: 1 1 1 1 1 1 1 1 2 2 ...
      $ Sq                      : num  510 599 627 536 461 ...
@@ -127,55 +129,55 @@ str(FT)
 head(FT)
 ```
 
-      Specimen Sediment Cycles  State Location      NMP NMP_cat       Sq        Ssk
-    1   Scra11  Quincay    600  after     loc1 6.210140    <10% 510.3147  0.2082995
-    2   Scra11  Quincay    600  after     loc2 8.988605    <10% 599.4221  0.1038576
-    3   Scra11  Quincay    600  after     loc3 9.360195    <10% 626.8703 -1.3491279
-    4   Scra11  Quincay    600  after     loc4 7.087054    <10% 535.8293  0.3066295
-    5   Scra11  Quincay      0 before     loc1 5.585075    <10% 461.3625  0.3644242
-    6   Scra11  Quincay      0 before     loc2 7.824051    <10% 537.4528 -0.3339857
-            Sku       Sp       Sv       Sz       Sa       Smr      Smc       Sxp
-    1  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984  959.4634
-    2  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265 1299.1056
-    3 16.215072 4021.251 4888.391 8909.643 399.6521 0.1384577 594.0357 1118.6396
-    4  3.504882 2236.933 1622.238 3859.171 420.7068 1.9326553 670.0448  961.0071
-    5  3.438282 1940.378 1193.170 3133.549 362.0558 3.1472606 568.2292  834.1125
-    6  4.060290 1796.531 2537.250 4333.781 412.1910 6.2930831 674.2111 1111.3785
-           Sal       Str      Std       Ssw       Sdq       Sdr         Vm
-    1 5.535718 0.7571265 54.74853 0.4249085 0.5937326 14.108213 0.03220712
-    2 6.570978 0.6973378 74.74841 0.4249085 0.3186908  4.665525 0.04181877
-    3 5.662375 0.6112438 85.50156 0.4249085 0.3722057  5.960471 0.04105984
-    4 5.693638 0.6484318 57.75130 0.4249085 0.3241989  4.854970 0.03305849
-    5 6.107537 0.6810785 86.25058 0.4249085 0.3179695  4.701684 0.03014862
-    6 5.961985 0.6743632 86.99719 0.4249085 0.4060171  7.404031 0.02403996
-             Vv        Vmp       Vmc       Vvc        Vvv First.direction
-    1 0.6632383 0.03220712 0.4298770 0.6058456 0.05739273        44.99067
-    2 0.7468693 0.04181877 0.4518377 0.6665194 0.08034989        89.99559
-    3 0.6350726 0.04105984 0.3806123 0.5465987 0.08847389        90.00050
-    4 0.7030889 0.03305849 0.4670876 0.6490426 0.05404634        44.98490
-    5 0.5983675 0.03014862 0.4005538 0.5514198 0.04694766        89.99058
-    6 0.6982755 0.02403996 0.4565223 0.6277425 0.07053295        45.01407
-      Second.direction Third.direction Texture.isotropy Maximum.depth.of.furrows
-    1       0.01081937        90.00509         82.36371                 3418.379
-    2     179.99523860       134.98878         68.76672                 4350.215
-    3      44.99608453       116.43945         58.82372                 9461.823
-    4      90.01423227       135.00686         71.81574                 3943.282
-    5     135.02619380       179.99602         72.18861                 3051.558
-    6      89.99811744        63.56398         57.93184                 4003.873
-      Mean.depth.of.furrows Mean.density.of.furrows       epLsar  NewEplsar
-    1              1714.284                6492.159 0.0005855797 0.01748435
-    2              1899.377                6945.496 0.0028073607 0.01681894
-    3              3459.689                7121.221 0.0017361474 0.01787320
-    4              1857.354                6632.412 0.0023834012 0.01666934
-    5              1527.908                6748.034 0.0024736287 0.01686902
-    6              1607.176                7054.717 0.0012932325 0.01710849
-          Asfc      Smfc    HAsfc9
-    1 49.92666 1.0805865 0.1333228
-    2 13.83172 1.1530754 0.4437028
-    3 19.82069 1.4950314 0.9494297
-    4 13.06050 1.1530754 0.3135672
-    5 13.10260 0.9489935 0.1773680
-    6 26.90327 0.8893344 0.2908531
+      Specimen Sediment Cycles  State Location    Use      NMP NMP_cat       Sq
+    1   Scra11  Quincay    600  after     loc1   used 6.210140    <10% 510.3147
+    2   Scra11  Quincay    600  after     loc2   used 8.988605    <10% 599.4221
+    3   Scra11  Quincay    600  after     loc3   used 9.360195    <10% 626.8703
+    4   Scra11  Quincay    600  after     loc4 unused 7.087054    <10% 535.8293
+    5   Scra11  Quincay      0 before     loc1   used 5.585075    <10% 461.3625
+    6   Scra11  Quincay      0 before     loc2   used 7.824051    <10% 537.4528
+             Ssk       Sku       Sp       Sv       Sz       Sa       Smr      Smc
+    1  0.2082995  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984
+    2  0.1038576  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265
+    3 -1.3491279 16.215072 4021.251 4888.391 8909.643 399.6521 0.1384577 594.0357
+    4  0.3066295  3.504882 2236.933 1622.238 3859.171 420.7068 1.9326553 670.0448
+    5  0.3644242  3.438282 1940.378 1193.170 3133.549 362.0558 3.1472606 568.2292
+    6 -0.3339857  4.060290 1796.531 2537.250 4333.781 412.1910 6.2930831 674.2111
+            Sxp      Sal       Str      Std       Ssw       Sdq       Sdr
+    1  959.4634 5.535718 0.7571265 54.74853 0.4249085 0.5937326 14.108213
+    2 1299.1056 6.570978 0.6973378 74.74841 0.4249085 0.3186908  4.665525
+    3 1118.6396 5.662375 0.6112438 85.50156 0.4249085 0.3722057  5.960471
+    4  961.0071 5.693638 0.6484318 57.75130 0.4249085 0.3241989  4.854970
+    5  834.1125 6.107537 0.6810785 86.25058 0.4249085 0.3179695  4.701684
+    6 1111.3785 5.961985 0.6743632 86.99719 0.4249085 0.4060171  7.404031
+              Vm        Vv        Vmp       Vmc       Vvc        Vvv
+    1 0.03220712 0.6632383 0.03220712 0.4298770 0.6058456 0.05739273
+    2 0.04181877 0.7468693 0.04181877 0.4518377 0.6665194 0.08034989
+    3 0.04105984 0.6350726 0.04105984 0.3806123 0.5465987 0.08847389
+    4 0.03305849 0.7030889 0.03305849 0.4670876 0.6490426 0.05404634
+    5 0.03014862 0.5983675 0.03014862 0.4005538 0.5514198 0.04694766
+    6 0.02403996 0.6982755 0.02403996 0.4565223 0.6277425 0.07053295
+      First.direction Second.direction Third.direction Texture.isotropy
+    1        44.99067       0.01081937        90.00509         82.36371
+    2        89.99559     179.99523860       134.98878         68.76672
+    3        90.00050      44.99608453       116.43945         58.82372
+    4        44.98490      90.01423227       135.00686         71.81574
+    5        89.99058     135.02619380       179.99602         72.18861
+    6        45.01407      89.99811744        63.56398         57.93184
+      Maximum.depth.of.furrows Mean.depth.of.furrows Mean.density.of.furrows
+    1                 3418.379              1714.284                6492.159
+    2                 4350.215              1899.377                6945.496
+    3                 9461.823              3459.689                7121.221
+    4                 3943.282              1857.354                6632.412
+    5                 3051.558              1527.908                6748.034
+    6                 4003.873              1607.176                7054.717
+            epLsar  NewEplsar     Asfc      Smfc    HAsfc9
+    1 0.0005855797 0.01748435 49.92666 1.0805865 0.1333228
+    2 0.0028073607 0.01681894 13.83172 1.1530754 0.4437028
+    3 0.0017361474 0.01787320 19.82069 1.4950314 0.9494297
+    4 0.0023834012 0.01666934 13.06050 1.1530754 0.3135672
+    5 0.0024736287 0.01686902 13.10260 0.9489935 0.1773680
+    6 0.0012932325 0.01710849 26.90327 0.8893344 0.2908531
 
 ------------------------------------------------------------------------
 
@@ -212,6 +214,24 @@ stats_sed[1]
     3   Fine sand
     4      Gravel
     5     Quincay
+
+``` r
+# Compute summary statistics based on Sediment and Use
+stats_sed_use <- summaryBy(. ~ Sediment + Use, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed_use[1:2]
+```
+
+          Sediment    Use
+    1         Clay unused
+    2         Clay   used
+    3  Coarse sand unused
+    4  Coarse sand   used
+    5    Fine sand unused
+    6    Fine sand   used
+    7       Gravel unused
+    8       Gravel   used
+    9      Quincay unused
+    10     Quincay   used
 
 ``` r
 # Compute summary statistics based on Sediment and NMP_cat
@@ -257,6 +277,75 @@ stats_sed_cy[1:2]
     13     Quincay      0
     14     Quincay    330
     15     Quincay    600
+
+``` r
+# Compute summary statistics based on Sediment, Use and NMP_cat
+stats_sed_use_NMP <- summaryBy(. ~ Sediment + Use + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed_use_NMP[1:3]
+```
+
+          Sediment    Use NMP_cat
+    1         Clay unused    <10%
+    2         Clay unused  10-17%
+    3         Clay   used    <10%
+    4         Clay   used  10-17%
+    5         Clay   used    >17%
+    6  Coarse sand unused    <10%
+    7  Coarse sand unused  10-17%
+    8  Coarse sand   used    <10%
+    9  Coarse sand   used  10-17%
+    10   Fine sand unused    <10%
+    11   Fine sand unused  10-17%
+    12   Fine sand   used    <10%
+    13   Fine sand   used  10-17%
+    14   Fine sand   used    >17%
+    15      Gravel unused  10-17%
+    16      Gravel unused    >17%
+    17      Gravel   used    <10%
+    18      Gravel   used  10-17%
+    19      Gravel   used    >17%
+    20     Quincay unused    <10%
+    21     Quincay   used    <10%
+    22     Quincay   used  10-17%
+    23     Quincay   used    >17%
+
+``` r
+# Compute summary statistics based on Sediment, Use and Cycles
+stats_sed_use_cy <- summaryBy(. ~ Sediment + Use + Cycles, data = FT, FUN = nminmaxmeanmedsd)
+stats_sed_use_cy[1:3]
+```
+
+          Sediment    Use Cycles
+    1         Clay unused      0
+    2         Clay unused    330
+    3         Clay unused    560
+    4         Clay   used      0
+    5         Clay   used    330
+    6         Clay   used    560
+    7  Coarse sand unused      0
+    8  Coarse sand unused    330
+    9  Coarse sand unused    600
+    10 Coarse sand   used      0
+    11 Coarse sand   used    330
+    12 Coarse sand   used    600
+    13   Fine sand unused      0
+    14   Fine sand unused    330
+    15   Fine sand unused    600
+    16   Fine sand   used      0
+    17   Fine sand   used    330
+    18   Fine sand   used    600
+    19      Gravel unused      0
+    20      Gravel unused    330
+    21      Gravel unused    600
+    22      Gravel   used      0
+    23      Gravel   used    330
+    24      Gravel   used    600
+    25     Quincay unused      0
+    26     Quincay unused    330
+    27     Quincay unused    600
+    28     Quincay   used      0
+    29     Quincay   used    330
+    30     Quincay   used    600
 
 ``` r
 # Compute summary statistics based on Sediment, Cycles and NMP_cat
@@ -362,8 +451,14 @@ stats_sed_cy_st_NMP[1:4]
 ## Save as XLSX
 
 ``` r
-write_xlsx(list("Sediment" = stats_sed, "Sediment+NMP" = stats_sed_NMP, "Sediment+Cycles" = stats_sed_cy, 
-                "Sediment+Cycles+NMP" = stats_sed_cy_NMP, "Sediment+Cycles+State" = stats_sed_cy_st,
+write_xlsx(list("Sediment" = stats_sed, 
+                "Sediment+Use" = stats_sed_use, 
+                "Sediment+NMP" = stats_sed_NMP,
+                "Sediment+Cycles" = stats_sed_cy, 
+                "Sediment+Use+NMP" = stats_sed_use_NMP,
+                "Sediment+Use+Cycles" = stats_sed_use_cy,
+                "Sediment+Cycles+NMP" = stats_sed_cy_NMP,
+                "Sediment+Cycles+State" = stats_sed_cy_st,
                 "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
            path = paste0(dir_stats, "/FT_STA-stats.xlsx"))
 ```
@@ -376,7 +471,7 @@ write_xlsx(list("Sediment" = stats_sed, "Sediment+NMP" = stats_sed_NMP, "Sedimen
 sessionInfo()
 ```
 
-    R version 4.5.1 (2025-06-13 ucrt)
+    R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
     Running under: Windows 10 x64 (build 19045)
 
@@ -398,28 +493,34 @@ sessionInfo()
 
     other attached packages:
      [1] writexl_1.5.4     lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0    
-     [5] dplyr_1.1.4       purrr_1.2.0       readr_2.1.5       tidyr_1.3.1      
-     [9] tibble_3.3.0      ggplot2_4.0.0     tidyverse_2.0.0   rmarkdown_2.30   
+     [5] dplyr_1.1.4       purrr_1.2.0       readr_2.1.6       tidyr_1.3.1      
+     [9] tibble_3.3.0      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
     [13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.50       
-    [17] grateful_0.3.0    doBy_4.7.0       
+    [17] grateful_0.3.0    doBy_4.7.1       
 
     loaded via a namespace (and not attached):
-     [1] sass_0.4.10          generics_0.1.4       stringi_1.8.7       
-     [4] lattice_0.22-7       hms_1.1.4            digest_0.6.37       
-     [7] magrittr_2.0.4       timechange_0.3.0     evaluate_1.0.5      
-    [10] grid_4.5.1           RColorBrewer_1.1-3   fastmap_1.2.0       
-    [13] rprojroot_2.1.1      jsonlite_2.0.0       Matrix_1.7-4        
-    [16] backports_1.5.0      scales_1.4.0         modelr_0.1.11       
-    [19] microbenchmark_1.5.0 jquerylib_0.1.4      cli_3.6.5           
-    [22] rlang_1.1.6          cowplot_1.2.0        withr_3.0.2         
-    [25] cachem_1.1.0         yaml_2.3.10          tools_4.5.1         
-    [28] tzdb_0.5.0           boot_1.3-32          Deriv_4.2.0         
-    [31] broom_1.0.10         vctrs_0.6.5          R6_2.6.1            
-    [34] lifecycle_1.0.4      MASS_7.3-65          pkgconfig_2.0.3     
-    [37] pillar_1.11.1        bslib_0.9.0          gtable_0.3.6        
-    [40] glue_1.8.0           xfun_0.54            tidyselect_1.2.1    
-    [43] rstudioapi_0.17.1    farver_2.1.2         htmltools_0.5.8.1   
-    [46] compiler_4.5.1       S7_0.2.0            
+     [1] gtable_0.3.6         xfun_0.54            bslib_0.9.0         
+     [4] lattice_0.22-7       tzdb_0.5.0           quadprog_1.5-8      
+     [7] vctrs_0.6.5          tools_4.5.2          generics_0.1.4      
+    [10] curl_7.0.0           parallel_4.5.2       xts_0.14.1          
+    [13] pkgconfig_2.0.3      Matrix_1.7-4         RColorBrewer_1.1-3  
+    [16] S7_0.2.1             lifecycle_1.0.4      compiler_4.5.2      
+    [19] farver_2.1.2         microbenchmark_1.5.0 htmltools_0.5.8.1   
+    [22] sass_0.4.10          yaml_2.3.10          pillar_1.11.1       
+    [25] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
+    [28] boot_1.3-32          nlme_3.1-168         fracdiff_1.5-3      
+    [31] Deriv_4.2.0          tidyselect_1.2.1     digest_0.6.38       
+    [34] stringi_1.8.7        tseries_0.10-58      cowplot_1.2.0       
+    [37] rprojroot_2.1.1      fastmap_1.2.0        grid_4.5.2          
+    [40] colorspace_2.1-2     cli_3.6.5            magrittr_2.0.4      
+    [43] broom_1.0.10         withr_3.0.2          scales_1.4.0        
+    [46] backports_1.5.0      forecast_8.24.0      timechange_0.3.0    
+    [49] TTR_0.24.4           modelr_0.1.11        quantmod_0.4.28     
+    [52] nnet_7.3-20          timeDate_4051.111    hms_1.1.4           
+    [55] zoo_1.8-14           urca_1.3-4           evaluate_1.0.5      
+    [58] lmtest_0.9-40        rlang_1.1.6          Rcpp_1.1.0          
+    [61] glue_1.8.0           rstudioapi_0.17.1    jsonlite_2.0.0      
+    [64] R6_2.6.1            
 
 ------------------------------------------------------------------------
 
@@ -427,8 +528,8 @@ sessionInfo()
 
 | Package | Version | Citation |
 |:---|:---|:---|
-| base | 4.5.1 | R Core Team (2025) |
-| doBy | 4.7.0 | Halekoh and Højsgaard (2025) |
+| base | 4.5.2 | R Core Team (2025) |
+| doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
 | knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
@@ -437,7 +538,7 @@ sessionInfo()
 | rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
 | writexl | 1.5.4 | Ooms (2025) |
-| RStudio | 2025.9.0.387 | Posit team (2025) |
+| RStudio | 2025.9.2.418 | Posit team (2025) |
 
 ## References
 
