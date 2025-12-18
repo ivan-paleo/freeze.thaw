@@ -223,9 +223,20 @@ table(FT_keep_sed_cy["NMP_cat"])
 ```
 
 
+## Add column used/unused locations
+```{r}
+# Define
+FT_keep_sed_cy[FT_keep_sed_cy$Location %in% c("loc1", "loc2", "loc3"), "Use"] <- "used"
+FT_keep_sed_cy[FT_keep_sed_cy$Location == "loc4", "Use"] <- "unused"
+
+# Check
+FT_keep_sed_cy[c("Location", "Use")]
+```
+
+
 ## Re-order columns and add units as comment 
 ```{r}
-FT_final <- select(FT_keep_sed_cy, Specimen, Sediment, Cycles, State, Location, NMP, NMP_cat, Sq:HAsfc9)
+FT_final <- select(FT_keep_sed_cy, Specimen, Sediment, Cycles, State, Location, Use, NMP, NMP_cat, Sq:HAsfc9)
 comment(FT_final) <- FT_units
 ```
 
