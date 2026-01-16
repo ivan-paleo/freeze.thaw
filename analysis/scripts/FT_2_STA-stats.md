@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-12-18 16:58:13 CET
+2026-01-16 10:20:48 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -25,7 +25,6 @@ The groups are based on:
 
 - Sediment type  
 - Freeze-thaw cycles  
-- State  
 - Use  
 - NMP_cat
 
@@ -205,248 +204,186 @@ nminmaxmeanmedsd <- function(x){
 ``` r
 # Compute summary statistics based on Sediment
 stats_sed <- summaryBy(. ~ Sediment, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed[1]
+stats_sed[1:2]
 ```
 
-         Sediment
-    1        Clay
-    2 Coarse sand
-    3   Fine sand
-    4      Gravel
-    5     Quincay
+         Sediment Cycles.n
+    1        Clay       16
+    2 Coarse sand       16
+    3   Fine sand       16
+    4      Gravel       16
+    5     Quincay       16
 
 ``` r
 # Compute summary statistics based on Sediment and Use
 stats_sed_use <- summaryBy(. ~ Sediment + Use, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_use[1:2]
+stats_sed_use[1:3]
 ```
 
-          Sediment    Use
-    1         Clay unused
-    2         Clay   used
-    3  Coarse sand unused
-    4  Coarse sand   used
-    5    Fine sand unused
-    6    Fine sand   used
-    7       Gravel unused
-    8       Gravel   used
-    9      Quincay unused
-    10     Quincay   used
+          Sediment    Use Cycles.n
+    1         Clay unused        4
+    2         Clay   used       12
+    3  Coarse sand unused        4
+    4  Coarse sand   used       12
+    5    Fine sand unused        4
+    6    Fine sand   used       12
+    7       Gravel unused        4
+    8       Gravel   used       12
+    9      Quincay unused        4
+    10     Quincay   used       12
 
 ``` r
 # Compute summary statistics based on Sediment and NMP_cat
 stats_sed_NMP <- summaryBy(. ~ Sediment + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_NMP[1:2]
+stats_sed_NMP[1:3]
 ```
 
-          Sediment NMP_cat
-    1         Clay    <10%
-    2         Clay  10-17%
-    3         Clay    >17%
-    4  Coarse sand    <10%
-    5  Coarse sand  10-17%
-    6    Fine sand    <10%
-    7    Fine sand  10-17%
-    8    Fine sand    >17%
-    9       Gravel    <10%
-    10      Gravel  10-17%
-    11      Gravel    >17%
-    12     Quincay    <10%
-    13     Quincay  10-17%
-    14     Quincay    >17%
+          Sediment NMP_cat Cycles.n
+    1         Clay    <10%        5
+    2         Clay  10-17%        9
+    3         Clay    >17%        2
+    4  Coarse sand    <10%        9
+    5  Coarse sand  10-17%        7
+    6    Fine sand    <10%        3
+    7    Fine sand  10-17%       12
+    8    Fine sand    >17%        1
+    9       Gravel    <10%        5
+    10      Gravel  10-17%        7
+    11      Gravel    >17%        4
+    12     Quincay    <10%       13
+    13     Quincay  10-17%        2
+    14     Quincay    >17%        1
 
 ``` r
 # Compute summary statistics based on Sediment and Cycles
 stats_sed_cy <- summaryBy(. ~ Sediment + Cycles, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy[1:2]
+stats_sed_cy[1:3]
 ```
 
-          Sediment Cycles
-    1         Clay      0
-    2         Clay    330
-    3         Clay    560
-    4  Coarse sand      0
-    5  Coarse sand    330
-    6  Coarse sand    600
-    7    Fine sand      0
-    8    Fine sand    330
-    9    Fine sand    600
-    10      Gravel      0
-    11      Gravel    330
-    12      Gravel    600
-    13     Quincay      0
-    14     Quincay    330
-    15     Quincay    600
+          Sediment Cycles NMP.n
+    1         Clay      0     8
+    2         Clay    330     4
+    3         Clay    560     4
+    4  Coarse sand      0     8
+    5  Coarse sand    330     4
+    6  Coarse sand    600     4
+    7    Fine sand      0     8
+    8    Fine sand    330     4
+    9    Fine sand    600     4
+    10      Gravel      0     8
+    11      Gravel    330     4
+    12      Gravel    600     4
+    13     Quincay      0     8
+    14     Quincay    330     4
+    15     Quincay    600     4
 
 ``` r
 # Compute summary statistics based on Sediment, Use and NMP_cat
 stats_sed_use_NMP <- summaryBy(. ~ Sediment + Use + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_use_NMP[1:3]
+stats_sed_use_NMP[1:4]
 ```
 
-          Sediment    Use NMP_cat
-    1         Clay unused    <10%
-    2         Clay unused  10-17%
-    3         Clay   used    <10%
-    4         Clay   used  10-17%
-    5         Clay   used    >17%
-    6  Coarse sand unused    <10%
-    7  Coarse sand unused  10-17%
-    8  Coarse sand   used    <10%
-    9  Coarse sand   used  10-17%
-    10   Fine sand unused    <10%
-    11   Fine sand unused  10-17%
-    12   Fine sand   used    <10%
-    13   Fine sand   used  10-17%
-    14   Fine sand   used    >17%
-    15      Gravel unused  10-17%
-    16      Gravel unused    >17%
-    17      Gravel   used    <10%
-    18      Gravel   used  10-17%
-    19      Gravel   used    >17%
-    20     Quincay unused    <10%
-    21     Quincay   used    <10%
-    22     Quincay   used  10-17%
-    23     Quincay   used    >17%
+          Sediment    Use NMP_cat Cycles.n
+    1         Clay unused    <10%        2
+    2         Clay unused  10-17%        2
+    3         Clay   used    <10%        3
+    4         Clay   used  10-17%        7
+    5         Clay   used    >17%        2
+    6  Coarse sand unused    <10%        2
+    7  Coarse sand unused  10-17%        2
+    8  Coarse sand   used    <10%        7
+    9  Coarse sand   used  10-17%        5
+    10   Fine sand unused    <10%        1
+    11   Fine sand unused  10-17%        3
+    12   Fine sand   used    <10%        2
+    13   Fine sand   used  10-17%        9
+    14   Fine sand   used    >17%        1
+    15      Gravel unused  10-17%        3
+    16      Gravel unused    >17%        1
+    17      Gravel   used    <10%        5
+    18      Gravel   used  10-17%        4
+    19      Gravel   used    >17%        3
+    20     Quincay unused    <10%        4
+    21     Quincay   used    <10%        9
+    22     Quincay   used  10-17%        2
+    23     Quincay   used    >17%        1
 
 ``` r
 # Compute summary statistics based on Sediment, Use and Cycles
 stats_sed_use_cy <- summaryBy(. ~ Sediment + Use + Cycles, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_use_cy[1:3]
+stats_sed_use_cy[1:4]
 ```
 
-          Sediment    Use Cycles
-    1         Clay unused      0
-    2         Clay unused    330
-    3         Clay unused    560
-    4         Clay   used      0
-    5         Clay   used    330
-    6         Clay   used    560
-    7  Coarse sand unused      0
-    8  Coarse sand unused    330
-    9  Coarse sand unused    600
-    10 Coarse sand   used      0
-    11 Coarse sand   used    330
-    12 Coarse sand   used    600
-    13   Fine sand unused      0
-    14   Fine sand unused    330
-    15   Fine sand unused    600
-    16   Fine sand   used      0
-    17   Fine sand   used    330
-    18   Fine sand   used    600
-    19      Gravel unused      0
-    20      Gravel unused    330
-    21      Gravel unused    600
-    22      Gravel   used      0
-    23      Gravel   used    330
-    24      Gravel   used    600
-    25     Quincay unused      0
-    26     Quincay unused    330
-    27     Quincay unused    600
-    28     Quincay   used      0
-    29     Quincay   used    330
-    30     Quincay   used    600
+          Sediment    Use Cycles NMP.n
+    1         Clay unused      0     2
+    2         Clay unused    330     1
+    3         Clay unused    560     1
+    4         Clay   used      0     6
+    5         Clay   used    330     3
+    6         Clay   used    560     3
+    7  Coarse sand unused      0     2
+    8  Coarse sand unused    330     1
+    9  Coarse sand unused    600     1
+    10 Coarse sand   used      0     6
+    11 Coarse sand   used    330     3
+    12 Coarse sand   used    600     3
+    13   Fine sand unused      0     2
+    14   Fine sand unused    330     1
+    15   Fine sand unused    600     1
+    16   Fine sand   used      0     6
+    17   Fine sand   used    330     3
+    18   Fine sand   used    600     3
+    19      Gravel unused      0     2
+    20      Gravel unused    330     1
+    21      Gravel unused    600     1
+    22      Gravel   used      0     6
+    23      Gravel   used    330     3
+    24      Gravel   used    600     3
+    25     Quincay unused      0     2
+    26     Quincay unused    330     1
+    27     Quincay unused    600     1
+    28     Quincay   used      0     6
+    29     Quincay   used    330     3
+    30     Quincay   used    600     3
 
 ``` r
 # Compute summary statistics based on Sediment, Cycles and NMP_cat
 stats_sed_cy_NMP <- summaryBy(. ~ Sediment + Cycles + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy_NMP[1:3]
+stats_sed_cy_NMP[1:4]
 ```
 
-          Sediment Cycles NMP_cat
-    1         Clay      0    <10%
-    2         Clay      0  10-17%
-    3         Clay      0    >17%
-    4         Clay    330    <10%
-    5         Clay    330  10-17%
-    6         Clay    330    >17%
-    7         Clay    560  10-17%
-    8  Coarse sand      0    <10%
-    9  Coarse sand      0  10-17%
-    10 Coarse sand    330  10-17%
-    11 Coarse sand    600    <10%
-    12   Fine sand      0    <10%
-    13   Fine sand      0  10-17%
-    14   Fine sand    330  10-17%
-    15   Fine sand    600    <10%
-    16   Fine sand    600  10-17%
-    17   Fine sand    600    >17%
-    18      Gravel      0    <10%
-    19      Gravel      0  10-17%
-    20      Gravel      0    >17%
-    21      Gravel    330    <10%
-    22      Gravel    330  10-17%
-    23      Gravel    330    >17%
-    24      Gravel    600    <10%
-    25      Gravel    600  10-17%
-    26      Gravel    600    >17%
-    27     Quincay      0    <10%
-    28     Quincay      0  10-17%
-    29     Quincay    330    <10%
-    30     Quincay    330    >17%
-    31     Quincay    600    <10%
-
-``` r
-# Compute summary statistics based on Sediment, Cycles and State
-stats_sed_cy_st <- summaryBy(. ~ Sediment + Cycles + State, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy_st[1:3]
-```
-
-          Sediment Cycles  State
-    1         Clay      0 before
-    2         Clay    330  after
-    3         Clay    560  after
-    4  Coarse sand      0 before
-    5  Coarse sand    330  after
-    6  Coarse sand    600  after
-    7    Fine sand      0 before
-    8    Fine sand    330  after
-    9    Fine sand    600  after
-    10      Gravel      0 before
-    11      Gravel    330  after
-    12      Gravel    600  after
-    13     Quincay      0 before
-    14     Quincay    330  after
-    15     Quincay    600  after
-
-``` r
-# Compute summary statistics based on Sediment, Cycles, State and NMP_cat
-stats_sed_cy_st_NMP <- summaryBy(. ~ Sediment + Cycles + State + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy_st_NMP[1:4]
-```
-
-          Sediment Cycles  State NMP_cat
-    1         Clay      0 before    <10%
-    2         Clay      0 before  10-17%
-    3         Clay      0 before    >17%
-    4         Clay    330  after    <10%
-    5         Clay    330  after  10-17%
-    6         Clay    330  after    >17%
-    7         Clay    560  after  10-17%
-    8  Coarse sand      0 before    <10%
-    9  Coarse sand      0 before  10-17%
-    10 Coarse sand    330  after  10-17%
-    11 Coarse sand    600  after    <10%
-    12   Fine sand      0 before    <10%
-    13   Fine sand      0 before  10-17%
-    14   Fine sand    330  after  10-17%
-    15   Fine sand    600  after    <10%
-    16   Fine sand    600  after  10-17%
-    17   Fine sand    600  after    >17%
-    18      Gravel      0 before    <10%
-    19      Gravel      0 before  10-17%
-    20      Gravel      0 before    >17%
-    21      Gravel    330  after    <10%
-    22      Gravel    330  after  10-17%
-    23      Gravel    330  after    >17%
-    24      Gravel    600  after    <10%
-    25      Gravel    600  after  10-17%
-    26      Gravel    600  after    >17%
-    27     Quincay      0 before    <10%
-    28     Quincay      0 before  10-17%
-    29     Quincay    330  after    <10%
-    30     Quincay    330  after    >17%
-    31     Quincay    600  after    <10%
+          Sediment Cycles NMP_cat NMP.n
+    1         Clay      0    <10%     4
+    2         Clay      0  10-17%     3
+    3         Clay      0    >17%     1
+    4         Clay    330    <10%     1
+    5         Clay    330  10-17%     2
+    6         Clay    330    >17%     1
+    7         Clay    560  10-17%     4
+    8  Coarse sand      0    <10%     5
+    9  Coarse sand      0  10-17%     3
+    10 Coarse sand    330  10-17%     4
+    11 Coarse sand    600    <10%     4
+    12   Fine sand      0    <10%     2
+    13   Fine sand      0  10-17%     6
+    14   Fine sand    330  10-17%     4
+    15   Fine sand    600    <10%     1
+    16   Fine sand    600  10-17%     2
+    17   Fine sand    600    >17%     1
+    18      Gravel      0    <10%     3
+    19      Gravel      0  10-17%     4
+    20      Gravel      0    >17%     1
+    21      Gravel    330    <10%     1
+    22      Gravel    330  10-17%     1
+    23      Gravel    330    >17%     2
+    24      Gravel    600    <10%     1
+    25      Gravel    600  10-17%     2
+    26      Gravel    600    >17%     1
+    27     Quincay      0    <10%     6
+    28     Quincay      0  10-17%     2
+    29     Quincay    330    <10%     3
+    30     Quincay    330    >17%     1
+    31     Quincay    600    <10%     4
 
 ## Save as XLSX
 
@@ -457,9 +394,7 @@ write_xlsx(list("Sediment" = stats_sed,
                 "Sediment+Cycles" = stats_sed_cy, 
                 "Sediment+Use+NMP" = stats_sed_use_NMP,
                 "Sediment+Use+Cycles" = stats_sed_use_cy,
-                "Sediment+Cycles+NMP" = stats_sed_cy_NMP,
-                "Sediment+Cycles+State" = stats_sed_cy_st,
-                "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
+                "Sediment+Cycles+NMP" = stats_sed_cy_NMP),
            path = paste0(dir_stats, "/FT_STA-stats.xlsx"))
 ```
 
@@ -473,17 +408,17 @@ sessionInfo()
 
     R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 10 x64 (build 19045)
+    Running under: Windows 11 x64 (build 26200)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United Kingdom.utf8 
-    [2] LC_CTYPE=English_United Kingdom.utf8   
-    [3] LC_MONETARY=English_United Kingdom.utf8
-    [4] LC_NUMERIC=C                           
-    [5] LC_TIME=English_United Kingdom.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -506,10 +441,10 @@ sessionInfo()
     [13] pkgconfig_2.0.3      Matrix_1.7-4         RColorBrewer_1.1-3  
     [16] S7_0.2.1             lifecycle_1.0.4      compiler_4.5.2      
     [19] farver_2.1.2         microbenchmark_1.5.0 htmltools_0.5.8.1   
-    [22] sass_0.4.10          yaml_2.3.10          pillar_1.11.1       
+    [22] sass_0.4.10          yaml_2.3.11          pillar_1.11.1       
     [25] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
     [28] boot_1.3-32          nlme_3.1-168         fracdiff_1.5-3      
-    [31] Deriv_4.2.0          tidyselect_1.2.1     digest_0.6.38       
+    [31] Deriv_4.2.0          tidyselect_1.2.1     digest_0.6.39       
     [34] stringi_1.8.7        tseries_0.10-58      cowplot_1.2.0       
     [37] rprojroot_2.1.1      fastmap_1.2.0        grid_4.5.2          
     [40] colorspace_2.1-2     cli_3.6.5            magrittr_2.0.4      

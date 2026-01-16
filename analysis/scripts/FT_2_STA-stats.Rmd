@@ -34,7 +34,6 @@ The groups are based on:
 
 * Sediment type  
 * Freeze-thaw cycles  
-* State  
 * Use  
 * NMP_cat
 
@@ -115,39 +114,31 @@ nminmaxmeanmedsd <- function(x){
 ```{r}
 # Compute summary statistics based on Sediment
 stats_sed <- summaryBy(. ~ Sediment, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed[1]
+stats_sed[1:2]
 
 # Compute summary statistics based on Sediment and Use
 stats_sed_use <- summaryBy(. ~ Sediment + Use, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_use[1:2]
+stats_sed_use[1:3]
 
 # Compute summary statistics based on Sediment and NMP_cat
 stats_sed_NMP <- summaryBy(. ~ Sediment + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_NMP[1:2]
+stats_sed_NMP[1:3]
 
 # Compute summary statistics based on Sediment and Cycles
 stats_sed_cy <- summaryBy(. ~ Sediment + Cycles, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy[1:2]
+stats_sed_cy[1:3]
 
 # Compute summary statistics based on Sediment, Use and NMP_cat
 stats_sed_use_NMP <- summaryBy(. ~ Sediment + Use + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_use_NMP[1:3]
+stats_sed_use_NMP[1:4]
 
 # Compute summary statistics based on Sediment, Use and Cycles
 stats_sed_use_cy <- summaryBy(. ~ Sediment + Use + Cycles, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_use_cy[1:3]
+stats_sed_use_cy[1:4]
 
 # Compute summary statistics based on Sediment, Cycles and NMP_cat
 stats_sed_cy_NMP <- summaryBy(. ~ Sediment + Cycles + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy_NMP[1:3]
-
-# Compute summary statistics based on Sediment, Cycles and State
-stats_sed_cy_st <- summaryBy(. ~ Sediment + Cycles + State, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy_st[1:3]
-
-# Compute summary statistics based on Sediment, Cycles, State and NMP_cat
-stats_sed_cy_st_NMP <- summaryBy(. ~ Sediment + Cycles + State + NMP_cat, data = FT, FUN = nminmaxmeanmedsd)
-stats_sed_cy_st_NMP[1:4]
+stats_sed_cy_NMP[1:4]
 ```
 
 
@@ -159,9 +150,7 @@ write_xlsx(list("Sediment" = stats_sed,
                 "Sediment+Cycles" = stats_sed_cy, 
                 "Sediment+Use+NMP" = stats_sed_use_NMP,
                 "Sediment+Use+Cycles" = stats_sed_use_cy,
-                "Sediment+Cycles+NMP" = stats_sed_cy_NMP,
-                "Sediment+Cycles+State" = stats_sed_cy_st,
-                "Sediment+Cycles+State+NMP" = stats_sed_cy_st_NMP),
+                "Sediment+Cycles+NMP" = stats_sed_cy_NMP),
            path = paste0(dir_stats, "/FT_STA-stats.xlsx"))
 ```
 
