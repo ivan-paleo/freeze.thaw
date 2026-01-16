@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2025-11-27 14:19:18 CET
+2026-01-16 11:12:25 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -97,12 +97,13 @@ Below are its structure and first lines:
 str(FT)
 ```
 
-    'data.frame':   80 obs. of  41 variables:
+    'data.frame':   80 obs. of  42 variables:
      $ Specimen                : chr  "Scra11" "Scra11" "Scra11" "Scra11" ...
      $ Sediment                : chr  "Quincay" "Quincay" "Quincay" "Quincay" ...
      $ Cycles                  : num  600 600 600 600 0 0 0 0 330 330 ...
      $ State                   : Factor w/ 2 levels "before","after": 2 2 2 2 1 1 1 1 2 2 ...
      $ Location                : chr  "loc1" "loc2" "loc3" "loc4" ...
+     $ Use                     : chr  "used" "used" "used" "unused" ...
      $ NMP                     : num  6.21 8.99 9.36 7.09 5.59 ...
      $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-17%"<..: 1 1 1 1 1 1 1 1 2 2 ...
      $ Sq                      : num  510 599 627 536 461 ...
@@ -146,55 +147,55 @@ str(FT)
 head(FT)
 ```
 
-      Specimen Sediment Cycles  State Location      NMP NMP_cat       Sq        Ssk
-    1   Scra11  Quincay    600  after     loc1 6.210140    <10% 510.3147  0.2082995
-    2   Scra11  Quincay    600  after     loc2 8.988605    <10% 599.4221  0.1038576
-    3   Scra11  Quincay    600  after     loc3 9.360195    <10% 626.8703 -1.3491279
-    4   Scra11  Quincay    600  after     loc4 7.087054    <10% 535.8293  0.3066295
-    5   Scra11  Quincay      0 before     loc1 5.585075    <10% 461.3625  0.3644242
-    6   Scra11  Quincay      0 before     loc2 7.824051    <10% 537.4528 -0.3339857
-            Sku       Sp       Sv       Sz       Sa       Smr      Smc       Sxp
-    1  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984  959.4634
-    2  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265 1299.1056
-    3 16.215072 4021.251 4888.391 8909.643 399.6521 0.1384577 594.0357 1118.6396
-    4  3.504882 2236.933 1622.238 3859.171 420.7068 1.9326553 670.0448  961.0071
-    5  3.438282 1940.378 1193.170 3133.549 362.0558 3.1472606 568.2292  834.1125
-    6  4.060290 1796.531 2537.250 4333.781 412.1910 6.2930831 674.2111 1111.3785
-           Sal       Str      Std       Ssw       Sdq       Sdr         Vm
-    1 5.535718 0.7571265 54.74853 0.4249085 0.5937326 14.108213 0.03220712
-    2 6.570978 0.6973378 74.74841 0.4249085 0.3186908  4.665525 0.04181877
-    3 5.662375 0.6112438 85.50156 0.4249085 0.3722057  5.960471 0.04105984
-    4 5.693638 0.6484318 57.75130 0.4249085 0.3241989  4.854970 0.03305849
-    5 6.107537 0.6810785 86.25058 0.4249085 0.3179695  4.701684 0.03014862
-    6 5.961985 0.6743632 86.99719 0.4249085 0.4060171  7.404031 0.02403996
-             Vv        Vmp       Vmc       Vvc        Vvv First.direction
-    1 0.6632383 0.03220712 0.4298770 0.6058456 0.05739273        44.99067
-    2 0.7468693 0.04181877 0.4518377 0.6665194 0.08034989        89.99559
-    3 0.6350726 0.04105984 0.3806123 0.5465987 0.08847389        90.00050
-    4 0.7030889 0.03305849 0.4670876 0.6490426 0.05404634        44.98490
-    5 0.5983675 0.03014862 0.4005538 0.5514198 0.04694766        89.99058
-    6 0.6982755 0.02403996 0.4565223 0.6277425 0.07053295        45.01407
-      Second.direction Third.direction Texture.isotropy Maximum.depth.of.furrows
-    1       0.01081937        90.00509         82.36371                 3418.379
-    2     179.99523860       134.98878         68.76672                 4350.215
-    3      44.99608453       116.43945         58.82372                 9461.823
-    4      90.01423227       135.00686         71.81574                 3943.282
-    5     135.02619380       179.99602         72.18861                 3051.558
-    6      89.99811744        63.56398         57.93184                 4003.873
-      Mean.depth.of.furrows Mean.density.of.furrows       epLsar  NewEplsar
-    1              1714.284                6492.159 0.0005855797 0.01748435
-    2              1899.377                6945.496 0.0028073607 0.01681894
-    3              3459.689                7121.221 0.0017361474 0.01787320
-    4              1857.354                6632.412 0.0023834012 0.01666934
-    5              1527.908                6748.034 0.0024736287 0.01686902
-    6              1607.176                7054.717 0.0012932325 0.01710849
-          Asfc      Smfc    HAsfc9
-    1 49.92666 1.0805865 0.1333228
-    2 13.83172 1.1530754 0.4437028
-    3 19.82069 1.4950314 0.9494297
-    4 13.06050 1.1530754 0.3135672
-    5 13.10260 0.9489935 0.1773680
-    6 26.90327 0.8893344 0.2908531
+      Specimen Sediment Cycles  State Location    Use      NMP NMP_cat       Sq
+    1   Scra11  Quincay    600  after     loc1   used 6.210140    <10% 510.3147
+    2   Scra11  Quincay    600  after     loc2   used 8.988605    <10% 599.4221
+    3   Scra11  Quincay    600  after     loc3   used 9.360195    <10% 626.8703
+    4   Scra11  Quincay    600  after     loc4 unused 7.087054    <10% 535.8293
+    5   Scra11  Quincay      0 before     loc1   used 5.585075    <10% 461.3625
+    6   Scra11  Quincay      0 before     loc2   used 7.824051    <10% 537.4528
+             Ssk       Sku       Sp       Sv       Sz       Sa       Smr      Smc
+    1  0.2082995  3.611167 2002.269 1895.237 3897.506 395.2242 3.3585136 630.9984
+    2  0.1038576  4.277262 2280.247 2129.979 4410.227 444.2419 2.6425792 705.0265
+    3 -1.3491279 16.215072 4021.251 4888.391 8909.643 399.6521 0.1384577 594.0357
+    4  0.3066295  3.504882 2236.933 1622.238 3859.171 420.7068 1.9326553 670.0448
+    5  0.3644242  3.438282 1940.378 1193.170 3133.549 362.0558 3.1472606 568.2292
+    6 -0.3339857  4.060290 1796.531 2537.250 4333.781 412.1910 6.2930831 674.2111
+            Sxp      Sal       Str      Std       Ssw       Sdq       Sdr
+    1  959.4634 5.535718 0.7571265 54.74853 0.4249085 0.5937326 14.108213
+    2 1299.1056 6.570978 0.6973378 74.74841 0.4249085 0.3186908  4.665525
+    3 1118.6396 5.662375 0.6112438 85.50156 0.4249085 0.3722057  5.960471
+    4  961.0071 5.693638 0.6484318 57.75130 0.4249085 0.3241989  4.854970
+    5  834.1125 6.107537 0.6810785 86.25058 0.4249085 0.3179695  4.701684
+    6 1111.3785 5.961985 0.6743632 86.99719 0.4249085 0.4060171  7.404031
+              Vm        Vv        Vmp       Vmc       Vvc        Vvv
+    1 0.03220712 0.6632383 0.03220712 0.4298770 0.6058456 0.05739273
+    2 0.04181877 0.7468693 0.04181877 0.4518377 0.6665194 0.08034989
+    3 0.04105984 0.6350726 0.04105984 0.3806123 0.5465987 0.08847389
+    4 0.03305849 0.7030889 0.03305849 0.4670876 0.6490426 0.05404634
+    5 0.03014862 0.5983675 0.03014862 0.4005538 0.5514198 0.04694766
+    6 0.02403996 0.6982755 0.02403996 0.4565223 0.6277425 0.07053295
+      First.direction Second.direction Third.direction Texture.isotropy
+    1        44.99067       0.01081937        90.00509         82.36371
+    2        89.99559     179.99523860       134.98878         68.76672
+    3        90.00050      44.99608453       116.43945         58.82372
+    4        44.98490      90.01423227       135.00686         71.81574
+    5        89.99058     135.02619380       179.99602         72.18861
+    6        45.01407      89.99811744        63.56398         57.93184
+      Maximum.depth.of.furrows Mean.depth.of.furrows Mean.density.of.furrows
+    1                 3418.379              1714.284                6492.159
+    2                 4350.215              1899.377                6945.496
+    3                 9461.823              3459.689                7121.221
+    4                 3943.282              1857.354                6632.412
+    5                 3051.558              1527.908                6748.034
+    6                 4003.873              1607.176                7054.717
+            epLsar  NewEplsar     Asfc      Smfc    HAsfc9
+    1 0.0005855797 0.01748435 49.92666 1.0805865 0.1333228
+    2 0.0028073607 0.01681894 13.83172 1.1530754 0.4437028
+    3 0.0017361474 0.01787320 19.82069 1.4950314 0.9494297
+    4 0.0023834012 0.01666934 13.06050 1.1530754 0.3135672
+    5 0.0024736287 0.01686902 13.10260 0.9489935 0.1773680
+    6 0.0012932325 0.01710849 26.90327 0.8893344 0.2908531
 
 ------------------------------------------------------------------------
 
@@ -208,7 +209,11 @@ FT <- select(FT, !NMP)  %>%
   
       # Combine Specimen and Location in one column
       # Necessary to connect points when plotting individual points
-      mutate(SpecLoc = paste(Specimen, Location, sep = "-"))
+      mutate(SpecLoc = paste(Specimen, Location, sep = "-")) %>%
+  
+      # Combine Specimen and Use in one column
+      # Necessary to connect points when plotting mean points
+      mutate(SpecUse = paste(Specimen, Use, sep = "-"))
 ```
 
 ## Create new datasets based on NMP_cat
@@ -229,13 +234,13 @@ are excluded and 72 are kept for further analysis.
 ## Calculate the mean per specimen per cycle
 
 ``` r
-# Calculate means based on Specimen + Cycles
-# Sediment is listed as factor in order to keep this column
+# Calculate means based on Specimen + Cycles + Use
+# Sediment and SpecUse are listed as factor in order to keep these columns
 # keep.names = TRUE is important for the matching on names in the plots
-FT_NMP10_mean <- summaryBy(.~ Specimen + Sediment + Cycles, data = FT_NMP10,
-                           FUN = mean, keep.names = TRUE)
-FT_NMP17_mean <- summaryBy(.~ Specimen + Sediment + Cycles, data = FT_NMP17,
-                           FUN = mean, keep.names = TRUE)
+FT_NMP10_mean <- summaryBy(.~ Specimen + Sediment + Cycles + Use + SpecUse, 
+                           data = FT_NMP10, FUN = mean, keep.names = TRUE)
+FT_NMP17_mean <- summaryBy(.~ Specimen + Sediment + Cycles + Use + SpecUse, 
+                           data = FT_NMP17, FUN = mean, keep.names = TRUE)
 ```
 
 ## Add units to headers for plotting
@@ -323,18 +328,19 @@ names(p_line_NMP17) <- table_units$Param_unit
 
 ``` r
 # Design for patchwork combination of plots (see below)
-design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 2))
+design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 3))
 
 # Plot for every parameters
 for (i in names(p_line_NMP17)) {
   
   # Define y-axis limits based on the range of the y-variable
   # This ensures that both plots have the same y-range
+  # Not used currently
   #range_y <- range(FT_NMP17_units[[i]])
   
   # Plot of individual data points
              #  Define aesthetics 
-  p_indiv <- ggplot(data = FT_NMP17_units, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+  p_indiv <- ggplot(data = FT_NMP17_units, aes(x = Cycles, y = .data[[i]], color = Sediment, shape = Use)) + 
              
              # Add points
              geom_point(size = 3) + 
@@ -353,19 +359,24 @@ for (i in names(p_line_NMP17)) {
              scale_color_brewer(palette = 'Set2') +
     
              # Set y-limits
+             # Not used currently
              #ylim(range_y[1], range_y[2]) +
     
              # Add title to plot
-             labs(title = "Individual data points")
+             labs(title = "Individual data points") +
+    
+             # Position and orientation of legend
+             theme(legend.direction = "horizontal", legend.title.position = "top")
 
   # Plot of means per sample and cycle
-  p_mean <- ggplot(data = FT_NMP17_mean, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+  p_mean <- ggplot(data = FT_NMP17_mean, aes(x = Cycles, y = .data[[i]], color = Sediment, shape = Use)) + 
             geom_point(size = 3) + 
-            geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
+            geom_line(linewidth = 0.5, aes(group = SpecUse), show.legend = FALSE) +
             theme_classic() +
             scale_color_brewer(palette = 'Set2') +
             #ylim(range_y[1], range_y[2]) +
-            labs(title = "Mean per sample and cycle")
+            labs(title = "Mean per sample+cycle") +
+            theme(legend.direction = "horizontal", legend.title.position = "top")
 
   # Combine both plots with patchwork
   p_line_NMP17[[i]] <- p_indiv / p_mean + guide_area() + 
@@ -630,14 +641,11 @@ parameters](#pca-on-selected-parameters).
 pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[4:37], scale. = TRUE)
 
 pca_FT_NMP17_all_eig <- fviz_eig(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP17_all_eig)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
     Ignoring empty aesthetic: `width`.
-
-``` r
-print(pca_FT_NMP17_all_eig)
-```
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
@@ -663,6 +671,9 @@ all_plots_17_all <- list(pca_FT_NMP17_all_eig, pca_FT_NMP17_all_12, pca_FT_NMP17
 ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_17_all, 
        width = 190, height = 125, units = "mm")
 ```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
 
 ## PCA on selected parameters
 
@@ -714,14 +725,11 @@ pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE)
 
 ``` r
 pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP17_eig)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
     Ignoring empty aesthetic: `width`.
-
-``` r
-print(pca_FT_NMP17_eig)
-```
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
@@ -761,6 +769,9 @@ ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots_1
        width = 190, height = 125, units = "mm")
 ```
 
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
+
 ------------------------------------------------------------------------
 
 # Line plots for height maps with \<10% NMP
@@ -771,25 +782,28 @@ For comments on the code, see section [Line plots for height maps with
 ``` r
 p_line_NMP10 <- vector(mode = "list", length = nrow(table_units))
 names(p_line_NMP10) <- table_units$Param_unit
-design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 2))
+design_patch <- c(area(1, 1, 2, 3), area(3, 1, 3, 1), area(3, 2, 3, 3))
+
 for (i in names(p_line_NMP10)) {
-  p_indiv <- ggplot(data = FT_NMP10_units, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+  p_indiv <- ggplot(data = FT_NMP10_units, aes(x = Cycles, y = .data[[i]], color = Sediment, shape = Use)) + 
              geom_point(size = 3) + 
              facet_wrap(~ Sediment) +
              geom_line(linewidth = 0.5, aes(group = SpecLoc), show.legend = FALSE) +
              theme_classic() +
              scale_color_brewer(palette = 'Set2') +
-             labs(title = "Individual data points")
-  p_mean <- ggplot(data = FT_NMP10_mean, aes(x = Cycles, y = .data[[i]], color = Sediment)) + 
+             labs(title = "Individual data points") +
+             theme(legend.direction = "horizontal", legend.title.position = "top")
+  p_mean <- ggplot(data = FT_NMP10_mean, aes(x = Cycles, y = .data[[i]], color = Sediment, shape = Use)) + 
             geom_point(size = 3) + 
-            geom_line(linewidth = 0.5, aes(group = Specimen), show.legend = FALSE) +
+            geom_line(linewidth = 0.5, aes(group = SpecUse), show.legend = FALSE) +
             theme_classic() +
             scale_color_brewer(palette = 'Set2') +
-            labs(title = "Mean per sample and cycle")
-
+            labs(title = "Mean per sample+cycle") +
+            theme(legend.direction = "horizontal", legend.title.position = "top")
   p_line_NMP10[[i]] <- p_indiv / p_mean + guide_area() + 
                        plot_layout(guides = 'collect', design = design_patch)
 }
+
 print(p_line_NMP10)
 ```
 
@@ -983,14 +997,11 @@ FT_NMP10_pca_data <- select(FT_NMP10, !c(Cycles, NMP_cat))           %>%
 
 pca_FT_NMP10_all <- prcomp(FT_NMP10_pca_data[4:37], scale. = TRUE)
 pca_FT_NMP10_all_eig <- fviz_eig(pca_FT_NMP10_all, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP10_all_eig)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
     Ignoring empty aesthetic: `width`.
-
-``` r
-print(pca_FT_NMP10_all_eig)
-```
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
@@ -1015,18 +1026,20 @@ print(pca_FT_NMP10_all_34)
 all_plots_10_all <- list(pca_FT_NMP10_all_eig, pca_FT_NMP10_all_12, pca_FT_NMP10_all_34)  
 ggsave(filename = "FT_PCA-plots_NMP10_all-params.pdf", path = dir_plots, plot = all_plots_10_all, 
        width = 190, height = 125, units = "mm")
-
-pca_FT_NMP10 <- prcomp(FT_NMP10_pca_data[ , pca_params], scale. = TRUE)
-
-pca_FT_NMP10_eig <- fviz_eig(pca_FT_NMP10, addlabels = TRUE, ggtheme = theme_classic())
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
     Ignoring empty aesthetic: `width`.
 
 ``` r
+pca_FT_NMP10 <- prcomp(FT_NMP10_pca_data[ , pca_params], scale. = TRUE)
+
+pca_FT_NMP10_eig <- fviz_eig(pca_FT_NMP10, addlabels = TRUE, ggtheme = theme_classic())
 print(pca_FT_NMP10_eig)
 ```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-4.png)<!-- -->
 
@@ -1054,6 +1067,9 @@ ggsave(filename = "FT_PCA-plots_NMP10.pdf", path = dir_plots, plot = all_plots_1
        width = 190, height = 125, units = "mm")
 ```
 
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
+
 ------------------------------------------------------------------------
 
 # sessionInfo()
@@ -1062,19 +1078,19 @@ ggsave(filename = "FT_PCA-plots_NMP10.pdf", path = dir_plots, plot = all_plots_1
 sessionInfo()
 ```
 
-    R version 4.5.1 (2025-06-13 ucrt)
+    R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 10 x64 (build 19045)
+    Running under: Windows 11 x64 (build 26200)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United Kingdom.utf8 
-    [2] LC_CTYPE=English_United Kingdom.utf8   
-    [3] LC_MONETARY=English_United Kingdom.utf8
-    [4] LC_NUMERIC=C                           
-    [5] LC_TIME=English_United Kingdom.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -1084,32 +1100,38 @@ sessionInfo()
 
     other attached packages:
      [1] lubridate_1.9.4    forcats_1.0.1      stringr_1.6.0      dplyr_1.1.4       
-     [5] purrr_1.2.0        readr_2.1.5        tidyr_1.3.1        tibble_3.3.0      
+     [5] purrr_1.2.0        readr_2.1.6        tidyr_1.3.1        tibble_3.3.0      
      [9] tidyverse_2.0.0    rmarkdown_2.30     RColorBrewer_1.1-3 R.utils_2.13.0    
     [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.50        
-    [17] grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.0      doBy_4.7.0        
+    [17] grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.1      doBy_4.7.1        
 
     loaded via a namespace (and not attached):
-     [1] gtable_0.3.6         xfun_0.54            bslib_0.9.0         
-     [4] rstatix_0.7.3        ggrepel_0.9.6        lattice_0.22-7      
-     [7] tzdb_0.5.0           vctrs_0.6.5          tools_4.5.1         
-    [10] generics_0.1.4       pkgconfig_2.0.3      Matrix_1.7-4        
-    [13] S7_0.2.0             lifecycle_1.0.4      compiler_4.5.1      
-    [16] farver_2.1.2         textshaping_1.0.4    microbenchmark_1.5.0
-    [19] carData_3.0-5        htmltools_0.5.8.1    sass_0.4.10         
-    [22] yaml_2.3.10          Formula_1.2-5        crayon_1.5.3        
-    [25] car_3.1-3            ggpubr_0.6.2         pillar_1.11.1       
-    [28] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
-    [31] abind_1.4-8          boot_1.3-32          Deriv_4.2.0         
-    [34] tidyselect_1.2.1     digest_0.6.37        stringi_1.8.7       
-    [37] labeling_0.4.3       cowplot_1.2.0        rprojroot_2.1.1     
-    [40] fastmap_1.2.0        grid_4.5.1           cli_3.6.5           
-    [43] magrittr_2.0.4       broom_1.0.10         withr_3.0.2         
-    [46] scales_1.4.0         backports_1.5.0      timechange_0.3.0    
-    [49] modelr_0.1.11        ggsignif_0.6.4       ragg_1.5.0          
-    [52] hms_1.1.4            evaluate_1.0.5       rlang_1.1.6         
-    [55] Rcpp_1.1.0           glue_1.8.0           rstudioapi_0.17.1   
-    [58] jsonlite_2.0.0       R6_2.6.1             systemfonts_1.3.1   
+     [1] tidyselect_1.2.1     timeDate_4051.111    farver_2.1.2        
+     [4] S7_0.2.1             fastmap_1.2.0        digest_0.6.39       
+     [7] timechange_0.3.0     lifecycle_1.0.4      Deriv_4.2.0         
+    [10] magrittr_2.0.4       compiler_4.5.2       rlang_1.1.6         
+    [13] sass_0.4.10          tools_4.5.2          yaml_2.3.11         
+    [16] ggsignif_0.6.4       labeling_0.4.3       curl_7.0.0          
+    [19] TTR_0.24.4           abind_1.4-8          withr_3.0.2         
+    [22] nnet_7.3-20          grid_4.5.2           ggpubr_0.6.2        
+    [25] xts_0.14.1           colorspace_2.1-2     scales_1.4.0        
+    [28] MASS_7.3-65          cli_3.6.5            crayon_1.5.3        
+    [31] ragg_1.5.0           generics_0.1.4       rstudioapi_0.17.1   
+    [34] modelr_0.1.11        tzdb_0.5.0           cachem_1.1.0        
+    [37] forecast_8.24.0      parallel_4.5.2       urca_1.3-4          
+    [40] vctrs_0.6.5          boot_1.3-32          Matrix_1.7-4        
+    [43] carData_3.0-5        jsonlite_2.0.0       car_3.1-3           
+    [46] hms_1.1.4            tseries_0.10-58      rstatix_0.7.3       
+    [49] ggrepel_0.9.6        Formula_1.2-5        systemfonts_1.3.1   
+    [52] jquerylib_0.1.4      quantmod_0.4.28      glue_1.8.0          
+    [55] cowplot_1.2.0        stringi_1.8.7        gtable_0.3.6        
+    [58] quadprog_1.5-8       lmtest_0.9-40        pillar_1.11.1       
+    [61] htmltools_0.5.8.1    R6_2.6.1             microbenchmark_1.5.0
+    [64] textshaping_1.0.4    rprojroot_2.1.1      evaluate_1.0.5      
+    [67] lattice_0.22-7       backports_1.5.0      broom_1.0.10        
+    [70] fracdiff_1.5-3       bslib_0.9.0          Rcpp_1.1.0          
+    [73] nlme_3.1-168         xfun_0.54            zoo_1.8-14          
+    [76] pkgconfig_2.0.3     
 
 ------------------------------------------------------------------------
 
@@ -1117,8 +1139,8 @@ sessionInfo()
 
 | Package | Version | Citation |
 |:---|:---|:---|
-| base | 4.5.1 | R Core Team (2025) |
-| doBy | 4.7.0 | Halekoh and Højsgaard (2025) |
+| base | 4.5.2 | R Core Team (2025) |
+| doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
 | factoextra | 1.0.7 | Kassambara and Mundt (2020) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
 | knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
