@@ -243,8 +243,7 @@ ggsave(filename = "FT_STA-plots_NMP17.pdf", path = dir_plots, plot = p_line_NMP1
 
 # PCA for height maps with <17% NMP
 ## Format data
-PCA will be applied to the differences between after and before the experiments, for all surface texture parameter.
-
+PCA will be applied to the differences between after and before the experiments, for all surface texture parameter.  
 The method below works only with 2 values per group, which is the case here.
 
 ### Define function to calculate difference
@@ -266,7 +265,7 @@ FT_NMP17_pca_data <- select(FT_NMP17, !c(Cycles, NMP_cat)) %>%
                      arrange(Specimen, Location, State) %>% 
   
                      # Group by Specimen, Sediment and Location (= everything except State)
-                     group_by(Specimen, Sediment, Location) %>%
+                     group_by(Specimen, Sediment, Location, Use) %>%
   
                      # Apply function fun_minus to each group
                      summarize(across(where(is.numeric), fun_minus)) %>% 
@@ -282,18 +281,18 @@ The library `factoextra` is not maintained anymore so there are some warnings du
 ```{r}
 custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.pt, mean.pt = FALSE, 
                               col.pal = brewer.pal(length(unique(datpca[[col.pt]])), "Set2"), 
-                              pt.size = 3, pt.shape = 19, pt.fill = "white",
+                              pt.size = 3, pt.shape = 19, pt.fill = "white", alph = 1,
                               elli = TRUE, elli.type = "convex", repel.lab = TRUE, 
                               col.variable = "black", main.title){
   
   # Define plotting
-  p_out <- fviz_pca_biplot(dat, axes = pc, 
+  p_out <- fviz_pca_ind(dat, axes = pc, 
                            geom.ind = geom.pt, col.ind = datpca[[col.pt]], mean.point = mean.pt,
                            palette = col.pal, pointsize = pt.size, pointshape = pt.shape, fill.ind = pt.fill,
-                           addEllipses = elli, ellipse.type = elli.type,  
+                           addEllipses = elli, ellipse.type = elli.type, alpha = alph,  
                            repel = repel.lab, col.var = col.variable, title = main.title, legend.title = "")
   
-  p_out <- p_out + theme(legend.position = "bottom")
+  p_out <- p_out + theme(legend.position = "bottom", legend.box = "vertical")
 
   # Return plotting object
   return(p_out)
@@ -302,24 +301,23 @@ custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.
 
 
 ## Run PCA with all parameters 
+All STA parameters are used here, except Ssw (column 18), which is almost always 0.  
 This PCA is only meant to select the most informative parameters.  
 For comments on the code, see section [PCA on selected parameters](#pca-on-selected-parameters).  
 
 ```{r}
-pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[4:37], scale. = TRUE)
-
-pca_FT_NMP17_all_eig <- fviz_eig(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP17_all_eig)
+pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[c(5:17, 19:38)], scale. = TRUE, center = TRUE)
+pca_FT_NMP17_all_scree <- fviz_screeplot(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP17_all_scree)
 
 grp_PCA <- "Sediment"
 pca_FT_NMP17_all_12 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
-                                         col.pt = grp_PCA, main.title = "PC 1&2")
+                                         col.pt = grp_PCA, main.title = "PC 1&2 - all parameters")
 print(pca_FT_NMP17_all_12)
 pca_FT_NMP17_all_34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
-                                         col.pt = grp_PCA, main.title = "PC 3&4")
+                                         col.pt = grp_PCA, main.title = "PC 3&4 - all parameters")
 print(pca_FT_NMP17_all_34)
-
-all_plots_17_all <- list(pca_FT_NMP17_all_eig, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
+all_plots_17_all <- list(pca_FT_NMP17_all_scree, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
 ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_17_all, 
        width = 190, height = 125, units = "mm")
 ```
@@ -348,11 +346,23 @@ pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE)
 
 
 ### Plots
-#### Eigenvalues
+#### Screeplot
 ```{r}
-pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP17_eig)
+pca_FT_NMP17_scree <- fviz_screeplot(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP17_scree)
 ```
+
+#### Contributions of variables
+```{r}
+# PC1-2
+pca_FT_NMP17_var12 <- fviz_pca_var(pca_FT_NMP17, axes = c(1, 2), col.var = "black", repel = TRUE)
+print(pca_FT_NMP17_var12)
+
+# PC3-4
+pca_FT_NMP17_var34 <- fviz_pca_var(pca_FT_NMP17, axes = c(3, 4), col.var = "black", repel = TRUE)
+print(pca_FT_NMP17_var34)
+```
+
 
 #### Biplots
 ```{r}
@@ -360,19 +370,23 @@ print(pca_FT_NMP17_eig)
 grp_PCA <- "Sediment"
 
 # Biplot of PC1&2
-pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
-                                     col.pt = grp_PCA, main.title = "PC 1&2")
+pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(1, 2), alph = 0,
+                                     col.pt = grp_PCA, main.title = "PC 1&2 - selected parameters") +
+  geom_point(aes(shape = FT_NMP17_pca_data$Use, color = FT_NMP17_pca_data$Sediment), size = 3) +
+  guides(shape = guide_legend(title = "Use"),
+         color = guide_legend(title = "Sediment"),
+         fill = "none")
 print(pca_FT_NMP17_12)
 
 # Biplot of PC3&4
 pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
-                                     col.pt = grp_PCA, main.title = "PC 3&4")
+                                     col.pt = grp_PCA, main.title = "PC 3&4 - selected parameters")
 print(pca_FT_NMP17_34)
 ```
 
 #### Combine plots to save them into 1 file
 ```{r}
-all_plots_17 <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)  
+all_plots_17 <- list(pca_FT_NMP17_scree, pca_FT_NMP17_12, pca_FT_NMP17_34)  
 ```
 
 #### Save plots

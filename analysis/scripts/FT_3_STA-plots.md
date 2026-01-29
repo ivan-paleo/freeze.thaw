@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2026-01-29 09:57:26 CET
+2026-01-29 17:01:46 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -34,7 +34,7 @@ Ivan Calandra
       parameters](#select-surface-texture-parameters)
     - [PCA](#pca)
     - [Plots](#plots-1)
-      - [Eigenvalues](#eigenvalues)
+      - [Screeplot](#screeplot)
       - [Biplots](#biplots)
       - [Combine plots to save them into 1
         file](#combine-plots-to-save-them-into-1-file)
@@ -59,7 +59,11 @@ dir_plots <- "analysis/plots"
 Input Rbin data file must be located in “./analysis/derived_data”.  
 Plots will be saved in “./analysis/plots”.
 
-The knit directory for this script is the project directory.
+The knit directory for this script is the project directory. This is
+important to specify the path for input and output.  
+However, the HTML, MD and BIB files resulting from the rendering of this
+Rmd file will be located in the same folder as the Rmd file
+(i.e. “`./analysis/scripts`”).
 
 ------------------------------------------------------------------------
 
@@ -569,8 +573,7 @@ ggsave(filename = "FT_STA-plots_NMP17.pdf", path = dir_plots, plot = p_line_NMP1
 ## Format data
 
 PCA will be applied to the differences between after and before the
-experiments, for all surface texture parameter.
-
+experiments, for all surface texture parameter.  
 The method below works only with 2 values per group, which is the case
 here.
 
@@ -595,7 +598,7 @@ FT_NMP17_pca_data <- select(FT_NMP17, !c(Cycles, NMP_cat)) %>%
                      arrange(Specimen, Location, State) %>% 
   
                      # Group by Specimen, Sediment and Location (= everything except State)
-                     group_by(Specimen, Sediment, Location) %>%
+                     group_by(Specimen, Sediment, Location, Use) %>%
   
                      # Apply function fun_minus to each group
                      summarize(across(where(is.numeric), fun_minus)) %>% 
@@ -632,15 +635,16 @@ custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.
 
 ## Run PCA with all parameters
 
+All STA parameters are used here, except Ssw (column 18), which is
+almost always 0.  
 This PCA is only meant to select the most informative parameters.  
 For comments on the code, see section [PCA on selected
 parameters](#pca-on-selected-parameters).
 
 ``` r
-pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[4:37], scale. = TRUE)
-
-pca_FT_NMP17_all_eig <- fviz_eig(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP17_all_eig)
+pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[c(5:17, 19:38)], scale. = TRUE, center = TRUE)
+pca_FT_NMP17_all_scree <- fviz_screeplot(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP17_all_scree)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
@@ -651,7 +655,7 @@ print(pca_FT_NMP17_all_eig)
 ``` r
 grp_PCA <- "Sediment"
 pca_FT_NMP17_all_12 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
-                                         col.pt = grp_PCA, main.title = "PC 1&2")
+                                         col.pt = grp_PCA, main.title = "PC 1&2 - all parameters")
 print(pca_FT_NMP17_all_12)
 ```
 
@@ -659,14 +663,14 @@ print(pca_FT_NMP17_all_12)
 
 ``` r
 pca_FT_NMP17_all_34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
-                                         col.pt = grp_PCA, main.title = "PC 3&4")
+                                         col.pt = grp_PCA, main.title = "PC 3&4 - all parameters")
 print(pca_FT_NMP17_all_34)
 ```
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-3.png)<!-- -->
 
 ``` r
-all_plots_17_all <- list(pca_FT_NMP17_all_eig, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
+all_plots_17_all <- list(pca_FT_NMP17_all_scree, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
 ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_17_all, 
        width = 190, height = 125, units = "mm")
 ```
@@ -720,11 +724,11 @@ pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE)
 
 ### Plots
 
-#### Eigenvalues
+#### Screeplot
 
 ``` r
-pca_FT_NMP17_eig <- fviz_eig(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP17_eig)
+pca_FT_NMP17_scree <- fviz_screeplot(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
+print(pca_FT_NMP17_scree)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
@@ -740,7 +744,7 @@ grp_PCA <- "Sediment"
 
 # Biplot of PC1&2
 pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
-                                     col.pt = grp_PCA, main.title = "PC 1&2")
+                                     col.pt = grp_PCA, main.title = "PC 1&2 - selected parameters")
 print(pca_FT_NMP17_12)
 ```
 
@@ -749,7 +753,7 @@ print(pca_FT_NMP17_12)
 ``` r
 # Biplot of PC3&4
 pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
-                                     col.pt = grp_PCA, main.title = "PC 3&4")
+                                     col.pt = grp_PCA, main.title = "PC 3&4 - selected parameters")
 print(pca_FT_NMP17_34)
 ```
 
@@ -758,7 +762,7 @@ print(pca_FT_NMP17_34)
 #### Combine plots to save them into 1 file
 
 ``` r
-all_plots_17 <- list(pca_FT_NMP17_eig, pca_FT_NMP17_12, pca_FT_NMP17_34)  
+all_plots_17 <- list(pca_FT_NMP17_scree, pca_FT_NMP17_12, pca_FT_NMP17_34)  
 ```
 
 #### Save plots
