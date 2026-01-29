@@ -1577,7 +1577,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Import dataset from the surface texture
 analysis for the Freeze-thaw project</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2025-12-18 13:46:51 CET</h4>
+<h4 class="date">2026-01-29 10:01:59 CET</h4>
 
 </div>
 
@@ -1600,7 +1600,11 @@ R</li>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>dir_out <span class="ot">&lt;-</span> <span class="st">&quot;analysis/derived_data&quot;</span></span></code></pre></div>
 <p>Raw data must be located in “./analysis/raw_data”.<br />
 Formatted data will be saved in “./analysis/derived_data”.</p>
-<p>The knit directory for this script is the project directory.</p>
+<p>The knit directory for this script is the project directory. This is
+important to specify the path for input and output.<br />
+However, the HTML, MD and BIB files resulting from the rendering of this
+Rmd file will be located in the same folder as the Rmd file
+(i.e. “<code>./analysis/scripts</code>”).</p>
 <hr />
 </div>
 <div id="load-packages" class="section level1" number="2">
@@ -2215,22 +2219,22 @@ attached base packages:
 
 other attached packages:
  [1] writexl_1.5.4     lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0    
- [5] dplyr_1.1.4       purrr_1.2.0       readr_2.1.6       tidyr_1.3.1      
- [9] tibble_3.3.0      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
-[13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.50       
+ [5] dplyr_1.1.4       purrr_1.2.1       readr_2.1.6       tidyr_1.3.2      
+ [9] tibble_3.3.1      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
+[13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.51       
 [17] grateful_0.3.0   
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6       jsonlite_2.0.0     crayon_1.5.3       compiler_4.5.2    
- [5] tidyselect_1.2.1   jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10       
- [9] fastmap_1.2.0      R6_2.6.1           generics_0.1.4     rprojroot_2.1.1   
-[13] tzdb_0.5.0         bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3
-[17] rlang_1.1.6        stringi_1.8.7      cachem_1.1.0       xfun_0.54         
-[21] sass_0.4.10        S7_0.2.1           timechange_0.3.0   cli_3.6.5         
-[25] withr_3.0.2        magrittr_2.0.4     digest_0.6.38      grid_4.5.2        
-[29] rstudioapi_0.17.1  hms_1.1.4          lifecycle_1.0.4    vctrs_0.6.5       
-[33] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       tools_4.5.2       
-[37] pkgconfig_2.0.3    htmltools_0.5.8.1 </code></pre>
+ [1] sass_0.4.10        generics_0.1.4     stringi_1.8.7      hms_1.1.4         
+ [5] digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5     grid_4.5.2        
+ [9] timechange_0.3.0   RColorBrewer_1.1-3 fastmap_1.2.0      rprojroot_2.1.1   
+[13] jsonlite_2.0.0     scales_1.4.0       jquerylib_0.1.4    cli_3.6.5         
+[17] rlang_1.1.7        crayon_1.5.3       withr_3.0.2        cachem_1.1.0      
+[21] yaml_2.3.12        otel_0.2.0         tools_4.5.2        tzdb_0.5.0        
+[25] vctrs_0.7.1        R6_2.6.1           lifecycle_1.0.5    pkgconfig_2.0.3   
+[29] pillar_1.11.1      bslib_0.10.0       gtable_0.3.6       glue_1.8.0        
+[33] xfun_0.56          tidyselect_1.2.1   rstudioapi_0.18.0  farver_2.1.2      
+[37] htmltools_0.5.9    compiler_4.5.2     S7_0.2.1          </code></pre>
 <hr />
 </div>
 <div id="cite-r-packages-used" class="section level1" number="6">
@@ -2263,7 +2267,7 @@ used</h1>
 </tr>
 <tr class="odd">
 <td align="left">knitr</td>
-<td align="left">1.50</td>
+<td align="left">1.51</td>
 <td align="left"><span class="citation">Xie (2014)</span>; <span class="citation">Xie (2015)</span>; <span class="citation">Xie
 (2025)</span></td>
 </tr>
@@ -2302,8 +2306,8 @@ used</h1>
 </tr>
 <tr class="even">
 <td align="left">RStudio</td>
-<td align="left">2025.9.2.418</td>
-<td align="left"><span class="citation">Posit team (2025)</span></td>
+<td align="left">2026.1.0.392</td>
+<td align="left"><span class="citation">Posit team (2026)</span></td>
 </tr>
 </tbody>
 </table>
@@ -2340,7 +2344,7 @@ Frames to Excel <span>“<span class="nocase">xlsx</span>”</span>
 Format</em>. <a href="https://doi.org/10.32614/CRAN.package.writexl">https://doi.org/10.32614/CRAN.package.writexl</a>.
 </div>
 <div id="ref-rstudio" class="csl-entry">
-Posit team. 2025. <em><span>RStudio</span>: Integrated Development
+Posit team. 2026. <em><span>RStudio</span>: Integrated Development
 Environment for r</em>. Boston, MA: Posit Software, PBC. <a href="http://www.posit.co/">http://www.posit.co/</a>.
 </div>
 <div id="ref-base" class="csl-entry">

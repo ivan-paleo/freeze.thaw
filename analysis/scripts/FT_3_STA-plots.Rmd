@@ -38,7 +38,8 @@ dir_plots <- "analysis/plots"
 Input Rbin data file must be located in "`r paste0("./", dir_in)`".  
 Plots will be saved in "`r paste0("./", dir_plots)`".
 
-The knit directory for this script is the project directory.
+The knit directory for this script is the project directory. This is important to specify the path for input and output.  
+However, the HTML, MD and BIB files resulting from the rendering of this Rmd file will be located in the same folder as the Rmd file (i.e. "`./analysis/scripts`").
 
 
 ---
@@ -415,52 +416,6 @@ for (i in names(p_line_NMP10)) {
 print(p_line_NMP10)
 ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP10, 
        width = 190, height = 200, units = "mm")
-```
-
-
----
-
-
-# PCA for height maps with <10% NMP
-For comments on the code, see section [PCA for height maps with <17% NMP](#pca-for-height-maps-with-17-nmp).
-
-```{r}
-FT_NMP10_pca_data <- select(FT_NMP10, !c(Cycles, NMP_cat))           %>% 
-                     arrange(Specimen, Location, State)              %>% 
-                     group_by(Specimen, Sediment, Location)          %>%
-                     summarize(across(where(is.numeric), fun_minus)) %>% 
-                     na.omit() 
-
-pca_FT_NMP10_all <- prcomp(FT_NMP10_pca_data[4:37], scale. = TRUE)
-pca_FT_NMP10_all_eig <- fviz_eig(pca_FT_NMP10_all, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP10_all_eig)
-grp_PCA <- "Sediment"
-pca_FT_NMP10_all_12 <- custom_pca_biplot(pca_FT_NMP10_all, datpca = FT_NMP10_pca_data, pc = c(1, 2), 
-                                         col.pt = grp_PCA, main.title = "PC 1&2")
-print(pca_FT_NMP10_all_12)
-pca_FT_NMP10_all_34 <- custom_pca_biplot(pca_FT_NMP10_all, datpca = FT_NMP10_pca_data, pc = c(3, 4), 
-                                         col.pt = grp_PCA, main.title = "PC 3&4")
-print(pca_FT_NMP10_all_34)
-all_plots_10_all <- list(pca_FT_NMP10_all_eig, pca_FT_NMP10_all_12, pca_FT_NMP10_all_34)  
-ggsave(filename = "FT_PCA-plots_NMP10_all-params.pdf", path = dir_plots, plot = all_plots_10_all, 
-       width = 190, height = 125, units = "mm")
-
-pca_FT_NMP10 <- prcomp(FT_NMP10_pca_data[ , pca_params], scale. = TRUE)
-
-pca_FT_NMP10_eig <- fviz_eig(pca_FT_NMP10, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP10_eig)
-
-grp_PCA <- "Sediment"
-pca_FT_NMP10_12 <- custom_pca_biplot(pca_FT_NMP10, datpca = FT_NMP10_pca_data, pc = c(1, 2), 
-                                     col.pt = grp_PCA, main.title = "PC 1&2")
-print(pca_FT_NMP10_12)
-pca_FT_NMP10_34 <- custom_pca_biplot(pca_FT_NMP10, datpca = FT_NMP10_pca_data, pc = c(3, 4), 
-                                     col.pt = grp_PCA, main.title = "PC 3&4")
-print(pca_FT_NMP10_34)
-all_plots_10 <- list(pca_FT_NMP10_eig, pca_FT_NMP10_12, pca_FT_NMP10_34)  
-
-ggsave(filename = "FT_PCA-plots_NMP10.pdf", path = dir_plots, plot = all_plots_10, 
-       width = 190, height = 125, units = "mm")
 ```
 
 

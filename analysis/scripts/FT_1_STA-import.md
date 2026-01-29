@@ -2,7 +2,7 @@ Import dataset from the surface texture analysis for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2025-12-18 13:46:55 CET
+2026-01-29 10:02:04 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -52,7 +52,11 @@ dir_out <- "analysis/derived_data"
 Raw data must be located in “./analysis/raw_data”.  
 Formatted data will be saved in “./analysis/derived_data”.
 
-The knit directory for this script is the project directory.
+The knit directory for this script is the project directory. This is
+important to specify the path for input and output.  
+However, the HTML, MD and BIB files resulting from the rendering of this
+Rmd file will be located in the same folder as the Rmd file
+(i.e. “`./analysis/scripts`”).
 
 ------------------------------------------------------------------------
 
@@ -717,22 +721,22 @@ sessionInfo()
 
     other attached packages:
      [1] writexl_1.5.4     lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0    
-     [5] dplyr_1.1.4       purrr_1.2.0       readr_2.1.6       tidyr_1.3.1      
-     [9] tibble_3.3.0      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
-    [13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.50       
+     [5] dplyr_1.1.4       purrr_1.2.1       readr_2.1.6       tidyr_1.3.2      
+     [9] tibble_3.3.1      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
+    [13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.51       
     [17] grateful_0.3.0   
 
     loaded via a namespace (and not attached):
-     [1] gtable_0.3.6       jsonlite_2.0.0     crayon_1.5.3       compiler_4.5.2    
-     [5] tidyselect_1.2.1   jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10       
-     [9] fastmap_1.2.0      R6_2.6.1           generics_0.1.4     rprojroot_2.1.1   
-    [13] tzdb_0.5.0         bslib_0.9.0        pillar_1.11.1      RColorBrewer_1.1-3
-    [17] rlang_1.1.6        stringi_1.8.7      cachem_1.1.0       xfun_0.54         
-    [21] sass_0.4.10        S7_0.2.1           timechange_0.3.0   cli_3.6.5         
-    [25] withr_3.0.2        magrittr_2.0.4     digest_0.6.38      grid_4.5.2        
-    [29] rstudioapi_0.17.1  hms_1.1.4          lifecycle_1.0.4    vctrs_0.6.5       
-    [33] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       tools_4.5.2       
-    [37] pkgconfig_2.0.3    htmltools_0.5.8.1 
+     [1] sass_0.4.10        generics_0.1.4     stringi_1.8.7      hms_1.1.4         
+     [5] digest_0.6.39      magrittr_2.0.4     evaluate_1.0.5     grid_4.5.2        
+     [9] timechange_0.3.0   RColorBrewer_1.1-3 fastmap_1.2.0      rprojroot_2.1.1   
+    [13] jsonlite_2.0.0     scales_1.4.0       jquerylib_0.1.4    cli_3.6.5         
+    [17] rlang_1.1.7        crayon_1.5.3       withr_3.0.2        cachem_1.1.0      
+    [21] yaml_2.3.12        otel_0.2.0         tools_4.5.2        tzdb_0.5.0        
+    [25] vctrs_0.7.1        R6_2.6.1           lifecycle_1.0.5    pkgconfig_2.0.3   
+    [29] pillar_1.11.1      bslib_0.10.0       gtable_0.3.6       glue_1.8.0        
+    [33] xfun_0.56          tidyselect_1.2.1   rstudioapi_0.18.0  farver_2.1.2      
+    [37] htmltools_0.5.9    compiler_4.5.2     S7_0.2.1          
 
 ------------------------------------------------------------------------
 
@@ -742,14 +746,14 @@ sessionInfo()
 |:---|:---|:---|
 | base | 4.5.2 | R Core Team (2025) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
-| knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
+| knitr | 1.51 | Xie (2014); Xie (2015); Xie (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
 | R.oo | 1.27.1 | Bengtsson (2003b) |
 | R.utils | 2.13.0 | Bengtsson (2025) |
 | rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
 | writexl | 1.5.4 | Ooms (2025) |
-| RStudio | 2025.9.2.418 | Posit team (2025) |
+| RStudio | 2026.1.0.392 | Posit team (2026) |
 
 ## References
 
@@ -806,7 +810,7 @@ Frames to Excel “<span class="nocase">xlsx</span>” Format*.
 
 <div id="ref-rstudio" class="csl-entry">
 
-Posit team. 2025. *RStudio: Integrated Development Environment for r*.
+Posit team. 2026. *RStudio: Integrated Development Environment for r*.
 Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
 
 </div>

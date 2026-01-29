@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2026-01-16 11:12:25 CET
+2026-01-29 09:57:26 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -41,7 +41,6 @@ Ivan Calandra
       - [Save plots](#save-plots-1)
 - [Line plots for height maps with \<10%
   NMP](#line-plots-for-height-maps-with-10-nmp)
-- [PCA for height maps with \<10% NMP](#pca-for-height-maps-with-10-nmp)
 - [sessionInfo()](#sessioninfo)
 - [Cite R packages used](#cite-r-packages-used)
   - [References](#references)
@@ -798,7 +797,7 @@ for (i in names(p_line_NMP10)) {
             geom_line(linewidth = 0.5, aes(group = SpecUse), show.legend = FALSE) +
             theme_classic() +
             scale_color_brewer(palette = 'Set2') +
-            labs(title = "Mean per sample+cycle") +
+            labs(title = "Mean per sample+ cycle") +
             theme(legend.direction = "horizontal", legend.title.position = "top")
   p_line_NMP10[[i]] <- p_indiv / p_mean + guide_area() + 
                        plot_layout(guides = 'collect', design = design_patch)
@@ -983,95 +982,6 @@ ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP1
 
 ------------------------------------------------------------------------
 
-# PCA for height maps with \<10% NMP
-
-For comments on the code, see section [PCA for height maps with \<17%
-NMP](#pca-for-height-maps-with-17-nmp).
-
-``` r
-FT_NMP10_pca_data <- select(FT_NMP10, !c(Cycles, NMP_cat))           %>% 
-                     arrange(Specimen, Location, State)              %>% 
-                     group_by(Specimen, Sediment, Location)          %>%
-                     summarize(across(where(is.numeric), fun_minus)) %>% 
-                     na.omit() 
-
-pca_FT_NMP10_all <- prcomp(FT_NMP10_pca_data[4:37], scale. = TRUE)
-pca_FT_NMP10_all_eig <- fviz_eig(pca_FT_NMP10_all, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP10_all_eig)
-```
-
-    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
-    Ignoring empty aesthetic: `width`.
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
-
-``` r
-grp_PCA <- "Sediment"
-pca_FT_NMP10_all_12 <- custom_pca_biplot(pca_FT_NMP10_all, datpca = FT_NMP10_pca_data, pc = c(1, 2), 
-                                         col.pt = grp_PCA, main.title = "PC 1&2")
-print(pca_FT_NMP10_all_12)
-```
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-2.png)<!-- -->
-
-``` r
-pca_FT_NMP10_all_34 <- custom_pca_biplot(pca_FT_NMP10_all, datpca = FT_NMP10_pca_data, pc = c(3, 4), 
-                                         col.pt = grp_PCA, main.title = "PC 3&4")
-print(pca_FT_NMP10_all_34)
-```
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-3.png)<!-- -->
-
-``` r
-all_plots_10_all <- list(pca_FT_NMP10_all_eig, pca_FT_NMP10_all_12, pca_FT_NMP10_all_34)  
-ggsave(filename = "FT_PCA-plots_NMP10_all-params.pdf", path = dir_plots, plot = all_plots_10_all, 
-       width = 190, height = 125, units = "mm")
-```
-
-    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
-    Ignoring empty aesthetic: `width`.
-
-``` r
-pca_FT_NMP10 <- prcomp(FT_NMP10_pca_data[ , pca_params], scale. = TRUE)
-
-pca_FT_NMP10_eig <- fviz_eig(pca_FT_NMP10, addlabels = TRUE, ggtheme = theme_classic())
-print(pca_FT_NMP10_eig)
-```
-
-    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
-    Ignoring empty aesthetic: `width`.
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-4.png)<!-- -->
-
-``` r
-grp_PCA <- "Sediment"
-pca_FT_NMP10_12 <- custom_pca_biplot(pca_FT_NMP10, datpca = FT_NMP10_pca_data, pc = c(1, 2), 
-                                     col.pt = grp_PCA, main.title = "PC 1&2")
-print(pca_FT_NMP10_12)
-```
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-5.png)<!-- -->
-
-``` r
-pca_FT_NMP10_34 <- custom_pca_biplot(pca_FT_NMP10, datpca = FT_NMP10_pca_data, pc = c(3, 4), 
-                                     col.pt = grp_PCA, main.title = "PC 3&4")
-print(pca_FT_NMP10_34)
-```
-
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-24-6.png)<!-- -->
-
-``` r
-all_plots_10 <- list(pca_FT_NMP10_eig, pca_FT_NMP10_12, pca_FT_NMP10_34)  
-
-ggsave(filename = "FT_PCA-plots_NMP10.pdf", path = dir_plots, plot = all_plots_10, 
-       width = 190, height = 125, units = "mm")
-```
-
-    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
-    Ignoring empty aesthetic: `width`.
-
-------------------------------------------------------------------------
-
 # sessionInfo()
 
 ``` r
@@ -1080,17 +990,17 @@ sessionInfo()
 
     R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 11 x64 (build 26200)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=English_United Kingdom.utf8 
+    [2] LC_CTYPE=English_United Kingdom.utf8   
+    [3] LC_MONETARY=English_United Kingdom.utf8
+    [4] LC_NUMERIC=C                           
+    [5] LC_TIME=English_United Kingdom.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -1100,37 +1010,37 @@ sessionInfo()
 
     other attached packages:
      [1] lubridate_1.9.4    forcats_1.0.1      stringr_1.6.0      dplyr_1.1.4       
-     [5] purrr_1.2.0        readr_2.1.6        tidyr_1.3.1        tibble_3.3.0      
+     [5] purrr_1.2.1        readr_2.1.6        tidyr_1.3.2        tibble_3.3.1      
      [9] tidyverse_2.0.0    rmarkdown_2.30     RColorBrewer_1.1-3 R.utils_2.13.0    
-    [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.50        
+    [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.51        
     [17] grateful_0.3.0     factoextra_1.0.7   ggplot2_4.0.1      doBy_4.7.1        
 
     loaded via a namespace (and not attached):
-     [1] tidyselect_1.2.1     timeDate_4051.111    farver_2.1.2        
+     [1] tidyselect_1.2.1     timeDate_4052.112    farver_2.1.2        
      [4] S7_0.2.1             fastmap_1.2.0        digest_0.6.39       
-     [7] timechange_0.3.0     lifecycle_1.0.4      Deriv_4.2.0         
-    [10] magrittr_2.0.4       compiler_4.5.2       rlang_1.1.6         
-    [13] sass_0.4.10          tools_4.5.2          yaml_2.3.11         
+     [7] timechange_0.3.0     lifecycle_1.0.5      Deriv_4.2.0         
+    [10] magrittr_2.0.4       compiler_4.5.2       rlang_1.1.7         
+    [13] sass_0.4.10          tools_4.5.2          yaml_2.3.12         
     [16] ggsignif_0.6.4       labeling_0.4.3       curl_7.0.0          
     [19] TTR_0.24.4           abind_1.4-8          withr_3.0.2         
     [22] nnet_7.3-20          grid_4.5.2           ggpubr_0.6.2        
     [25] xts_0.14.1           colorspace_2.1-2     scales_1.4.0        
-    [28] MASS_7.3-65          cli_3.6.5            crayon_1.5.3        
-    [31] ragg_1.5.0           generics_0.1.4       rstudioapi_0.17.1   
+    [28] MASS_7.3-65          cli_3.6.5            ragg_1.5.0          
+    [31] generics_0.1.4       otel_0.2.0           rstudioapi_0.18.0   
     [34] modelr_0.1.11        tzdb_0.5.0           cachem_1.1.0        
-    [37] forecast_8.24.0      parallel_4.5.2       urca_1.3-4          
-    [40] vctrs_0.6.5          boot_1.3-32          Matrix_1.7-4        
+    [37] forecast_9.0.0       parallel_4.5.2       urca_1.3-4          
+    [40] vctrs_0.7.1          boot_1.3-32          Matrix_1.7-4        
     [43] carData_3.0-5        jsonlite_2.0.0       car_3.1-3           
-    [46] hms_1.1.4            tseries_0.10-58      rstatix_0.7.3       
+    [46] hms_1.1.4            tseries_0.10-59      rstatix_0.7.3       
     [49] ggrepel_0.9.6        Formula_1.2-5        systemfonts_1.3.1   
     [52] jquerylib_0.1.4      quantmod_0.4.28      glue_1.8.0          
     [55] cowplot_1.2.0        stringi_1.8.7        gtable_0.3.6        
     [58] quadprog_1.5-8       lmtest_0.9-40        pillar_1.11.1       
-    [61] htmltools_0.5.8.1    R6_2.6.1             microbenchmark_1.5.0
+    [61] htmltools_0.5.9      R6_2.6.1             microbenchmark_1.5.0
     [64] textshaping_1.0.4    rprojroot_2.1.1      evaluate_1.0.5      
-    [67] lattice_0.22-7       backports_1.5.0      broom_1.0.10        
-    [70] fracdiff_1.5-3       bslib_0.9.0          Rcpp_1.1.0          
-    [73] nlme_3.1-168         xfun_0.54            zoo_1.8-14          
+    [67] lattice_0.22-7       backports_1.5.0      broom_1.0.12        
+    [70] fracdiff_1.5-3       bslib_0.10.0         Rcpp_1.1.1          
+    [73] nlme_3.1-168         xfun_0.56            zoo_1.8-15          
     [76] pkgconfig_2.0.3     
 
 ------------------------------------------------------------------------
@@ -1143,7 +1053,7 @@ sessionInfo()
 | doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
 | factoextra | 1.0.7 | Kassambara and Mundt (2020) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
-| knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
+| knitr | 1.51 | Xie (2014); Xie (2015); Xie (2025) |
 | patchwork | 1.3.2 | Pedersen (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
 | R.oo | 1.27.1 | Bengtsson (2003b) |
@@ -1151,7 +1061,7 @@ sessionInfo()
 | RColorBrewer | 1.1.3 | Neuwirth (2022) |
 | rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
-| RStudio | 2025.9.2.418 | Posit team (2025) |
+| RStudio | 2026.1.0.392 | Posit team (2026) |
 
 ## References
 
@@ -1231,7 +1141,7 @@ Composer of Plots*. <https://doi.org/10.32614/CRAN.package.patchwork>.
 
 <div id="ref-rstudio" class="csl-entry">
 
-Posit team. 2025. *RStudio: Integrated Development Environment for r*.
+Posit team. 2026. *RStudio: Integrated Development Environment for r*.
 Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
 
 </div>

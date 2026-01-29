@@ -53,8 +53,8 @@ dir_in <- dir_stats <- "analysis/derived_data"
 Raw data must be located in "`r paste0("./", dir_in)`".  
 Summary statistics will be saved in "`r paste0("./", dir_stats)`".
 
-The knit directory for this script is the project directory.
-
+The knit directory for this script is the project directory. This is important to specify the path for input and output.  
+However, the HTML, MD and BIB files resulting from the rendering of this Rmd file will be located in the same folder as the Rmd file (i.e. "`./analysis/scripts`").
 
 ---
 

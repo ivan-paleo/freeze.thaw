@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2026-01-16 10:20:48 CET
+2026-01-29 10:03:16 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -44,7 +44,11 @@ dir_in <- dir_stats <- "analysis/derived_data"
 Raw data must be located in “./analysis/derived_data”.  
 Summary statistics will be saved in “./analysis/derived_data”.
 
-The knit directory for this script is the project directory.
+The knit directory for this script is the project directory. This is
+important to specify the path for input and output.  
+However, the HTML, MD and BIB files resulting from the rendering of this
+Rmd file will be located in the same folder as the Rmd file
+(i.e. “`./analysis/scripts`”).
 
 ------------------------------------------------------------------------
 
@@ -408,17 +412,17 @@ sessionInfo()
 
     R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 11 x64 (build 26200)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=English_United Kingdom.utf8 
+    [2] LC_CTYPE=English_United Kingdom.utf8   
+    [3] LC_MONETARY=English_United Kingdom.utf8
+    [4] LC_NUMERIC=C                           
+    [5] LC_TIME=English_United Kingdom.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -428,34 +432,34 @@ sessionInfo()
 
     other attached packages:
      [1] writexl_1.5.4     lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0    
-     [5] dplyr_1.1.4       purrr_1.2.0       readr_2.1.6       tidyr_1.3.1      
-     [9] tibble_3.3.0      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
-    [13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.50       
+     [5] dplyr_1.1.4       purrr_1.2.1       readr_2.1.6       tidyr_1.3.2      
+     [9] tibble_3.3.1      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
+    [13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.51       
     [17] grateful_0.3.0    doBy_4.7.1       
 
     loaded via a namespace (and not attached):
-     [1] gtable_0.3.6         xfun_0.54            bslib_0.9.0         
+     [1] gtable_0.3.6         xfun_0.56            bslib_0.10.0        
      [4] lattice_0.22-7       tzdb_0.5.0           quadprog_1.5-8      
-     [7] vctrs_0.6.5          tools_4.5.2          generics_0.1.4      
+     [7] vctrs_0.7.1          tools_4.5.2          generics_0.1.4      
     [10] curl_7.0.0           parallel_4.5.2       xts_0.14.1          
     [13] pkgconfig_2.0.3      Matrix_1.7-4         RColorBrewer_1.1-3  
-    [16] S7_0.2.1             lifecycle_1.0.4      compiler_4.5.2      
-    [19] farver_2.1.2         microbenchmark_1.5.0 htmltools_0.5.8.1   
-    [22] sass_0.4.10          yaml_2.3.11          pillar_1.11.1       
+    [16] S7_0.2.1             lifecycle_1.0.5      compiler_4.5.2      
+    [19] farver_2.1.2         microbenchmark_1.5.0 htmltools_0.5.9     
+    [22] sass_0.4.10          yaml_2.3.12          pillar_1.11.1       
     [25] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
     [28] boot_1.3-32          nlme_3.1-168         fracdiff_1.5-3      
     [31] Deriv_4.2.0          tidyselect_1.2.1     digest_0.6.39       
-    [34] stringi_1.8.7        tseries_0.10-58      cowplot_1.2.0       
+    [34] stringi_1.8.7        tseries_0.10-59      cowplot_1.2.0       
     [37] rprojroot_2.1.1      fastmap_1.2.0        grid_4.5.2          
     [40] colorspace_2.1-2     cli_3.6.5            magrittr_2.0.4      
-    [43] broom_1.0.10         withr_3.0.2          scales_1.4.0        
-    [46] backports_1.5.0      forecast_8.24.0      timechange_0.3.0    
+    [43] broom_1.0.12         withr_3.0.2          scales_1.4.0        
+    [46] backports_1.5.0      forecast_9.0.0       timechange_0.3.0    
     [49] TTR_0.24.4           modelr_0.1.11        quantmod_0.4.28     
-    [52] nnet_7.3-20          timeDate_4051.111    hms_1.1.4           
-    [55] zoo_1.8-14           urca_1.3-4           evaluate_1.0.5      
-    [58] lmtest_0.9-40        rlang_1.1.6          Rcpp_1.1.0          
-    [61] glue_1.8.0           rstudioapi_0.17.1    jsonlite_2.0.0      
-    [64] R6_2.6.1            
+    [52] otel_0.2.0           nnet_7.3-20          timeDate_4052.112   
+    [55] hms_1.1.4            zoo_1.8-15           urca_1.3-4          
+    [58] evaluate_1.0.5       lmtest_0.9-40        rlang_1.1.7         
+    [61] Rcpp_1.1.1           glue_1.8.0           rstudioapi_0.18.0   
+    [64] jsonlite_2.0.0       R6_2.6.1            
 
 ------------------------------------------------------------------------
 
@@ -466,14 +470,14 @@ sessionInfo()
 | base | 4.5.2 | R Core Team (2025) |
 | doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
-| knitr | 1.50 | Xie (2014); Xie (2015); Xie (2025) |
+| knitr | 1.51 | Xie (2014); Xie (2015); Xie (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
 | R.oo | 1.27.1 | Bengtsson (2003b) |
 | R.utils | 2.13.0 | Bengtsson (2025) |
 | rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
 | writexl | 1.5.4 | Ooms (2025) |
-| RStudio | 2025.9.2.418 | Posit team (2025) |
+| RStudio | 2026.1.0.392 | Posit team (2026) |
 
 ## References
 
@@ -538,7 +542,7 @@ Frames to Excel “<span class="nocase">xlsx</span>” Format*.
 
 <div id="ref-rstudio" class="csl-entry">
 
-Posit team. 2025. *RStudio: Integrated Development Environment for r*.
+Posit team. 2026. *RStudio: Integrated Development Environment for r*.
 Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
 
 </div>
