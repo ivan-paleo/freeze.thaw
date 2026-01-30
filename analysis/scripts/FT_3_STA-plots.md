@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2026-01-29 17:01:46 CET
+2026-01-30 10:47:39 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -28,14 +28,17 @@ Ivan Calandra
     - [Calculate the difference between after and
       before](#calculate-the-difference-between-after-and-before)
   - [Custom plotting function](#custom-plotting-function)
+  - [Define columns for colors and
+    shapes](#define-columns-for-colors-and-shapes)
   - [Run PCA with all parameters](#run-pca-with-all-parameters)
   - [PCA on selected parameters](#pca-on-selected-parameters)
     - [Select surface texture
       parameters](#select-surface-texture-parameters)
     - [PCA](#pca)
     - [Plots](#plots-1)
-      - [Screeplot](#screeplot)
-      - [Biplots](#biplots)
+      - [Scree plot](#scree-plot)
+      - [PC1-2](#pc1-2)
+      - [PC3-4](#pc3-4)
       - [Combine plots to save them into 1
         file](#combine-plots-to-save-them-into-1-file)
       - [Save plots](#save-plots-1)
@@ -320,6 +323,10 @@ These are the new column names for the plots:
 
 # Line plots for height maps with \<17% NMP
 
+See section [Line plots for height maps with \<10%
+NMP](#line-plots-for-height-maps-with-10-nmp) for line plots for height
+maps with \<10% NMP.
+
 ## Create list to receive the plots
 
 ``` r
@@ -570,6 +577,10 @@ ggsave(filename = "FT_STA-plots_NMP17.pdf", path = dir_plots, plot = p_line_NMP1
 
 # PCA for height maps with \<17% NMP
 
+Note that there are too few data points with only height maps \<10% NMP
+to be meaningful for a PCA, so the PCAs are done only with height maps
+\< 17% NMP.
+
 ## Format data
 
 PCA will be applied to the differences between after and before the
@@ -615,22 +626,32 @@ warnings due to issues with newer versions of ggplot2.
 ``` r
 custom_pca_biplot <- function(dat, datpca, pc = c(1, 2), geom.pt = "point", col.pt, mean.pt = FALSE, 
                               col.pal = brewer.pal(length(unique(datpca[[col.pt]])), "Set2"), 
-                              pt.size = 3, pt.shape = 19, pt.fill = "white",
+                              pt.size = 3, shape.pt, pt.fill = "white", alph = 1,
                               elli = TRUE, elli.type = "convex", repel.lab = TRUE, 
                               col.variable = "black", main.title){
   
   # Define plotting
-  p_out <- fviz_pca_biplot(dat, axes = pc, 
+  p_out <- fviz_pca_ind(dat, axes = pc, 
                            geom.ind = geom.pt, col.ind = datpca[[col.pt]], mean.point = mean.pt,
-                           palette = col.pal, pointsize = pt.size, pointshape = pt.shape, fill.ind = pt.fill,
-                           addEllipses = elli, ellipse.type = elli.type,  
-                           repel = repel.lab, col.var = col.variable, title = main.title, legend.title = "")
-  
-  p_out <- p_out + theme(legend.position = "bottom")
+                           palette = col.pal, pointsize = pt.size, fill.ind = pt.fill, pointshape = 19,
+                           addEllipses = elli, ellipse.type = elli.type, alpha = alph,  
+                           repel = repel.lab, col.var = col.variable, title = main.title, legend.title = "") +
+           theme(legend.position = "bottom", legend.box = "vertical") +
+           geom_point(aes(shape = datpca[[shape.pt]], color = datpca[[col.pt]]), size = 3) +
+           guides(shape = guide_legend(title = shape.pt),
+                  color = guide_legend(title = col.pt),
+                  fill = "none")
 
   # Return plotting object
   return(p_out)
 }
+```
+
+## Define columns for colors and shapes
+
+``` r
+col_PCA <- "Sediment"
+shape_PCA <- "Use"
 ```
 
 ## Run PCA with all parameters
@@ -643,36 +664,63 @@ parameters](#pca-on-selected-parameters).
 
 ``` r
 pca_FT_NMP17_all <- prcomp(FT_NMP17_pca_data[c(5:17, 19:38)], scale. = TRUE, center = TRUE)
-pca_FT_NMP17_all_scree <- fviz_screeplot(pca_FT_NMP17_all, addlabels = TRUE, ggtheme = theme_classic())
+
+pca_FT_NMP17_all_scree <- fviz_screeplot(pca_FT_NMP17_all, addlabels = TRUE, 
+                                         ggtheme = theme_classic(), title = "Scree plot - all parameters")
 print(pca_FT_NMP17_all_scree)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
     Ignoring empty aesthetic: `width`.
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ``` r
-grp_PCA <- "Sediment"
-pca_FT_NMP17_all_12 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
-                                         col.pt = grp_PCA, main.title = "PC 1&2 - all parameters")
-print(pca_FT_NMP17_all_12)
+pca_axes12 <- c(1, 2)
+plot_title12_all <- paste("PC", paste(pca_axes12, collapse = "&"), "- all parameters")
+
+pca_FT_NMP17_all_ind12 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = pca_axes12, 
+                                            col.pt = col_PCA, shape.pt = shape_PCA, alph = 0,
+                                            main.title = plot_title12_all)
+print(pca_FT_NMP17_all_ind12)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
 
 ``` r
-pca_FT_NMP17_all_34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
-                                         col.pt = grp_PCA, main.title = "PC 3&4 - all parameters")
-print(pca_FT_NMP17_all_34)
+pca_FT_NMP17_all_var12 <- fviz_pca_var(pca_FT_NMP17_all, axes = pca_axes12, 
+                                       col.var = "black", repel = TRUE, title = plot_title12_all)
+print(pca_FT_NMP17_all_var12)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-16-3.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-3.png)<!-- -->
 
 ``` r
-all_plots_17_all <- list(pca_FT_NMP17_all_scree, pca_FT_NMP17_all_12, pca_FT_NMP17_all_34)  
+pca_axes34 <- c(3, 4)
+plot_title34_all <- paste("PC", paste(pca_axes34, collapse = "&"), "- all parameters")
+
+pca_FT_NMP17_all_ind34 <- custom_pca_biplot(pca_FT_NMP17_all, datpca = FT_NMP17_pca_data, pc = pca_axes34, 
+                                            col.pt = col_PCA, shape.pt = shape_PCA, alph = 0,
+                                            main.title = plot_title34_all)
+print(pca_FT_NMP17_all_ind34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-4.png)<!-- -->
+
+``` r
+pca_FT_NMP17_all_var34 <- fviz_pca_var(pca_FT_NMP17_all, axes = pca_axes34, 
+                                       col.var = "black", repel = TRUE, title = plot_title34_all)
+print(pca_FT_NMP17_all_var34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-5.png)<!-- -->
+
+``` r
+all_plots_17_all <- list(pca_FT_NMP17_all_scree, 
+                         pca_FT_NMP17_all_ind12, pca_FT_NMP17_all_var12,
+                         pca_FT_NMP17_all_ind34, pca_FT_NMP17_all_var34)  
 ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_17_all, 
-       width = 190, height = 125, units = "mm")
+       width = 190, height = 190, units = "mm")
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
@@ -719,57 +767,81 @@ correlating with PC1 and epLsar with PC2).
 ### PCA
 
 ``` r
-pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE)
+pca_FT_NMP17 <- prcomp(FT_NMP17_pca_data[ , pca_params], scale. = TRUE, center = TRUE)
 ```
 
 ### Plots
 
-#### Screeplot
+#### Scree plot
 
 ``` r
-pca_FT_NMP17_scree <- fviz_screeplot(pca_FT_NMP17, addlabels = TRUE, ggtheme = theme_classic())
+pca_FT_NMP17_scree <- fviz_screeplot(pca_FT_NMP17, addlabels = TRUE, 
+                                     ggtheme = theme_classic(), title = "Scree plot - selected parameters")
 print(pca_FT_NMP17_scree)
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
     Ignoring empty aesthetic: `width`.
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
-
-#### Biplots
-
-``` r
-# Define grouping variable and titles
-grp_PCA <- "Sediment"
-
-# Biplot of PC1&2
-pca_FT_NMP17_12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(1, 2), 
-                                     col.pt = grp_PCA, main.title = "PC 1&2 - selected parameters")
-print(pca_FT_NMP17_12)
-```
-
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
+#### PC1-2
+
 ``` r
-# Biplot of PC3&4
-pca_FT_NMP17_34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = c(3, 4), 
-                                     col.pt = grp_PCA, main.title = "PC 3&4 - selected parameters")
-print(pca_FT_NMP17_34)
+# Plot title
+plot_title12 <- paste("PC", paste(pca_axes12, collapse = "&"), "- selected parameters")
+
+# Individual points
+pca_FT_NMP17_ind12 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = pca_axes12, 
+                                            col.pt = col_PCA, shape.pt = shape_PCA, alph = 0,
+                                            main.title = plot_title12)
+print(pca_FT_NMP17_ind12)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-20-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+
+``` r
+# Contributions of variables
+pca_FT_NMP17_var12 <- fviz_pca_var(pca_FT_NMP17, axes = pca_axes12, 
+                                   col.var = "black", repel = TRUE, title = plot_title12)
+print(pca_FT_NMP17_var12)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-21-2.png)<!-- -->
+
+#### PC3-4
+
+``` r
+plot_title34 <- paste("PC", paste(pca_axes34, collapse = "&"), "- selected parameters")
+pca_FT_NMP17_ind34 <- custom_pca_biplot(pca_FT_NMP17, datpca = FT_NMP17_pca_data, pc = pca_axes34, 
+                                            col.pt = col_PCA, shape.pt = shape_PCA, alph = 0,
+                                            main.title = plot_title34)
+print(pca_FT_NMP17_ind34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+``` r
+pca_FT_NMP17_var34 <- fviz_pca_var(pca_FT_NMP17, axes = pca_axes34, 
+                                   col.var = "black", repel = TRUE, title = plot_title34)
+print(pca_FT_NMP17_var34)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-22-2.png)<!-- -->
 
 #### Combine plots to save them into 1 file
 
 ``` r
-all_plots_17 <- list(pca_FT_NMP17_scree, pca_FT_NMP17_12, pca_FT_NMP17_34)  
+all_plots_17 <- list(pca_FT_NMP17_scree, 
+                     pca_FT_NMP17_ind12, pca_FT_NMP17_var12,
+                     pca_FT_NMP17_ind34, pca_FT_NMP17_var34)    
 ```
 
 #### Save plots
 
 ``` r
 ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots_17, 
-       width = 190, height = 125, units = "mm")
+       width = 190, height = 190, units = "mm")
 ```
 
     Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
@@ -812,172 +884,172 @@ print(p_line_NMP10)
 
     $`Sq [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
 
     $`Ssk [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-2.png)<!-- -->
 
 
     $`Sku [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-3.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-3.png)<!-- -->
 
 
     $`Sp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-4.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-4.png)<!-- -->
 
 
     $`Sv [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-5.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-5.png)<!-- -->
 
 
     $`Sz [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-6.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-6.png)<!-- -->
 
 
     $`Sa [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-7.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-7.png)<!-- -->
 
 
     $`Smr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-8.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-8.png)<!-- -->
 
 
     $`Smc [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-9.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-9.png)<!-- -->
 
 
     $`Sxp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-10.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-10.png)<!-- -->
 
 
     $`Sal [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-11.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-11.png)<!-- -->
 
 
     $`Str [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-12.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-12.png)<!-- -->
 
 
     $`Std [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-13.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-13.png)<!-- -->
 
 
     $`Ssw [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-14.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-14.png)<!-- -->
 
 
     $`Sdq [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-15.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-15.png)<!-- -->
 
 
     $`Sdr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-16.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-16.png)<!-- -->
 
 
     $`Vm [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-17.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-17.png)<!-- -->
 
 
     $`Vv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-18.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-18.png)<!-- -->
 
 
     $`Vmp [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-19.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-19.png)<!-- -->
 
 
     $`Vmc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-20.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-20.png)<!-- -->
 
 
     $`Vvc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-21.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-21.png)<!-- -->
 
 
     $`Vvv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-22.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-22.png)<!-- -->
 
 
     $`First.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-23.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-23.png)<!-- -->
 
 
     $`Second.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-24.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-24.png)<!-- -->
 
 
     $`Third.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-25.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-25.png)<!-- -->
 
 
     $`Texture.isotropy [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-26.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-26.png)<!-- -->
 
 
     $`Maximum.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-27.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-27.png)<!-- -->
 
 
     $`Mean.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-28.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-28.png)<!-- -->
 
 
     $`Mean.density.of.furrows [cm/cm2]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-29.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-29.png)<!-- -->
 
 
     $`epLsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-30.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-30.png)<!-- -->
 
 
     $`NewEplsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-31.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-31.png)<!-- -->
 
 
     $`Asfc [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-32.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-32.png)<!-- -->
 
 
     $`Smfc [µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-33.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-33.png)<!-- -->
 
 
     $`HAsfc9 [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-23-34.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-25-34.png)<!-- -->
 
 ``` r
 ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP10, 
@@ -994,17 +1066,17 @@ sessionInfo()
 
     R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 10 x64 (build 19045)
+    Running under: Windows 11 x64 (build 26200)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United Kingdom.utf8 
-    [2] LC_CTYPE=English_United Kingdom.utf8   
-    [3] LC_MONETARY=English_United Kingdom.utf8
-    [4] LC_NUMERIC=C                           
-    [5] LC_TIME=English_United Kingdom.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
