@@ -1,0 +1,187 @@
+---
+title: "Import movement dataset for the Freeze-thaw project"
+author: "Ivan Calandra"
+date: "`r format(Sys.time(), usetz = TRUE)`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cerulean
+    highlight: pygments
+    number_sections: true
+  github_document: 
+    toc: true
+    toc_depth: 3
+    html_preview: false
+bibliography: FT_1_Movement-import.bib
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
+---
+
+
+```{r Knitr Options, include = FALSE}
+knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE)
+```
+
+
+---
+
+
+# Goal of the script
+This script formats the movement data.
+The script will:
+
+1. Read in the original file  
+2. Format the data  
+3. Write XLSX file and save R object ready for further analysis in R  
+
+```{r}
+dir_in  <- "analysis/raw_data"
+dir_out <- "analysis/derived_data"
+```
+
+Raw data must be located in "`r paste0("./", dir_in)`".  
+Formatted data will be saved in "`r paste0("./", dir_out)`".
+
+The knit directory for this script is the project directory. This is important to specify the path for input and output.  
+However, the HTML, MD and BIB files resulting from the rendering of this Rmd file will be located in the same folder as the Rmd file (i.e. "`./analysis/scripts`").
+
+---
+
+
+# Load packages
+```{r}
+library(grateful)
+library(knitr)
+library(R.utils)
+library(rmarkdown)
+library(tidyverse)
+library(writexl)
+```
+
+
+---
+
+
+# Read and format data
+## Read in CSV file
+```{r}
+mov_file <- list.files(dir_in, pattern = ".*movement.*\\.csv$", full.names = TRUE) 
+mov <- read.csv(mov_file, header = TRUE, fileEncoding = 'latin1')
+```
+
+The following raw data file has been read: "`r mov_file`"
+
+
+## Calculate new columns
+Create new columns based on combinations of existing columns.  
+All values are in cm, except for columns `Freeze-thaw_cycles` and `NO_tube`.
+
+```{r}
+mov_all <- mutate(mov,
+                  Original_depth_top_point1 = Tube_height - Original_depth_bottom_point1,
+                  Original_depth_top_point2 = Tube_height - Original_depth_bottom_point2,
+                  Movement_point1 = Final_depth_top_point1 - Original_depth_top_point1,
+                  Movement_point2 = Final_depth_top_point2 - Original_depth_top_point2,
+                  Abs_movement_point1 = abs(Movement_point1),
+                  Abs_movement_point2 = abs(Movement_point2),
+                  Average_movement = (Movement_point1 + Movement_point2)/2,
+                  Average_movement_CONV = -Average_movement,
+                  Total_abs_movement = Abs_movement_point1 + Abs_movement_point2) 
+```
+
+
+## Extract sediment info from column Specimen
+```{r}
+                    # Split column at every "_"
+mov_all$Sediment <- strsplit(mov_all$Specimen, "_") %>% 
+  
+                    # Keep second value
+                    sapply(., "[[", 2) %>% 
+  
+                    # Replace "fs" and "cs"
+                    gsub("fs", "Fine sand", .) %>% 
+                    gsub("cs", "Coarse sand", .) %>% 
+  
+                    # Capitalize first word
+                    str_to_sentence()
+```
+
+
+## Keep only SampleID in the column Specimen
+```{r}
+mov_all$Specimen <- strsplit(mov_all$Specimen, "_") %>% 
+                    sapply(., "[[", 1)
+```
+
+
+## Re-order columns and add unit as comment
+```{r}
+mov_final <- select(mov_all,
+                    Specimen, Sediment, Freeze.thaw_cycles, 
+                    Original_depth_bottom_point1, Original_depth_bottom_point2,
+                    Original_depth_top_point1, Original_depth_top_point2,
+                    Final_depth_top_point1, Final_depth_top_point2,
+                    Movement_point1:Total_abs_movement,
+                    Lithic_rotation, Lithic_tilting)
+comment(mov_final) <- "cm"
+```
+
+Type `comment(mov_final)` to check the unit of the values.
+
+
+## Check the result
+```{r}
+str(mov_final)
+head(mov_final)
+```
+
+
+---
+
+
+# Save data
+## As XLSX
+```{r}
+write_xlsx(list("data" = mov_final, "unit" = data.frame(Unit = paste("All values are in", comment(mov_final)))), 
+           path = paste0(dir_out, "/FT_movement_formatted-data.xlsx"))
+```
+
+
+## As Rbin
+```{r}
+saveObject(mov_final, file = paste0(dir_out, "/FT_movement_formatted-data.Rbin"))
+```
+
+Rbin files (e.g. `FT_movement_formatted-data.Rbin`) can be easily read into an R object (e.g. `rbin_data`) using the following code:
+```{r, eval = FALSE}
+library(R.utils)
+rbin_data <- loadObject("FT_movement_formatted-data")
+```
+
+
+---
+
+
+# sessionInfo()
+
+```{r}
+sessionInfo()
+```
+
+
+---
+
+
+# Cite R packages used
+
+```{r, echo = FALSE}
+pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "FT_1_Movement-import")
+knitr::kable(pkgs_cite)
+```
+
+
+## References
+
