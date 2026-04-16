@@ -6,6 +6,6 @@ NO_tube,Sample,Freeze-thaw_cycles,Specimen,Tube_height,Original_depth_bottom_poi
 16.1,Fine sand 1.1T ,330,Scra17_fs_330,12,5,5,6,5.6,no,partial
 25.1,Fine sand 2.1T ,600,Scra16_fs_600,13,5,5,9.3,11.5,no,partial
 18.1,Coarse sand 1.1T ,330,Scra12_cs_330,13,5,5,7.8,9.8,partial,partial
-27.1,Coarse sand 2.1T ,600,Scra26_cs_600,13,5,5,6,8.5,partial ,partial
+27.1,Coarse sand 2.1T ,600,Scra26_cs_600,13,5,5,6,8.5,partial,partial
 14.1,Gravel 1.1T ,330,Scra8_gravel_330,13,5,5,3,4.3,no,partial
 23.1,Gravel 2.1T,600,Scra7_gravel_600,12.5,5,5,5,10,complete,partial
