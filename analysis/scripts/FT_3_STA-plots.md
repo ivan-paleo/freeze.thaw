@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2026-04-16 15:30:56 CEST
+2026-04-16 16:23:35 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -53,7 +53,8 @@ Ivan Calandra
   - [Calculate variability of PC scores per
     sediment](#calculate-variability-of-pc-scores-per-sediment)
   - [Combine data](#combine-data)
-  - [Combined plot](#combined-plot)
+  - [Combined plots](#combined-plots)
+    - [Save to PDF](#save-to-pdf)
 - [Line plots for STA with height maps with \<10%
   NMP](#line-plots-for-sta-with-height-maps-with-10-nmp)
 - [sessionInfo()](#sessioninfo)
@@ -942,9 +943,10 @@ head(mov)
 ## Calculate mean movements per sediment
 
 ``` r
-            # Mean of Average_movement_CONV per specimen and sediment
+            # Mean of Average_movement_CONV and Total_abs_movement per specimen and sediment
             # Lithic_rotation and Lithic_tilting are listed only to stay in the output
-mov_mean <- summaryBy(Average_movement_CONV ~ Specimen + Sediment + Lithic_rotation + Lithic_tilting, 
+mov_mean <- summaryBy(Average_movement_CONV + Total_abs_movement ~ 
+                        Specimen + Sediment + Lithic_rotation + Lithic_tilting, 
                       data = mov, FUN = mean)
 
 # Display output
@@ -962,17 +964,17 @@ mov_mean
     8    Scra26 Coarse sand         partial        partial
     9     Scra7      Gravel        complete        partial
     10    Scra8      Gravel              no        partial
-       Average_movement_CONV.mean
-    1                        1.00
-    2                       -0.80
-    3                       -2.00
-    4                       -2.40
-    5                        1.20
-    6                       -0.55
-    7                        3.75
-    8                        0.75
-    9                        0.00
-    10                       4.35
+       Average_movement_CONV.mean Total_abs_movement.mean
+    1                        1.00                     2.0
+    2                       -0.80                     2.0
+    3                       -2.00                     4.0
+    4                       -2.40                     4.8
+    5                        1.20                     2.4
+    6                       -0.55                     4.7
+    7                        3.75                     7.5
+    8                        0.75                     2.5
+    9                        0.00                     5.0
+    10                       4.35                     8.7
 
 ## Extract PC scores on PC1 and PC2
 
@@ -1019,79 +1021,97 @@ pca_FT_NMP17_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17
 ## Combine data
 
 ``` r
-pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov_mean, by = c("Specimen", "Sediment"))
+                # Merge together
+pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov_mean, by = c("Specimen", "Sediment")) %>% 
+  
+                # Pivot to longer format for facetting
+                pivot_longer(c(Average_movement_CONV.mean, Total_abs_movement.mean), 
+                             names_to = "Parameter", values_to = "Value")
 
-# Display output
-pca_mov_data
+# Convert to factor for facet labels
+pca_mov_data$Parameter <- factor(pca_mov_data$Parameter, 
+                                 levels = c("Average_movement_CONV.mean", "Total_abs_movement.mean"), 
+                                 labels = c("Average movement [cm]", "Total absolute movement [cm]"))
+
+# Check output
+str(pca_mov_data)
 ```
 
-       Specimen    Sediment    PC1.sd    PC2.sd   mean_sd Lithic_rotation
-    1    Scra11     Quincay 3.6894455 3.9602097 3.8248276              no
-    2    Scra12 Coarse sand 1.3978630 1.2983408 1.3481019         partial
-    3    Scra14        Clay 3.0525292 0.6462072 1.8493682        complete
-    4    Scra16   Fine sand 1.3293407 0.3653167 0.8473287              no
-    5    Scra17   Fine sand 1.1426252 2.5150039 1.8288145              no
-    6    Scra21        Clay 4.8568992 1.5948649 3.2258820         partial
-    7    Scra25     Quincay 1.1948118 0.5085983 0.8517051         partial
-    8    Scra26 Coarse sand 0.8188502 0.9461931 0.8825217         partial
-    9     Scra7      Gravel 0.9579158 0.1977655 0.5778406        complete
-    10    Scra8      Gravel 1.1789209 0.3094250 0.7441730              no
-       Lithic_tilting Average_movement_CONV.mean
-    1         partial                       1.00
-    2         partial                      -0.80
-    3         partial                      -2.00
-    4         partial                      -2.40
-    5         partial                       1.20
-    6        vertical                      -0.55
-    7        vertical                       3.75
-    8         partial                       0.75
-    9         partial                       0.00
-    10        partial                       4.35
+    tibble [20 × 9] (S3: tbl_df/tbl/data.frame)
+     $ Specimen       : chr [1:20] "Scra11" "Scra11" "Scra12" "Scra12" ...
+     $ Sediment       : chr [1:20] "Quincay" "Quincay" "Coarse sand" "Coarse sand" ...
+     $ PC1.sd         : num [1:20] 3.69 3.69 1.4 1.4 3.05 ...
+     $ PC2.sd         : num [1:20] 3.96 3.96 1.298 1.298 0.646 ...
+     $ mean_sd        : Named num [1:20] 3.82 3.82 1.35 1.35 1.85 ...
+      ..- attr(*, "names")= chr [1:20] "1" "1" "2" "2" ...
+     $ Lithic_rotation: chr [1:20] "no" "no" "partial" "partial" ...
+     $ Lithic_tilting : chr [1:20] "partial" "partial" "partial" "partial" ...
+     $ Parameter      : Factor w/ 2 levels "Average movement [cm]",..: 1 2 1 2 1 2 1 2 1 2 ...
+     $ Value          : num [1:20] 1 2 -0.8 2 -2 4 -2.4 4.8 1.2 2.4 ...
 
-## Combined plot
+``` r
+head(pca_mov_data)
+```
+
+    # A tibble: 6 × 9
+      Specimen Sediment    PC1.sd PC2.sd mean_sd Lithic_rotation Lithic_tilting
+      <chr>    <chr>        <dbl>  <dbl>   <dbl> <chr>           <chr>         
+    1 Scra11   Quincay       3.69  3.96     3.82 no              partial       
+    2 Scra11   Quincay       3.69  3.96     3.82 no              partial       
+    3 Scra12   Coarse sand   1.40  1.30     1.35 partial         partial       
+    4 Scra12   Coarse sand   1.40  1.30     1.35 partial         partial       
+    5 Scra14   Clay          3.05  0.646    1.85 complete        partial       
+    6 Scra14   Clay          3.05  0.646    1.85 complete        partial       
+    # ℹ 2 more variables: Parameter <fct>, Value <dbl>
+
+## Combined plots
 
 ``` r
            # Define data and aes for points
-pca_mov <- ggplot(data = pca_mov_data, aes(x = Average_movement_CONV.mean, y = mean_sd, color = Sediment)) +
+pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+  
+           # Facetting
+           facet_wrap(~ Parameter, scales = "free_x") +
   
            # Add points
-           geom_point(size = 3) +
+           geom_point(size = 2) +
   
            # Add 360° curved arrows for complete rotation
                             # Subset dataset
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_rotation == "complete", ],
                             
                             # New aes for beginning and end of arrows
-                            aes(x = Average_movement_CONV.mean + 0.4, xend = Average_movement_CONV.mean + 0.2, 
+                            aes(x = Value + 0.4, xend = Value + 0.2, 
                                 y = mean_sd - 0.1, yend = mean_sd - 0.1), 
                             
                             # Other settings
-                            curvature = 3, length_head = 3, show.legend = FALSE) +
+                            curvature = 4, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Add 180° curved arrows for partial rotation
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_rotation == "partial", ],
-                            aes(x = Average_movement_CONV.mean + 0.05, xend = Average_movement_CONV.mean + 0.05, 
+                            aes(x = Value + 0.05, xend = Value + 0.05, 
                                 y = mean_sd - 0.1, yend = mean_sd + 0.1), 
-                            curvature = 1, length_head = 3, show.legend = FALSE) +
+                            curvature = 1, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Add vertical straight arrows for vertical tilting
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_tilting == "vertical", ],
-                            aes(x = Average_movement_CONV.mean - 0.15, xend = Average_movement_CONV.mean - 0.15, 
+                            aes(x = Value - 0.15, xend = Value - 0.15, 
                                 y = mean_sd - 0.1, yend = mean_sd + 0.1), 
-                            curvature = 0, length_head = 3, show.legend = FALSE) +
+                            curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Add oblique straight arrows for partial tilting
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_tilting == "partial", ],
-                            aes(x = Average_movement_CONV.mean - 0.05, xend = Average_movement_CONV.mean - 0.25, 
+                            aes(x = Value - 0.05, xend = Value - 0.25, 
                                 y = mean_sd - 0.1, yend = mean_sd + 0.1), 
-                            curvature = 0, length_head = 3, show.legend = FALSE) +
+                            curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Other settings (see above)
-           theme_classic() +
+           theme_bw() +
+           theme(legend.position = "bottom", legend.box = "vertical") +
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
-           labs(x = "Average movement [cm]", y = "Mean(sd(PC1), sd(PC2))", 
+           labs(x = NULL, y = "Mean(sd(PC1), sd(PC2))", 
                 caption = "Curved arrows = rotation, straight arrows = tilting")
 
 # Print plot
@@ -1100,10 +1120,11 @@ print(pca_mov)
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
+### Save to PDF
+
 ``` r
-# Save to PDF
 ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov, 
-       width = 190, height = 150, units = "mm")
+       width = 190, units = "mm")
 ```
 
 ------------------------------------------------------------------------
@@ -1143,172 +1164,172 @@ print(p_line_NMP10)
 
     $`Sq [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 
     $`Ssk [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-2.png)<!-- -->
 
 
     $`Sku [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-3.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-3.png)<!-- -->
 
 
     $`Sp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-4.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-4.png)<!-- -->
 
 
     $`Sv [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-5.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-5.png)<!-- -->
 
 
     $`Sz [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-6.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-6.png)<!-- -->
 
 
     $`Sa [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-7.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-7.png)<!-- -->
 
 
     $`Smr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-8.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-8.png)<!-- -->
 
 
     $`Smc [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-9.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-9.png)<!-- -->
 
 
     $`Sxp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-10.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-10.png)<!-- -->
 
 
     $`Sal [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-11.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-11.png)<!-- -->
 
 
     $`Str [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-12.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-12.png)<!-- -->
 
 
     $`Std [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-13.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-13.png)<!-- -->
 
 
     $`Ssw [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-14.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-14.png)<!-- -->
 
 
     $`Sdq [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-15.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-15.png)<!-- -->
 
 
     $`Sdr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-16.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-16.png)<!-- -->
 
 
     $`Vm [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-17.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-17.png)<!-- -->
 
 
     $`Vv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-18.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-18.png)<!-- -->
 
 
     $`Vmp [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-19.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-19.png)<!-- -->
 
 
     $`Vmc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-20.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-20.png)<!-- -->
 
 
     $`Vvc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-21.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-21.png)<!-- -->
 
 
     $`Vvv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-22.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-22.png)<!-- -->
 
 
     $`First.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-23.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-23.png)<!-- -->
 
 
     $`Second.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-24.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-24.png)<!-- -->
 
 
     $`Third.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-25.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-25.png)<!-- -->
 
 
     $`Texture.isotropy [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-26.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-26.png)<!-- -->
 
 
     $`Maximum.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-27.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-27.png)<!-- -->
 
 
     $`Mean.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-28.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-28.png)<!-- -->
 
 
     $`Mean.density.of.furrows [cm/cm2]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-29.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-29.png)<!-- -->
 
 
     $`epLsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-30.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-30.png)<!-- -->
 
 
     $`NewEplsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-31.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-31.png)<!-- -->
 
 
     $`Asfc [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-32.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-32.png)<!-- -->
 
 
     $`Smfc [µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-33.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-33.png)<!-- -->
 
 
     $`HAsfc9 [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-34.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-34.png)<!-- -->
 
 ``` r
 ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP10, 
@@ -1356,25 +1377,26 @@ sessionInfo()
      [4] S7_0.2.1             fastmap_1.2.0        digest_0.6.39       
      [7] timechange_0.4.0     lifecycle_1.0.5      Deriv_4.2.0         
     [10] magrittr_2.0.5       compiler_4.5.3       rlang_1.2.0         
-    [13] sass_0.4.10          tools_4.5.3          yaml_2.3.12         
-    [16] ggsignif_0.6.4       labeling_0.4.3       abind_1.4-8         
-    [19] withr_3.0.2          grid_4.5.3           polyclip_1.10-7     
-    [22] ggpubr_0.6.3         colorspace_2.1-2     scales_1.4.0        
-    [25] MASS_7.3-65          cli_3.6.6            ragg_1.5.2          
-    [28] generics_0.1.4       otel_0.2.0           rstudioapi_0.18.0   
-    [31] modelr_0.1.11        tzdb_0.5.0           cachem_1.1.0        
-    [34] forecast_9.0.2       parallel_4.5.3       urca_1.3-4          
-    [37] vctrs_0.7.3          boot_1.3-32          Matrix_1.7-4        
-    [40] jsonlite_2.0.0       carData_3.0-6        car_3.1-5           
-    [43] hms_1.1.4            ggrepel_0.9.8        rstatix_0.7.3       
-    [46] Formula_1.2-5        systemfonts_1.3.2    jquerylib_0.1.4     
-    [49] glue_1.8.0           cowplot_1.2.0        stringi_1.8.7       
-    [52] gtable_0.3.6         pillar_1.11.1        htmltools_0.5.9     
-    [55] R6_2.6.1             microbenchmark_1.5.0 textshaping_1.0.5   
-    [58] rprojroot_2.1.1      evaluate_1.0.5       lattice_0.22-9      
-    [61] backports_1.5.1      broom_1.0.12         fracdiff_1.5-3      
-    [64] bslib_0.10.0         Rcpp_1.1.1           nlme_3.1-168        
-    [67] xfun_0.57            zoo_1.8-15           pkgconfig_2.0.3     
+    [13] sass_0.4.10          tools_4.5.3          utf8_1.2.6          
+    [16] yaml_2.3.12          ggsignif_0.6.4       labeling_0.4.3      
+    [19] abind_1.4-8          withr_3.0.2          polyclip_1.10-7     
+    [22] grid_4.5.3           ggpubr_0.6.3         colorspace_2.1-2    
+    [25] scales_1.4.0         MASS_7.3-65          cli_3.6.6           
+    [28] ragg_1.5.2           generics_0.1.4       otel_0.2.0          
+    [31] rstudioapi_0.18.0    modelr_0.1.11        tzdb_0.5.0          
+    [34] cachem_1.1.0         forecast_9.0.2       parallel_4.5.3      
+    [37] urca_1.3-4           vctrs_0.7.3          boot_1.3-32         
+    [40] Matrix_1.7-4         jsonlite_2.0.0       carData_3.0-6       
+    [43] car_3.1-5            hms_1.1.4            ggrepel_0.9.8       
+    [46] rstatix_0.7.3        Formula_1.2-5        systemfonts_1.3.2   
+    [49] jquerylib_0.1.4      glue_1.8.0           cowplot_1.2.0       
+    [52] stringi_1.8.7        gtable_0.3.6         pillar_1.11.1       
+    [55] htmltools_0.5.9      R6_2.6.1             microbenchmark_1.5.0
+    [58] textshaping_1.0.5    rprojroot_2.1.1      evaluate_1.0.5      
+    [61] lattice_0.22-9       backports_1.5.1      broom_1.0.12        
+    [64] fracdiff_1.5-3       bslib_0.10.0         Rcpp_1.1.1          
+    [67] nlme_3.1-168         xfun_0.57            zoo_1.8-15          
+    [70] pkgconfig_2.0.3     
 
 ------------------------------------------------------------------------
 

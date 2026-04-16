@@ -456,9 +456,10 @@ head(mov)
 
 ## Calculate mean movements per sediment
 ```{r}
-            # Mean of Average_movement_CONV per specimen and sediment
+            # Mean of Average_movement_CONV and Total_abs_movement per specimen and sediment
             # Lithic_rotation and Lithic_tilting are listed only to stay in the output
-mov_mean <- summaryBy(Average_movement_CONV ~ Specimen + Sediment + Lithic_rotation + Lithic_tilting, 
+mov_mean <- summaryBy(Average_movement_CONV + Total_abs_movement ~ 
+                        Specimen + Sediment + Lithic_rotation + Lithic_tilting, 
                       data = mov, FUN = mean)
 
 # Display output
@@ -490,64 +491,81 @@ pca_FT_NMP17_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17
 
 ## Combine data
 ```{r}
-pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov_mean, by = c("Specimen", "Sediment"))
+                # Merge together
+pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov_mean, by = c("Specimen", "Sediment")) %>% 
+  
+                # Pivot to longer format for facetting
+                pivot_longer(c(Average_movement_CONV.mean, Total_abs_movement.mean), 
+                             names_to = "Parameter", values_to = "Value")
 
-# Display output
-pca_mov_data
+# Convert to factor for facet labels
+pca_mov_data$Parameter <- factor(pca_mov_data$Parameter, 
+                                 levels = c("Average_movement_CONV.mean", "Total_abs_movement.mean"), 
+                                 labels = c("Average movement [cm]", "Total absolute movement [cm]"))
+
+# Check output
+str(pca_mov_data)
+head(pca_mov_data)
 ```
 
 
-## Combined plot
+## Combined plots
 ```{r}
            # Define data and aes for points
-pca_mov <- ggplot(data = pca_mov_data, aes(x = Average_movement_CONV.mean, y = mean_sd, color = Sediment)) +
+pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+  
+           # Facetting
+           facet_wrap(~ Parameter, scales = "free_x") +
   
            # Add points
-           geom_point(size = 3) +
+           geom_point(size = 2) +
   
            # Add 360° curved arrows for complete rotation
                             # Subset dataset
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_rotation == "complete", ],
                             
                             # New aes for beginning and end of arrows
-                            aes(x = Average_movement_CONV.mean + 0.4, xend = Average_movement_CONV.mean + 0.2, 
+                            aes(x = Value + 0.4, xend = Value + 0.2, 
                                 y = mean_sd - 0.1, yend = mean_sd - 0.1), 
                             
                             # Other settings
-                            curvature = 3, length_head = 3, show.legend = FALSE) +
+                            curvature = 4, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Add 180° curved arrows for partial rotation
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_rotation == "partial", ],
-                            aes(x = Average_movement_CONV.mean + 0.05, xend = Average_movement_CONV.mean + 0.05, 
+                            aes(x = Value + 0.05, xend = Value + 0.05, 
                                 y = mean_sd - 0.1, yend = mean_sd + 0.1), 
-                            curvature = 1, length_head = 3, show.legend = FALSE) +
+                            curvature = 1, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Add vertical straight arrows for vertical tilting
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_tilting == "vertical", ],
-                            aes(x = Average_movement_CONV.mean - 0.15, xend = Average_movement_CONV.mean - 0.15, 
+                            aes(x = Value - 0.15, xend = Value - 0.15, 
                                 y = mean_sd - 0.1, yend = mean_sd + 0.1), 
-                            curvature = 0, length_head = 3, show.legend = FALSE) +
+                            curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Add oblique straight arrows for partial tilting
            geom_arrow_curve(data = pca_mov_data[pca_mov_data$Lithic_tilting == "partial", ],
-                            aes(x = Average_movement_CONV.mean - 0.05, xend = Average_movement_CONV.mean - 0.25, 
+                            aes(x = Value - 0.05, xend = Value - 0.25, 
                                 y = mean_sd - 0.1, yend = mean_sd + 0.1), 
-                            curvature = 0, length_head = 3, show.legend = FALSE) +
+                            curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Other settings (see above)
-           theme_classic() +
+           theme_bw() +
+           theme(legend.position = "bottom", legend.box = "vertical") +
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
-           labs(x = "Average movement [cm]", y = "Mean(sd(PC1), sd(PC2))", 
+           labs(x = NULL, y = "Mean(sd(PC1), sd(PC2))", 
                 caption = "Curved arrows = rotation, straight arrows = tilting")
 
 # Print plot
 print(pca_mov)
+```
 
-# Save to PDF
+### Save to PDF
+```{r}
 ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov, 
-       width = 190, height = 150, units = "mm")
+       width = 190, units = "mm")
 ```
 
 
