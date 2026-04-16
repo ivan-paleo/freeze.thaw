@@ -2,7 +2,7 @@ Summary statistics on the surface texture parameters for the Freeze-thaw
 project
 ================
 Ivan Calandra
-2026-01-29 10:03:16 CET
+2026-04-16 13:13:58 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -20,32 +20,32 @@ Ivan Calandra
 
 # Goal of the script
 
-This script computes standard descriptive statistics for each group.  
+This script computes standard descriptive statistics for each group.\
 The groups are based on:
 
-- Sediment type  
-- Freeze-thaw cycles  
-- Use  
+- Sediment type\
+- Freeze-thaw cycles\
+- Use\
 - NMP_cat
 
 It computes the following statistics:
 
-- sample size (n = `length`)  
-- smallest value (`min`)  
+- sample size (n = `length`)\
+- smallest value (`min`)\
 - largest value (`max`)
-- mean  
-- median  
+- mean\
+- median\
 - standard deviation (`sd`)
 
 ``` r
 dir_in <- dir_stats <- "analysis/derived_data"
 ```
 
-Raw data must be located in “./analysis/derived_data”.  
+Raw data must be located in “./analysis/derived_data”.\
 Summary statistics will be saved in “./analysis/derived_data”.
 
 The knit directory for this script is the project directory. This is
-important to specify the path for input and output.  
+important to specify the path for input and output.\
 However, the HTML, MD and BIB files resulting from the rendering of this
 Rmd file will be located in the same folder as the Rmd file
 (i.e. “`./analysis/scripts`”).
@@ -410,19 +410,19 @@ write_xlsx(list("Sediment" = stats_sed,
 sessionInfo()
 ```
 
-    R version 4.5.2 (2025-10-31 ucrt)
+    R version 4.5.3 (2026-03-11 ucrt)
     Platform: x86_64-w64-mingw32/x64
-    Running under: Windows 10 x64 (build 19045)
+    Running under: Windows 11 x64 (build 26200)
 
     Matrix products: default
       LAPACK version 3.12.1
 
     locale:
-    [1] LC_COLLATE=English_United Kingdom.utf8 
-    [2] LC_CTYPE=English_United Kingdom.utf8   
-    [3] LC_MONETARY=English_United Kingdom.utf8
-    [4] LC_NUMERIC=C                           
-    [5] LC_TIME=English_United Kingdom.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -431,35 +431,32 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base     
 
     other attached packages:
-     [1] writexl_1.5.4     lubridate_1.9.4   forcats_1.0.1     stringr_1.6.0    
-     [5] dplyr_1.1.4       purrr_1.2.1       readr_2.1.6       tidyr_1.3.2      
-     [9] tibble_3.3.1      ggplot2_4.0.1     tidyverse_2.0.0   rmarkdown_2.30   
+     [1] writexl_1.5.4     lubridate_1.9.5   forcats_1.0.1     stringr_1.6.0    
+     [5] dplyr_1.2.1       purrr_1.2.2       readr_2.2.0       tidyr_1.3.2      
+     [9] tibble_3.3.1      ggplot2_4.0.2     tidyverse_2.0.0   rmarkdown_2.31   
     [13] R.utils_2.13.0    R.oo_1.27.1       R.methodsS3_1.8.2 knitr_1.51       
     [17] grateful_0.3.0    doBy_4.7.1       
 
     loaded via a namespace (and not attached):
-     [1] gtable_0.3.6         xfun_0.56            bslib_0.10.0        
-     [4] lattice_0.22-7       tzdb_0.5.0           quadprog_1.5-8      
-     [7] vctrs_0.7.1          tools_4.5.2          generics_0.1.4      
-    [10] curl_7.0.0           parallel_4.5.2       xts_0.14.1          
-    [13] pkgconfig_2.0.3      Matrix_1.7-4         RColorBrewer_1.1-3  
-    [16] S7_0.2.1             lifecycle_1.0.5      compiler_4.5.2      
-    [19] farver_2.1.2         microbenchmark_1.5.0 htmltools_0.5.9     
-    [22] sass_0.4.10          yaml_2.3.12          pillar_1.11.1       
-    [25] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
-    [28] boot_1.3-32          nlme_3.1-168         fracdiff_1.5-3      
-    [31] Deriv_4.2.0          tidyselect_1.2.1     digest_0.6.39       
-    [34] stringi_1.8.7        tseries_0.10-59      cowplot_1.2.0       
-    [37] rprojroot_2.1.1      fastmap_1.2.0        grid_4.5.2          
-    [40] colorspace_2.1-2     cli_3.6.5            magrittr_2.0.4      
-    [43] broom_1.0.12         withr_3.0.2          scales_1.4.0        
-    [46] backports_1.5.0      forecast_9.0.0       timechange_0.3.0    
-    [49] TTR_0.24.4           modelr_0.1.11        quantmod_0.4.28     
-    [52] otel_0.2.0           nnet_7.3-20          timeDate_4052.112   
-    [55] hms_1.1.4            zoo_1.8-15           urca_1.3-4          
-    [58] evaluate_1.0.5       lmtest_0.9-40        rlang_1.1.7         
-    [61] Rcpp_1.1.1           glue_1.8.0           rstudioapi_0.18.0   
-    [64] jsonlite_2.0.0       R6_2.6.1            
+     [1] gtable_0.3.6         xfun_0.57            bslib_0.10.0        
+     [4] lattice_0.22-9       tzdb_0.5.0           vctrs_0.7.3         
+     [7] tools_4.5.3          generics_0.1.4       parallel_4.5.3      
+    [10] pkgconfig_2.0.3      Matrix_1.7-4         RColorBrewer_1.1-3  
+    [13] S7_0.2.1             lifecycle_1.0.5      compiler_4.5.3      
+    [16] farver_2.1.2         microbenchmark_1.5.0 htmltools_0.5.9     
+    [19] sass_0.4.10          yaml_2.3.12          pillar_1.11.1       
+    [22] jquerylib_0.1.4      MASS_7.3-65          cachem_1.1.0        
+    [25] boot_1.3-32          nlme_3.1-168         fracdiff_1.5-3      
+    [28] Deriv_4.2.0          tidyselect_1.2.1     digest_0.6.39       
+    [31] stringi_1.8.7        cowplot_1.2.0        rprojroot_2.1.1     
+    [34] fastmap_1.2.0        grid_4.5.3           colorspace_2.1-2    
+    [37] cli_3.6.6            magrittr_2.0.5       broom_1.0.12        
+    [40] withr_3.0.2          scales_1.4.0         backports_1.5.1     
+    [43] forecast_9.0.2       timechange_0.4.0     modelr_0.1.11       
+    [46] otel_0.2.0           timeDate_4052.112    zoo_1.8-15          
+    [49] hms_1.1.4            urca_1.3-4           evaluate_1.0.5      
+    [52] rlang_1.2.0          Rcpp_1.1.1           glue_1.8.0          
+    [55] rstudioapi_0.18.0    jsonlite_2.0.0       R6_2.6.1            
 
 ------------------------------------------------------------------------
 
@@ -467,27 +464,25 @@ sessionInfo()
 
 | Package | Version | Citation |
 |:---|:---|:---|
-| base | 4.5.2 | R Core Team (2025) |
+| base | 4.5.3 | R Core Team (2026) |
 | doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
 | knitr | 1.51 | Xie (2014); Xie (2015); Xie (2025) |
 | R.methodsS3 | 1.8.2 | Bengtsson (2003a) |
 | R.oo | 1.27.1 | Bengtsson (2003b) |
 | R.utils | 2.13.0 | Bengtsson (2025) |
-| rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
+| rmarkdown | 2.31 | Xie et al. (2018); Xie et al. (2020); Allaire et al. (2026) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
 | writexl | 1.5.4 | Ooms (2025) |
-| RStudio | 2026.1.0.392 | Posit team (2026) |
+| RStudio | 2026.1.2.418 | Posit team (2026) |
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-rmarkdown2025" class="csl-entry">
+<div id="ref-rmarkdown2026" class="csl-entry">
 
-Allaire, JJ, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
-Luraschi, Kevin Ushey, Aron Atkins, et al. 2025.
+Allaire, JJ, Yihui Xie, Christophe Dervieux, et al. 2026.
 *<span class="nocase">rmarkdown</span>: Dynamic Documents for r*.
 <https://github.com/rstudio/rmarkdown>.
 
@@ -499,28 +494,28 @@ Bengtsson, Henrik. 2003a. “The <span class="nocase">R.oo</span>
 Package - Object-Oriented Programming with References Using Standard R
 Code.” In *Proceedings of the 3rd International Workshop on Distributed
 Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
-Leisch, and Achim Zeileis. Vienna, Austria:
-https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+Leisch, and Achim Zeileis.
+Https://www.r-project.org/conferences/DSC-2003/Proceedings/.
 <https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
 
 </div>
 
 <div id="ref-Roo" class="csl-entry">
 
-———. 2003b. “The <span class="nocase">R.oo</span> Package -
-Object-Oriented Programming with References Using Standard R Code.” In
-*Proceedings of the 3rd International Workshop on Distributed
+Bengtsson, Henrik. 2003b. “The <span class="nocase">R.oo</span>
+Package - Object-Oriented Programming with References Using Standard R
+Code.” In *Proceedings of the 3rd International Workshop on Distributed
 Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
-Leisch, and Achim Zeileis. Vienna, Austria:
-https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+Leisch, and Achim Zeileis.
+Https://www.r-project.org/conferences/DSC-2003/Proceedings/.
 <https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
 
 </div>
 
 <div id="ref-Rutils" class="csl-entry">
 
-———. 2025. *<span class="nocase">R.utils</span>: Various Programming
-Utilities*. <https://doi.org/10.32614/CRAN.package.R.utils>.
+Bengtsson, Henrik. 2025. *<span class="nocase">R.utils</span>: Various
+Programming Utilities*. <https://doi.org/10.32614/CRAN.package.R.utils>.
 
 </div>
 
@@ -543,14 +538,14 @@ Frames to Excel “<span class="nocase">xlsx</span>” Format*.
 <div id="ref-rstudio" class="csl-entry">
 
 Posit team. 2026. *RStudio: Integrated Development Environment for r*.
-Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
+Posit Software, PBC. <http://www.posit.co/>.
 
 </div>
 
 <div id="ref-base" class="csl-entry">
 
-R Core Team. 2025. *R: A Language and Environment for Statistical
-Computing*. Vienna, Austria: R Foundation for Statistical Computing.
+R Core Team. 2026. *R: A Language and Environment for Statistical
+Computing*. R Foundation for Statistical Computing.
 <https://www.R-project.org/>.
 
 </div>
@@ -565,10 +560,9 @@ Packages*. <https://pakillo.github.io/grateful/>.
 
 <div id="ref-tidyverse" class="csl-entry">
 
-Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
-D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
-“Welcome to the <span class="nocase">tidyverse</span>.” *Journal of Open
-Source Software* 4 (43): 1686. <https://doi.org/10.21105/joss.01686>.
+Wickham, Hadley, Mara Averick, Jennifer Bryan, et al. 2019. “Welcome to
+the <span class="nocase">tidyverse</span>.” *Journal of Open Source
+Software* 4 (43): 1686. <https://doi.org/10.21105/joss.01686>.
 
 </div>
 
@@ -583,31 +577,29 @@ and Roger D. Peng. Chapman; Hall/CRC.
 
 <div id="ref-knitr2015" class="csl-entry">
 
-———. 2015. *Dynamic Documents with R and Knitr*. 2nd ed. Boca Raton,
-Florida: Chapman; Hall/CRC. <https://yihui.org/knitr/>.
+Xie, Yihui. 2015. *Dynamic Documents with R and Knitr*. 2nd ed. Chapman;
+Hall/CRC. <https://yihui.org/knitr/>.
 
 </div>
 
 <div id="ref-knitr2025" class="csl-entry">
 
-———. 2025. *<span class="nocase">knitr</span>: A General-Purpose Package
-for Dynamic Report Generation in R*. <https://yihui.org/knitr/>.
+Xie, Yihui. 2025. *<span class="nocase">knitr</span>: A General-Purpose
+Package for Dynamic Report Generation in R*. <https://yihui.org/knitr/>.
 
 </div>
 
 <div id="ref-rmarkdown2018" class="csl-entry">
 
 Xie, Yihui, J. J. Allaire, and Garrett Grolemund. 2018. *R Markdown: The
-Definitive Guide*. Boca Raton, Florida: Chapman; Hall/CRC.
-<https://bookdown.org/yihui/rmarkdown>.
+Definitive Guide*. Chapman; Hall/CRC. <https://yihui.org/rmarkdown/>.
 
 </div>
 
 <div id="ref-rmarkdown2020" class="csl-entry">
 
 Xie, Yihui, Christophe Dervieux, and Emily Riederer. 2020. *R Markdown
-Cookbook*. Boca Raton, Florida: Chapman; Hall/CRC.
-<https://bookdown.org/yihui/rmarkdown-cookbook>.
+Cookbook*. Chapman; Hall/CRC. <https://yihui.org/rmarkdown-cookbook>.
 
 </div>
 
