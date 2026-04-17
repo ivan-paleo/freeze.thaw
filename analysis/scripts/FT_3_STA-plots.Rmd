@@ -454,22 +454,10 @@ head(mov)
 ```
 
 
-## Calculate mean movements per sediment
+
+## Extract PC scores on PC1 to PC4
 ```{r}
-            # Mean of Average_movement_CONV and Total_abs_movement per specimen and sediment
-            # Lithic_rotation and Lithic_tilting are listed only to stay in the output
-mov_mean <- summaryBy(Average_movement_CONV + Total_abs_movement ~ 
-                        Specimen + Sediment + Lithic_rotation + Lithic_tilting, 
-                      data = mov, FUN = mean)
-
-# Display output
-mov_mean
-```
-
-
-## Extract PC scores on PC1 and PC2
-```{r}
-pca_FT_NMP17_scores <- data.frame(FT_NMP17_pca_data[1:4], pca_FT_NMP17$x[, c("PC1", "PC2")])
+pca_FT_NMP17_scores <- data.frame(FT_NMP17_pca_data[1:4], pca_FT_NMP17$x[, c("PC1", "PC2", "PC3", "PC4")])
 ```
 
 Below are the structure and first lines of the PC scores:
@@ -479,28 +467,36 @@ head(pca_FT_NMP17_scores)
 ```
 
 
-## Calculate variability of PC scores per sediment
+## Calculate variability of PC scores per specimen and sediment, using only used surfaces
 ```{r}
+# keep only used surfaces
+pca_FT_NMP17_scores_used <- filter(pca_FT_NMP17_scores, Use == "used")
+                          
                           # SD for each PC per specimen and sediment
-pca_FT_NMP17_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17_scores, FUN = sd) %>% 
+pca_FT_NMP17_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17_scores_used, 
+                                    FUN = sd) %>% 
   
                           # mean of both SDs per specimen and sediment
-                          mutate(mean_sd = rowMeans(.[c("PC1.sd", "PC2.sd")]))
+                          mutate(mean_sd = rowMeans(.[c("PC1.sd", "PC2.sd", "PC3.sd", "PC4.sd")]))
+
+# Check output
+str(pca_FT_NMP17_scores_sd)
+head(pca_FT_NMP17_scores_sd)
 ```
 
 
 ## Combine data
 ```{r}
                 # Merge together
-pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov_mean, by = c("Specimen", "Sediment")) %>% 
+pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov, by = c("Specimen", "Sediment")) %>% 
   
                 # Pivot to longer format for facetting
-                pivot_longer(c(Average_movement_CONV.mean, Total_abs_movement.mean), 
+                pivot_longer(c(Average_movement_CONV, Total_abs_movement), 
                              names_to = "Parameter", values_to = "Value")
 
 # Convert to factor for facet labels
 pca_mov_data$Parameter <- factor(pca_mov_data$Parameter, 
-                                 levels = c("Average_movement_CONV.mean", "Total_abs_movement.mean"), 
+                                 levels = c("Average_movement_CONV", "Total_abs_movement"), 
                                  labels = c("Average movement [cm]", "Total absolute movement [cm]"))
 
 # Check output
@@ -555,8 +551,8 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
-           labs(x = NULL, y = "Mean(sd(PC1), sd(PC2))", 
-                caption = "Curved arrows = rotation, straight arrows = tilting")
+           labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
 
 # Print plot
 print(pca_mov)

@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2026-04-16 16:23:35 CEST
+2026-04-17 10:52:40 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -46,12 +46,10 @@ Ivan Calandra
 - [Combined plots with STA-PCA data and movement
   data](#combined-plots-with-sta-pca-data-and-movement-data)
   - [Read in movement data](#read-in-movement-data)
-  - [Calculate mean movements per
-    sediment](#calculate-mean-movements-per-sediment)
-  - [Extract PC scores on PC1 and
-    PC2](#extract-pc-scores-on-pc1-and-pc2)
-  - [Calculate variability of PC scores per
-    sediment](#calculate-variability-of-pc-scores-per-sediment)
+  - [Extract PC scores on PC1 to PC4](#extract-pc-scores-on-pc1-to-pc4)
+  - [Calculate variability of PC scores per specimen and sediment, using
+    only used
+    surfaces](#calculate-variability-of-pc-scores-per-specimen-and-sediment-using-only-used-surfaces)
   - [Combine data](#combine-data)
   - [Combined plots](#combined-plots)
     - [Save to PDF](#save-to-pdf)
@@ -72,11 +70,11 @@ dir_in  <- "analysis/derived_data"
 dir_plots <- "analysis/plots"
 ```
 
-Input Rbin data file must be located in “./analysis/derived_data”.\
+Input Rbin data file must be located in “./analysis/derived_data”.  
 Plots will be saved in “./analysis/plots”.
 
 The knit directory for this script is the project directory. This is
-important to specify the path for input and output.\
+important to specify the path for input and output.  
 However, the HTML, MD and BIB files resulting from the rendering of this
 Rmd file will be located in the same folder as the Rmd file
 (i.e. “`./analysis/scripts`”).
@@ -247,7 +245,7 @@ FT_NMP17 <- filter(FT, NMP_cat %in% c("<10%", "10-17%"))
 ```
 
 When considering only height maps with 10% NMP or less, 45 height maps
-are excluded and 35 are kept for further analysis.\
+are excluded and 35 are kept for further analysis.  
 When considering only height maps with 17% NMP or less, 8 height maps
 are excluded and 72 are kept for further analysis.
 
@@ -267,7 +265,7 @@ FT_NMP17_mean <- summaryBy(.~ Specimen + Sediment + Cycles + Use + SpecUse,
 
 This cannot be done before on `FT` because it create problems during the
 calculations of the means due to the column names with spaces and
-special characters (for units).\
+special characters (for units).  
 Also, for `FT_NMP10` and `FT_NMP17`, a copy is created here because such
 column names are also problematic for the PCA (see below).
 
@@ -598,7 +596,7 @@ to be meaningful for a PCA, so the PCAs are done only with height maps
 ## Format data
 
 PCA will be applied to the differences between after and before the
-experiments, for all surface texture parameter.\
+experiments, for all surface texture parameter.  
 The method below works only with 2 values per group, which is the case
 here.
 
@@ -671,8 +669,8 @@ shape_PCA <- "Use"
 ## Run PCA with all parameters
 
 All STA parameters are used here, except Ssw (column 18), which is
-almost always 0.\
-This PCA is only meant to select the most informative parameters.\
+almost always 0.  
+This PCA is only meant to select the most informative parameters.  
 For comments on the code, see section [PCA on selected
 parameters](#pca-on-selected-parameters).
 
@@ -683,6 +681,9 @@ pca_FT_NMP17_all_scree <- fviz_screeplot(pca_FT_NMP17_all, addlabels = TRUE,
                                          ggtheme = theme_classic(), title = "Scree plot - all parameters")
 print(pca_FT_NMP17_all_scree)
 ```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
@@ -733,6 +734,9 @@ all_plots_17_all <- list(pca_FT_NMP17_all_scree,
 ggsave(filename = "FT_PCA-plots_NMP17_all-params.pdf", path = dir_plots, plot = all_plots_17_all, 
        width = 190, height = 190, units = "mm")
 ```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
 
 ## PCA on selected parameters
 
@@ -787,6 +791,9 @@ pca_FT_NMP17_scree <- fviz_screeplot(pca_FT_NMP17, addlabels = TRUE,
                                      ggtheme = theme_classic(), title = "Scree plot - selected parameters")
 print(pca_FT_NMP17_scree)
 ```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
@@ -848,6 +855,9 @@ all_plots_17 <- list(pca_FT_NMP17_scree,
 ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots_17, 
        width = 190, height = 190, units = "mm")
 ```
+
+    Warning in geom_bar(stat = "identity", fill = barfill, color = barcolor, :
+    Ignoring empty aesthetic: `width`.
 
 ------------------------------------------------------------------------
 
@@ -940,46 +950,10 @@ head(mov)
     5        partial
     6        partial
 
-## Calculate mean movements per sediment
+## Extract PC scores on PC1 to PC4
 
 ``` r
-            # Mean of Average_movement_CONV and Total_abs_movement per specimen and sediment
-            # Lithic_rotation and Lithic_tilting are listed only to stay in the output
-mov_mean <- summaryBy(Average_movement_CONV + Total_abs_movement ~ 
-                        Specimen + Sediment + Lithic_rotation + Lithic_tilting, 
-                      data = mov, FUN = mean)
-
-# Display output
-mov_mean
-```
-
-       Specimen    Sediment Lithic_rotation Lithic_tilting
-    1    Scra11     Quincay              no        partial
-    2    Scra12 Coarse sand         partial        partial
-    3    Scra14        Clay        complete        partial
-    4    Scra16   Fine sand              no        partial
-    5    Scra17   Fine sand              no        partial
-    6    Scra21        Clay         partial       vertical
-    7    Scra25     Quincay         partial       vertical
-    8    Scra26 Coarse sand         partial        partial
-    9     Scra7      Gravel        complete        partial
-    10    Scra8      Gravel              no        partial
-       Average_movement_CONV.mean Total_abs_movement.mean
-    1                        1.00                     2.0
-    2                       -0.80                     2.0
-    3                       -2.00                     4.0
-    4                       -2.40                     4.8
-    5                        1.20                     2.4
-    6                       -0.55                     4.7
-    7                        3.75                     7.5
-    8                        0.75                     2.5
-    9                        0.00                     5.0
-    10                       4.35                     8.7
-
-## Extract PC scores on PC1 and PC2
-
-``` r
-pca_FT_NMP17_scores <- data.frame(FT_NMP17_pca_data[1:4], pca_FT_NMP17$x[, c("PC1", "PC2")])
+pca_FT_NMP17_scores <- data.frame(FT_NMP17_pca_data[1:4], pca_FT_NMP17$x[, c("PC1", "PC2", "PC3", "PC4")])
 ```
 
 Below are the structure and first lines of the PC scores:
@@ -988,81 +962,114 @@ Below are the structure and first lines of the PC scores:
 str(pca_FT_NMP17_scores)
 ```
 
-    'data.frame':   34 obs. of  6 variables:
+    'data.frame':   34 obs. of  8 variables:
      $ Specimen: chr  "Scra11" "Scra11" "Scra11" "Scra11" ...
      $ Sediment: chr  "Quincay" "Quincay" "Quincay" "Quincay" ...
      $ Location: chr  "loc1" "loc2" "loc3" "loc4" ...
      $ Use     : chr  "used" "used" "used" "unused" ...
      $ PC1     : num  -3.7 -3.24 -4.09 3.67 -1.79 ...
      $ PC2     : num  -1.64 4.03 -5 1.81 -1.69 ...
+     $ PC3     : num  -1.308 -0.174 4.135 1.783 0.299 ...
+     $ PC4     : num  2.1702 -2.013 0.0584 -0.4686 0.554 ...
 
 ``` r
 head(pca_FT_NMP17_scores)
 ```
 
-      Specimen    Sediment Location    Use        PC1         PC2
-    1   Scra11     Quincay     loc1   used -3.7016556 -1.64049159
-    2   Scra11     Quincay     loc2   used -3.2375559  4.02584485
-    3   Scra11     Quincay     loc3   used -4.0896542 -5.00229280
-    4   Scra11     Quincay     loc4 unused  3.6696420  1.81370039
-    5   Scra12 Coarse sand     loc1   used -1.7929242 -1.69195870
-    6   Scra12 Coarse sand     loc2   used  0.4031036  0.09010813
+      Specimen    Sediment Location    Use        PC1         PC2        PC3
+    1   Scra11     Quincay     loc1   used -3.7016556 -1.64049159 -1.3081859
+    2   Scra11     Quincay     loc2   used -3.2375559  4.02584485 -0.1744678
+    3   Scra11     Quincay     loc3   used -4.0896542 -5.00229280  4.1352554
+    4   Scra11     Quincay     loc4 unused  3.6696420  1.81370039  1.7825208
+    5   Scra12 Coarse sand     loc1   used -1.7929242 -1.69195870  0.2986382
+    6   Scra12 Coarse sand     loc2   used  0.4031036  0.09010813  0.5272444
+              PC4
+    1  2.17021415
+    2 -2.01301223
+    3  0.05840911
+    4 -0.46858267
+    5  0.55395403
+    6  0.42200060
 
-## Calculate variability of PC scores per sediment
+## Calculate variability of PC scores per specimen and sediment, using only used surfaces
 
 ``` r
+# keep only used surfaces
+pca_FT_NMP17_scores_used <- filter(pca_FT_NMP17_scores, Use == "used")
+                          
                           # SD for each PC per specimen and sediment
-pca_FT_NMP17_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17_scores, FUN = sd) %>% 
+pca_FT_NMP17_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17_scores_used, 
+                                    FUN = sd) %>% 
   
                           # mean of both SDs per specimen and sediment
-                          mutate(mean_sd = rowMeans(.[c("PC1.sd", "PC2.sd")]))
+                          mutate(mean_sd = rowMeans(.[c("PC1.sd", "PC2.sd", "PC3.sd", "PC4.sd")]))
 ```
 
 ## Combine data
 
 ``` r
                 # Merge together
-pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov_mean, by = c("Specimen", "Sediment")) %>% 
+pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov, by = c("Specimen", "Sediment")) %>% 
   
                 # Pivot to longer format for facetting
-                pivot_longer(c(Average_movement_CONV.mean, Total_abs_movement.mean), 
+                pivot_longer(c(Average_movement_CONV, Total_abs_movement), 
                              names_to = "Parameter", values_to = "Value")
 
 # Convert to factor for facet labels
 pca_mov_data$Parameter <- factor(pca_mov_data$Parameter, 
-                                 levels = c("Average_movement_CONV.mean", "Total_abs_movement.mean"), 
+                                 levels = c("Average_movement_CONV", "Total_abs_movement"), 
                                  labels = c("Average movement [cm]", "Total absolute movement [cm]"))
 
 # Check output
 str(pca_mov_data)
 ```
 
-    tibble [20 × 9] (S3: tbl_df/tbl/data.frame)
-     $ Specimen       : chr [1:20] "Scra11" "Scra11" "Scra12" "Scra12" ...
-     $ Sediment       : chr [1:20] "Quincay" "Quincay" "Coarse sand" "Coarse sand" ...
-     $ PC1.sd         : num [1:20] 3.69 3.69 1.4 1.4 3.05 ...
-     $ PC2.sd         : num [1:20] 3.96 3.96 1.298 1.298 0.646 ...
-     $ mean_sd        : Named num [1:20] 3.82 3.82 1.35 1.35 1.85 ...
+    tibble [20 × 23] (S3: tbl_df/tbl/data.frame)
+     $ Specimen                    : chr [1:20] "Scra11" "Scra11" "Scra12" "Scra12" ...
+     $ Sediment                    : chr [1:20] "Quincay" "Quincay" "Coarse sand" "Coarse sand" ...
+     $ PC1.sd                      : num [1:20] 0.427 0.427 1.682 1.682 2.302 ...
+     $ PC2.sd                      : num [1:20] 4.563 4.563 1.055 1.055 0.642 ...
+     $ PC3.sd                      : num [1:20] 2.872 2.872 0.211 0.211 1.554 ...
+     $ PC4.sd                      : num [1:20] 2.092 2.092 1.606 1.606 0.347 ...
+     $ mean_sd                     : Named num [1:20] 2.49 2.49 1.14 1.14 1.21 ...
       ..- attr(*, "names")= chr [1:20] "1" "1" "2" "2" ...
-     $ Lithic_rotation: chr [1:20] "no" "no" "partial" "partial" ...
-     $ Lithic_tilting : chr [1:20] "partial" "partial" "partial" "partial" ...
-     $ Parameter      : Factor w/ 2 levels "Average movement [cm]",..: 1 2 1 2 1 2 1 2 1 2 ...
-     $ Value          : num [1:20] 1 2 -0.8 2 -2 4 -2.4 4.8 1.2 2.4 ...
+     $ Freeze.thaw_cycles          : int [1:20] 600 600 330 330 276 276 600 600 330 330 ...
+     $ Original_depth_bottom_point1: int [1:20] 5 5 5 5 5 5 5 5 5 5 ...
+     $ Original_depth_bottom_point2: int [1:20] 5 5 5 5 5 5 5 5 5 5 ...
+     $ Original_depth_top_point1   : num [1:20] 8 8 8 8 9 9 8 8 7 7 ...
+     $ Original_depth_top_point2   : num [1:20] 8 8 8 8 9 9 8 8 7 7 ...
+     $ Final_depth_top_point1      : num [1:20] 6 6 7.8 7.8 10.5 10.5 9.3 9.3 6 6 ...
+     $ Final_depth_top_point2      : num [1:20] 8 8 9.8 9.8 11.5 11.5 11.5 11.5 5.6 5.6 ...
+     $ Movement_point1             : num [1:20] -2 -2 -0.2 -0.2 1.5 1.5 1.3 1.3 -1 -1 ...
+     $ Movement_point2             : num [1:20] 0 0 1.8 1.8 2.5 2.5 3.5 3.5 -1.4 -1.4 ...
+     $ Abs_movement_point1         : num [1:20] 2 2 0.2 0.2 1.5 1.5 1.3 1.3 1 1 ...
+     $ Abs_movement_point2         : num [1:20] 0 0 1.8 1.8 2.5 2.5 3.5 3.5 1.4 1.4 ...
+     $ Average_movement            : num [1:20] -1 -1 0.8 0.8 2 2 2.4 2.4 -1.2 -1.2 ...
+     $ Lithic_rotation             : chr [1:20] "no" "no" "partial" "partial" ...
+     $ Lithic_tilting              : chr [1:20] "partial" "partial" "partial" "partial" ...
+     $ Parameter                   : Factor w/ 2 levels "Average movement [cm]",..: 1 2 1 2 1 2 1 2 1 2 ...
+     $ Value                       : num [1:20] 1 2 -0.8 2 -2 4 -2.4 4.8 1.2 2.4 ...
 
 ``` r
 head(pca_mov_data)
 ```
 
-    # A tibble: 6 × 9
-      Specimen Sediment    PC1.sd PC2.sd mean_sd Lithic_rotation Lithic_tilting
-      <chr>    <chr>        <dbl>  <dbl>   <dbl> <chr>           <chr>         
-    1 Scra11   Quincay       3.69  3.96     3.82 no              partial       
-    2 Scra11   Quincay       3.69  3.96     3.82 no              partial       
-    3 Scra12   Coarse sand   1.40  1.30     1.35 partial         partial       
-    4 Scra12   Coarse sand   1.40  1.30     1.35 partial         partial       
-    5 Scra14   Clay          3.05  0.646    1.85 complete        partial       
-    6 Scra14   Clay          3.05  0.646    1.85 complete        partial       
-    # ℹ 2 more variables: Parameter <fct>, Value <dbl>
+    # A tibble: 6 × 23
+      Specimen Sediment    PC1.sd PC2.sd PC3.sd PC4.sd mean_sd Freeze.thaw_cycles
+      <chr>    <chr>        <dbl>  <dbl>  <dbl>  <dbl>   <dbl>              <int>
+    1 Scra11   Quincay      0.427  4.56   2.87   2.09     2.49                600
+    2 Scra11   Quincay      0.427  4.56   2.87   2.09     2.49                600
+    3 Scra12   Coarse sand  1.68   1.06   0.211  1.61     1.14                330
+    4 Scra12   Coarse sand  1.68   1.06   0.211  1.61     1.14                330
+    5 Scra14   Clay         2.30   0.642  1.55   0.347    1.21                276
+    6 Scra14   Clay         2.30   0.642  1.55   0.347    1.21                276
+    # ℹ 15 more variables: Original_depth_bottom_point1 <int>,
+    #   Original_depth_bottom_point2 <int>, Original_depth_top_point1 <dbl>,
+    #   Original_depth_top_point2 <dbl>, Final_depth_top_point1 <dbl>,
+    #   Final_depth_top_point2 <dbl>, Movement_point1 <dbl>, Movement_point2 <dbl>,
+    #   Abs_movement_point1 <dbl>, Abs_movement_point2 <dbl>,
+    #   Average_movement <dbl>, Lithic_rotation <chr>, Lithic_tilting <chr>,
+    #   Parameter <fct>, Value <dbl>
 
 ## Combined plots
 
@@ -1111,14 +1118,14 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
-           labs(x = NULL, y = "Mean(sd(PC1), sd(PC2))", 
-                caption = "Curved arrows = rotation, straight arrows = tilting")
+           labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
 
 # Print plot
 print(pca_mov)
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 ### Save to PDF
 
@@ -1164,172 +1171,172 @@ print(p_line_NMP10)
 
     $`Sq [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
 
 
     $`Ssk [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-2.png)<!-- -->
 
 
     $`Sku [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-3.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-3.png)<!-- -->
 
 
     $`Sp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-4.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-4.png)<!-- -->
 
 
     $`Sv [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-5.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-5.png)<!-- -->
 
 
     $`Sz [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-6.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-6.png)<!-- -->
 
 
     $`Sa [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-7.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-7.png)<!-- -->
 
 
     $`Smr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-8.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-8.png)<!-- -->
 
 
     $`Smc [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-9.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-9.png)<!-- -->
 
 
     $`Sxp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-10.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-10.png)<!-- -->
 
 
     $`Sal [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-11.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-11.png)<!-- -->
 
 
     $`Str [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-12.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-12.png)<!-- -->
 
 
     $`Std [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-13.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-13.png)<!-- -->
 
 
     $`Ssw [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-14.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-14.png)<!-- -->
 
 
     $`Sdq [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-15.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-15.png)<!-- -->
 
 
     $`Sdr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-16.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-16.png)<!-- -->
 
 
     $`Vm [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-17.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-17.png)<!-- -->
 
 
     $`Vv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-18.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-18.png)<!-- -->
 
 
     $`Vmp [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-19.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-19.png)<!-- -->
 
 
     $`Vmc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-20.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-20.png)<!-- -->
 
 
     $`Vvc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-21.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-21.png)<!-- -->
 
 
     $`Vvv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-22.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-22.png)<!-- -->
 
 
     $`First.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-23.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-23.png)<!-- -->
 
 
     $`Second.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-24.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-24.png)<!-- -->
 
 
     $`Third.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-25.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-25.png)<!-- -->
 
 
     $`Texture.isotropy [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-26.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-26.png)<!-- -->
 
 
     $`Maximum.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-27.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-27.png)<!-- -->
 
 
     $`Mean.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-28.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-28.png)<!-- -->
 
 
     $`Mean.density.of.furrows [cm/cm2]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-29.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-29.png)<!-- -->
 
 
     $`epLsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-30.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-30.png)<!-- -->
 
 
     $`NewEplsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-31.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-31.png)<!-- -->
 
 
     $`Asfc [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-32.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-32.png)<!-- -->
 
 
     $`Smfc [µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-33.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-33.png)<!-- -->
 
 
     $`HAsfc9 [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-34.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-33-34.png)<!-- -->
 
 ``` r
 ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP10, 
@@ -1344,7 +1351,7 @@ ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP1
 sessionInfo()
 ```
 
-    R version 4.5.3 (2026-03-11 ucrt)
+    R version 4.5.2 (2025-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64
     Running under: Windows 11 x64 (build 26200)
 
@@ -1365,38 +1372,40 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base     
 
     other attached packages:
-     [1] lubridate_1.9.5    forcats_1.0.1      stringr_1.6.0      dplyr_1.2.1       
-     [5] purrr_1.2.2        readr_2.2.0        tidyr_1.3.2        tibble_3.3.1      
-     [9] tidyverse_2.0.0    rmarkdown_2.31     RColorBrewer_1.1-3 R.utils_2.13.0    
+     [1] lubridate_1.9.4    forcats_1.0.1      stringr_1.6.0      dplyr_1.1.4       
+     [5] purrr_1.2.1        readr_2.1.6        tidyr_1.3.2        tibble_3.3.1      
+     [9] tidyverse_2.0.0    rmarkdown_2.30     RColorBrewer_1.1-3 R.utils_2.13.0    
     [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.51        
-    [17] grateful_0.3.0     ggarrow_0.1.1      factoextra_2.0.0   ggplot2_4.0.2     
+    [17] grateful_0.3.0     ggarrow_0.1.1      factoextra_1.0.7   ggplot2_4.0.1     
     [21] doBy_4.7.1        
 
     loaded via a namespace (and not attached):
      [1] tidyselect_1.2.1     timeDate_4052.112    farver_2.1.2        
      [4] S7_0.2.1             fastmap_1.2.0        digest_0.6.39       
      [7] timechange_0.4.0     lifecycle_1.0.5      Deriv_4.2.0         
-    [10] magrittr_2.0.5       compiler_4.5.3       rlang_1.2.0         
-    [13] sass_0.4.10          tools_4.5.3          utf8_1.2.6          
+    [10] magrittr_2.0.4       compiler_4.5.2       rlang_1.1.7         
+    [13] sass_0.4.10          tools_4.5.2          utf8_1.2.6          
     [16] yaml_2.3.12          ggsignif_0.6.4       labeling_0.4.3      
-    [19] abind_1.4-8          withr_3.0.2          polyclip_1.10-7     
-    [22] grid_4.5.3           ggpubr_0.6.3         colorspace_2.1-2    
-    [25] scales_1.4.0         MASS_7.3-65          cli_3.6.6           
-    [28] ragg_1.5.2           generics_0.1.4       otel_0.2.0          
-    [31] rstudioapi_0.18.0    modelr_0.1.11        tzdb_0.5.0          
-    [34] cachem_1.1.0         forecast_9.0.2       parallel_4.5.3      
-    [37] urca_1.3-4           vctrs_0.7.3          boot_1.3-32         
-    [40] Matrix_1.7-4         jsonlite_2.0.0       carData_3.0-6       
-    [43] car_3.1-5            hms_1.1.4            ggrepel_0.9.8       
-    [46] rstatix_0.7.3        Formula_1.2-5        systemfonts_1.3.2   
-    [49] jquerylib_0.1.4      glue_1.8.0           cowplot_1.2.0       
-    [52] stringi_1.8.7        gtable_0.3.6         pillar_1.11.1       
-    [55] htmltools_0.5.9      R6_2.6.1             microbenchmark_1.5.0
-    [58] textshaping_1.0.5    rprojroot_2.1.1      evaluate_1.0.5      
-    [61] lattice_0.22-9       backports_1.5.1      broom_1.0.12        
-    [64] fracdiff_1.5-3       bslib_0.10.0         Rcpp_1.1.1          
-    [67] nlme_3.1-168         xfun_0.57            zoo_1.8-15          
-    [70] pkgconfig_2.0.3     
+    [19] curl_7.0.0           TTR_0.24.4           abind_1.4-8         
+    [22] withr_3.0.2          polyclip_1.10-7      nnet_7.3-20         
+    [25] grid_4.5.2           ggpubr_0.6.2         xts_0.14.1          
+    [28] colorspace_2.1-2     scales_1.4.0         MASS_7.3-65         
+    [31] cli_3.6.5            ragg_1.5.0           generics_0.1.4      
+    [34] otel_0.2.0           rstudioapi_0.18.0    modelr_0.1.11       
+    [37] tzdb_0.5.0           cachem_1.1.0         forecast_9.0.0      
+    [40] parallel_4.5.2       urca_1.3-4           vctrs_0.7.1         
+    [43] boot_1.3-32          Matrix_1.7-4         carData_3.0-6       
+    [46] jsonlite_2.0.0       car_3.1-3            hms_1.1.4           
+    [49] tseries_0.10-59      rstatix_0.7.3        ggrepel_0.9.6       
+    [52] Formula_1.2-5        systemfonts_1.3.1    jquerylib_0.1.4     
+    [55] quantmod_0.4.28      glue_1.8.0           cowplot_1.2.0       
+    [58] stringi_1.8.7        gtable_0.3.6         quadprog_1.5-8      
+    [61] lmtest_0.9-40        pillar_1.11.1        htmltools_0.5.9     
+    [64] R6_2.6.1             microbenchmark_1.5.0 textshaping_1.0.4   
+    [67] rprojroot_2.1.1      evaluate_1.0.5       lattice_0.22-7      
+    [70] backports_1.5.0      broom_1.0.12         fracdiff_1.5-3      
+    [73] bslib_0.10.0         Rcpp_1.1.1           nlme_3.1-168        
+    [76] xfun_0.56            zoo_1.8-15           pkgconfig_2.0.3     
 
 ------------------------------------------------------------------------
 
@@ -1404,10 +1413,10 @@ sessionInfo()
 
 | Package | Version | Citation |
 |:---|:---|:---|
-| base | 4.5.3 | R Core Team (2026) |
+| base | 4.5.2 | R Core Team (2025) |
 | doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
-| factoextra | 2.0.0 | Kassambara and Mundt (2026) |
-| ggarrow | 0.1.1 | <span class="nocase">van den Brand</span> (2025) |
+| factoextra | 1.0.7 | Kassambara and Mundt (2020) |
+| ggarrow | 0.1.1 | van den Brand (2025) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
 | knitr | 1.51 | Xie (2014); Xie (2015); Xie (2025) |
 | patchwork | 1.3.2 | Pedersen (2025) |
@@ -1415,17 +1424,19 @@ sessionInfo()
 | R.oo | 1.27.1 | Bengtsson (2003b) |
 | R.utils | 2.13.0 | Bengtsson (2025) |
 | RColorBrewer | 1.1.3 | Neuwirth (2022) |
-| rmarkdown | 2.31 | Xie et al. (2018); Xie et al. (2020); Allaire et al. (2026) |
+| rmarkdown | 2.30 | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2025) |
 | tidyverse | 2.0.0 | Wickham et al. (2019) |
-| RStudio | 2026.1.2.418 | Posit team (2026) |
+| RStudio | 2026.1.0.392 | Posit team (2026) |
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
-<div id="ref-rmarkdown2026" class="csl-entry">
+<div id="ref-rmarkdown2025" class="csl-entry">
 
-Allaire, JJ, Yihui Xie, Christophe Dervieux, et al. 2026.
+Allaire, JJ, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
+Luraschi, Kevin Ushey, Aron Atkins, et al. 2025.
 *<span class="nocase">rmarkdown</span>: Dynamic Documents for r*.
 <https://github.com/rstudio/rmarkdown>.
 
@@ -1437,28 +1448,28 @@ Bengtsson, Henrik. 2003a. “The <span class="nocase">R.oo</span>
 Package - Object-Oriented Programming with References Using Standard R
 Code.” In *Proceedings of the 3rd International Workshop on Distributed
 Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
-Leisch, and Achim Zeileis.
-Https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+Leisch, and Achim Zeileis. Vienna, Austria:
+https://www.r-project.org/conferences/DSC-2003/Proceedings/.
 <https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
 
 </div>
 
 <div id="ref-Roo" class="csl-entry">
 
-Bengtsson, Henrik. 2003b. “The <span class="nocase">R.oo</span>
-Package - Object-Oriented Programming with References Using Standard R
-Code.” In *Proceedings of the 3rd International Workshop on Distributed
+———. 2003b. “The <span class="nocase">R.oo</span> Package -
+Object-Oriented Programming with References Using Standard R Code.” In
+*Proceedings of the 3rd International Workshop on Distributed
 Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
-Leisch, and Achim Zeileis.
-Https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+Leisch, and Achim Zeileis. Vienna, Austria:
+https://www.r-project.org/conferences/DSC-2003/Proceedings/.
 <https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
 
 </div>
 
 <div id="ref-Rutils" class="csl-entry">
 
-Bengtsson, Henrik. 2025. *<span class="nocase">R.utils</span>: Various
-Programming Utilities*. <https://doi.org/10.32614/CRAN.package.R.utils>.
+———. 2025. *<span class="nocase">R.utils</span>: Various Programming
+Utilities*. <https://doi.org/10.32614/CRAN.package.R.utils>.
 
 </div>
 
@@ -1472,10 +1483,10 @@ Estimates, Utilities*. <https://doi.org/10.32614/CRAN.package.doBy>.
 
 <div id="ref-factoextra" class="csl-entry">
 
-Kassambara, Alboukadel, and Fabian Mundt. 2026.
+Kassambara, Alboukadel, and Fabian Mundt. 2020.
 *<span class="nocase">factoextra</span>: Extract and Visualize the
 Results of Multivariate Data Analyses*.
-<https://CRAN.R-project.org/package=factoextra>.
+<https://doi.org/10.32614/CRAN.package.factoextra>.
 
 </div>
 
@@ -1496,14 +1507,14 @@ Composer of Plots*. <https://doi.org/10.32614/CRAN.package.patchwork>.
 <div id="ref-rstudio" class="csl-entry">
 
 Posit team. 2026. *RStudio: Integrated Development Environment for r*.
-Posit Software, PBC. <http://www.posit.co/>.
+Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
 
 </div>
 
 <div id="ref-base" class="csl-entry">
 
-R Core Team. 2026. *R: A Language and Environment for Statistical
-Computing*. R Foundation for Statistical Computing.
+R Core Team. 2025. *R: A Language and Environment for Statistical
+Computing*. Vienna, Austria: R Foundation for Statistical Computing.
 <https://www.R-project.org/>.
 
 </div>
@@ -1518,18 +1529,18 @@ Packages*. <https://pakillo.github.io/grateful/>.
 
 <div id="ref-ggarrow" class="csl-entry">
 
-<span class="nocase">van den Brand, Teun</span>. 2025.
-*<span class="nocase">ggarrow</span>: Arrows for
-“<span class="nocase">ggplot2</span>”*.
+van den Brand, Teun. 2025. *<span class="nocase">ggarrow</span>: Arrows
+for “<span class="nocase">ggplot2</span>”*.
 <https://doi.org/10.32614/CRAN.package.ggarrow>.
 
 </div>
 
 <div id="ref-tidyverse" class="csl-entry">
 
-Wickham, Hadley, Mara Averick, Jennifer Bryan, et al. 2019. “Welcome to
-the <span class="nocase">tidyverse</span>.” *Journal of Open Source
-Software* 4 (43): 1686. <https://doi.org/10.21105/joss.01686>.
+Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
+D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
+“Welcome to the <span class="nocase">tidyverse</span>.” *Journal of Open
+Source Software* 4 (43): 1686. <https://doi.org/10.21105/joss.01686>.
 
 </div>
 
@@ -1544,29 +1555,31 @@ and Roger D. Peng. Chapman; Hall/CRC.
 
 <div id="ref-knitr2015" class="csl-entry">
 
-Xie, Yihui. 2015. *Dynamic Documents with R and Knitr*. 2nd ed. Chapman;
-Hall/CRC. <https://yihui.org/knitr/>.
+———. 2015. *Dynamic Documents with R and Knitr*. 2nd ed. Boca Raton,
+Florida: Chapman; Hall/CRC. <https://yihui.org/knitr/>.
 
 </div>
 
 <div id="ref-knitr2025" class="csl-entry">
 
-Xie, Yihui. 2025. *<span class="nocase">knitr</span>: A General-Purpose
-Package for Dynamic Report Generation in R*. <https://yihui.org/knitr/>.
+———. 2025. *<span class="nocase">knitr</span>: A General-Purpose Package
+for Dynamic Report Generation in R*. <https://yihui.org/knitr/>.
 
 </div>
 
 <div id="ref-rmarkdown2018" class="csl-entry">
 
 Xie, Yihui, J. J. Allaire, and Garrett Grolemund. 2018. *R Markdown: The
-Definitive Guide*. Chapman; Hall/CRC. <https://yihui.org/rmarkdown/>.
+Definitive Guide*. Boca Raton, Florida: Chapman; Hall/CRC.
+<https://bookdown.org/yihui/rmarkdown>.
 
 </div>
 
 <div id="ref-rmarkdown2020" class="csl-entry">
 
 Xie, Yihui, Christophe Dervieux, and Emily Riederer. 2020. *R Markdown
-Cookbook*. Chapman; Hall/CRC. <https://yihui.org/rmarkdown-cookbook>.
+Cookbook*. Boca Raton, Florida: Chapman; Hall/CRC.
+<https://bookdown.org/yihui/rmarkdown-cookbook>.
 
 </div>
 
