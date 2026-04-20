@@ -1,6 +1,6 @@
 # Freeze-Thaw project
 Ivan Calandra
-, 2026-04-20, 10:50:58
+, 2026-04-20, 10:57:26
 
 - [How to cite](#how-to-cite)
 - [Content](#content)
@@ -22,7 +22,7 @@ This repository contains the data and code for our paper:
 Please cite this compendium as:
 
 > TBD (2026). Compendium of R code and data for *TBD*. Accessed 20 Apr
-> 2026. Online at <https://doi.org/10.5281/zenodo.14605779>
+> 2026. Online at <https://doi.org/10.5281/zenodo.XXX>
 
 # Content
 
@@ -58,7 +58,7 @@ The [scripts](/analysis/scripts) directory contains the following files:
   script to import and format the lithic movement data from the
   experiments. Rendered to MD and HTML files; the references are
   exported to a BIB file.  
-- [FT_1_STA-import.Rmd](/analysis/scripts/FT_1_STA-importt.Rmd): script
+- [FT_1_STA-import.Rmd](/analysis/scripts/FT_1_STA-import.Rmd): script
   to import the raw, input data from the surface texture analysis (STA).
   Rendered to MD and HTML files; the references are exported to a BIB
   file.  
@@ -96,7 +96,7 @@ See the section [Contributions](#contributions) for details on the
 This research compendium has been developed using the statistical
 programming languages R. To work with the compendium, you will need to
 install on your computer the [R software](https://cloud.r-project.org/)
-and [RStudio Desktop](https://posit.co/download/rstudio-desktop/).
+and [RStudio Desktop](https://posit.co/download/rstudio-desktop).
 
 To work locally with the R analysis, either from the ZIP archive or from
 cloning the GitHub repository to your computer:
