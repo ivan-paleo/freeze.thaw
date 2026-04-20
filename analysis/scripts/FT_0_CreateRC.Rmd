@@ -1,5 +1,5 @@
 ---
-title: "Create Research Compendium - ISEA use-wear"
+title: "Create Research Compendium - Freeze-Thaw project"
 author: "Ivan Calandra"
 date: "`r format(Sys.time(), usetz = TRUE)`"
 output:
@@ -14,7 +14,7 @@ output:
     toc: true
     toc_depth: 2
     html_preview: false
-bibliography: ISEA_0_CreateRC.bib
+bibliography: FT_0_CreateRC.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE, 
 
 
 # Goal of the script
-Create and set up a research compendium for the paper on ISEA use-wear using the R package `rrtools`.  
+Create and set up a research compendium for the paper on the Freeze-Thaw project using the R package `rrtools`.  
 For details on rrtools, see Ben Marwick's [GitHub repository](https://github.com/benmarwick/rrtools).  
 
 Note that this script is there only to show the steps taken to create the research compendium and is not part of the analysis per se. For this reason, most of the code is not evaluated (`knitr::opts_chunk$set(eval=FALSE)`).
@@ -93,9 +93,10 @@ dir.create("analysis/stats", showWarnings = FALSE)
 Note that the folders cannot be pushed to GitHub as long as they are empty.
 
 
-## Delete file 'NAMESPACE'
+## Delete file 'NAMESPACE' and folder '.binder'
 ```{r}
 file.remove("NAMESPACE")
+unlink(".binder", recursive = TRUE)
 ```
 
 
@@ -141,7 +142,7 @@ sessionInfo()
 
 ```{r, echo = FALSE, eval = TRUE}
 pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
-                           out.dir = "analysis/scripts", bib.file = "ISEA_0_CreateRC")
+                           out.dir = "analysis/scripts", bib.file = "FT_0_CreateRC")
 knitr::kable(pkgs_cite)
 ```
 
