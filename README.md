@@ -1,0 +1,148 @@
+# Freeze-Thaw project
+Ivan Calandra
+, 2026-04-20, 10:50:58
+
+- [How to cite](#how-to-cite)
+- [Content](#content)
+- [How to run in your browser or download and run
+  locally](#how-to-run-in-your-browser-or-download-and-run-locally)
+- [License](#license)
+- [Contributions](#contributions)
+- [References](#references)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXX.svg)](https://doi.org/10.5281/zenodo.XXXX)
+
+This repository contains the data and code for our paper:
+
+> TBD (to be submitted). TBD. *Name of journal: TBA*
+> <https://doi.org/xxx/xxx>
+
+# How to cite
+
+Please cite this compendium as:
+
+> TBD (2026). Compendium of R code and data for *TBD*. Accessed 20 Apr
+> 2026. Online at <https://doi.org/10.5281/zenodo.14605779>
+
+# Content
+
+This [README.md](/README.md) file has been created by rendering the
+[README.qmd](/README.qmd) file.
+
+The [DESCRIPTION](/DESCRIPTION) file contains information about the
+version, author, license and packages. For details on the license, see
+the [LICENSE](/LICENSE) file.
+
+The [freeze.thaw.Rproj](/freeze.thaw.Rproj) file is the RStudio project
+file.
+
+The [analysis](/analysis) directory contains all files related to the R
+analysis. It is composed of the following folders:
+
+- [:file_folder: derived_data](/analysis/derived_data): output data
+  generated during the analysis (scripts 1 and 2).  
+- [:file_folder: plots](/analysis/plots): plots generated during the
+  analyses (script 3).  
+- [:file_folder: raw_data](/analysis/raw_data): input data used in the
+  analyses (scripts 1 and 3).  
+- [:file_folder: scripts](/analysis/scripts): scripts used to run the
+  analyses. See below for details.
+
+The [scripts](/analysis/scripts) directory contains the following files:
+
+- [FT_0_CreateRC.Rmd](/analysis/scripts/FT_0_CreateRC.Rmd): script used
+  to create this research compendium - it is not part of the analysis
+  *per se* and is not meant to be run again. Rendered to MD and HTML
+  files; the references are exported to a BIB file.  
+- [FT_1_Movement-import.Rmd](/analysis/scripts/FT_1_Movement-import.Rmd):
+  script to import and format the lithic movement data from the
+  experiments. Rendered to MD and HTML files; the references are
+  exported to a BIB file.  
+- [FT_1_STA-import.Rmd](/analysis/scripts/FT_1_STA-importt.Rmd): script
+  to import the raw, input data from the surface texture analysis (STA).
+  Rendered to MD and HTML files; the references are exported to a BIB
+  file.  
+- [FT_2_STA-stats.Rmd](/analysis/scripts/FT_2_STA-stats.Rmd): script to
+  compute group-wise summary statistics for the STA data. Rendered to MD
+  and HTML files; the references are exported to a BIB file.  
+- [FT_3_STA-plots.Rmd](/analysis/scripts/FT_3_STA-plots.Rmd): script to
+  produce plots for the STA data. Rendered to MD (+ associated PNG files
+  of the plots in the folder
+  [FT_3_STA-plots_files](/analysis/scripts/FT_3_STA-plots_files/figure-gfm/))
+  and HTML files; the references are exported to a BIB file.
+
+Note that the HTML files are not rendered nicely on GitHub; you need to
+download them and open them with your browser. Use the MD files to view
+on GitHub. However, MD files do not have all functionalities of HTML
+files (numbered sections, floating table of content). I therefore
+recommend using the HTML files.  
+To download an HTML file from GitHub, first display the “raw” file and
+then save it as HTML.
+
+Alternatively, use [GitHub & BitBucket HTML
+Preview](https://htmlpreview.github.io/) to render it directly.
+
+The [renv.lock](/renv.lock) file is the lockfile describing the state of
+the R project’s library. It is associated to the [activation
+script](/renv/activate.R) and the R project’s library. All these files
+have been created using the package
+[renv](https://rstudio.github.io/renv/index.html).
+
+See the section [Contributions](#contributions) for details on the
+[CONDUCT.md](/CONDUCT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) files.
+
+# How to run in your browser or download and run locally
+
+This research compendium has been developed using the statistical
+programming languages R. To work with the compendium, you will need to
+install on your computer the [R software](https://cloud.r-project.org/)
+and [RStudio Desktop](https://posit.co/download/rstudio-desktop/).
+
+To work locally with the R analysis, either from the ZIP archive or from
+cloning the GitHub repository to your computer:
+
+- open the [freeze.thaw.Rproj](/freeze.thaw.Rproj) file in RStudio; this
+  takes some time the first time.  
+- run `renv::status()` and then `renv::restore()` to restore the state
+  of your project from [renv.lock](/renv.lock).
+
+Using the package `renv` implies that installing, removing and updating
+packages is done within the project. In other words, all the packages
+that you install/update while in a project using `renv` will not be
+available in any other project. If you want to globally
+install/remove/update packages, make sure you close the project first.
+
+You can also download the compendium as [a ZIP
+archive](https://github.com/ivan-paleo/freeze.thaw/archive/main.zip).  
+Alternatively, if you use GitHub, you can [fork and
+clone](https://happygitwithr.com/fork-and-clone.html) the repository to
+your account. See also the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+# License
+
+[![CC BY-NC-SA
+4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+This work is licensed under a [Creative Commons
+Attribution-NonCommercial-ShareAlike 4.0 International
+License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+
+See also [License file](LICENSE) in the repository.
+
+Author: Ivan Calandra
+
+[![CC BY-NC-SA
+4.0](https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+# Contributions
+
+We welcome contributions from everyone. Before you get started, please
+see our [contributor guidelines](CONTRIBUTING.md). Please note that this
+project is released with a [Contributor Code of Conduct](CONDUCT.md). By
+participating in this project you agree to abide by its terms.
+
+# References
+
+Soler S. 2022.cc-licenses: Creative Commons Licenses for GitHub
+Projects. Available at https://github.com/santisoler/cc-licenses
+(accessed September 27, 2022)
