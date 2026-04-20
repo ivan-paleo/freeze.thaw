@@ -162,7 +162,7 @@ cat(paste0(table_units$Param_unit, "\n"), sep = "")
 
 
 # Line plots of STA for height maps with <17% NMP
-See section [Line plots for height maps with <10% NMP](#line-plots-for-height-maps-with-10-nmp) for line plots for height maps with <10% NMP.
+See section [Line plots for height maps with <10% NMP](#line-plots-for-sta-with-height-maps-with-10-nmp) for line plots for height maps with <10% NMP.
 
 ## Create list to receive the plots
 ```{r}
@@ -436,7 +436,7 @@ ggsave(filename = "FT_PCA-plots_NMP17.pdf", path = dir_plots, plot = all_plots_1
 
 
 # Combined plots with STA-PCA data and movement data
-Here, the PCA data for height maps with <17% NMP with selected parameters are combined graphically with movement data.
+Here, the PCA data for height maps with <17% NMP are combined graphically with movement data.
 
 
 ## Read in movement data
@@ -454,8 +454,64 @@ head(mov)
 ```
 
 
+## PCA with all parameters
+For comments on the code, see section [PCA with selected parameters](#pca-with-selected-parameters).
+```{r}
+pca_FT_NMP17_all_scores <- data.frame(FT_NMP17_pca_data[1:4], pca_FT_NMP17_all$x[, c("PC1", "PC2", "PC3", "PC4")])
+str(pca_FT_NMP17_all_scores)
+head(pca_FT_NMP17_all_scores)
 
-## Extract PC scores on PC1 to PC4
+pca_FT_NMP17_all_scores_used <- filter(pca_FT_NMP17_all_scores, Use == "used")
+pca_FT_NMP17_all_scores_sd <- summaryBy(. ~ Specimen + Sediment, data = pca_FT_NMP17_all_scores_used, 
+                                        FUN = sd) %>% 
+                              mutate(mean_sd = rowMeans(.[c("PC1.sd", "PC2.sd", "PC3.sd", "PC4.sd")]))
+str(pca_FT_NMP17_all_scores_sd)
+head(pca_FT_NMP17_all_scores_sd)
+
+pca_all_mov_data <- merge(pca_FT_NMP17_all_scores_sd, mov, by = c("Specimen", "Sediment")) %>% 
+                    pivot_longer(c(Average_movement_CONV, Total_abs_movement), 
+                                 names_to = "Parameter", values_to = "Value")
+
+pca_all_mov_data$Parameter <- factor(pca_all_mov_data$Parameter, 
+                                     levels = c("Average_movement_CONV", "Total_abs_movement"), 
+                                     labels = c("Average movement [cm]", "Total absolute movement [cm]"))
+str(pca_all_mov_data)
+head(pca_all_mov_data)
+
+pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+               facet_wrap(~ Parameter, scales = "free_x") +
+               geom_point(size = 2) +
+               geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_rotation == "complete", ],
+                                aes(x = Value + 0.4, xend = Value + 0.2, 
+                                    y = mean_sd - 0.1, yend = mean_sd - 0.1), 
+                                curvature = 4, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
+               geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_rotation == "partial", ],
+                                aes(x = Value + 0.05, xend = Value + 0.05, 
+                                    y = mean_sd - 0.1, yend = mean_sd + 0.1), 
+                                curvature = 1, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
+               geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_tilting == "vertical", ],
+                                aes(x = Value - 0.15, xend = Value - 0.15, 
+                                    y = mean_sd - 0.1, yend = mean_sd + 0.1), 
+                                curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
+               geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_tilting == "partial", ],
+                                aes(x = Value - 0.05, xend = Value - 0.25, 
+                                    y = mean_sd - 0.1, yend = mean_sd + 0.1), 
+                                curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
+               theme_bw() +
+               theme(legend.position = "bottom", legend.box = "vertical") +
+               scale_color_brewer(palette = 'Set2') +
+               labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                    title = "PCA with all parameters",
+                    caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
+print(pca_all_mov)
+
+ggsave(filename = "FT_PCA-mov-plot_NMP17_all-params.pdf", path = dir_plots, plot = pca_all_mov, 
+       width = 190, units = "mm")
+```
+
+
+## PCA with selected parameters 
+### Extract PC scores on PC1 to PC4
 ```{r}
 pca_FT_NMP17_scores <- data.frame(FT_NMP17_pca_data[1:4], pca_FT_NMP17$x[, c("PC1", "PC2", "PC3", "PC4")])
 ```
@@ -466,8 +522,7 @@ str(pca_FT_NMP17_scores)
 head(pca_FT_NMP17_scores)
 ```
 
-
-## Calculate variability of PC scores per specimen and sediment, using only used surfaces
+### Calculate variability of PC scores per specimen and sediment, using only used surfaces
 ```{r}
 # keep only used surfaces
 pca_FT_NMP17_scores_used <- filter(pca_FT_NMP17_scores, Use == "used")
@@ -484,8 +539,7 @@ str(pca_FT_NMP17_scores_sd)
 head(pca_FT_NMP17_scores_sd)
 ```
 
-
-## Combine data
+### Combine data
 ```{r}
                 # Merge together
 pca_mov_data <- merge(pca_FT_NMP17_scores_sd, mov, by = c("Specimen", "Sediment")) %>% 
@@ -504,8 +558,7 @@ str(pca_mov_data)
 head(pca_mov_data)
 ```
 
-
-## Combined plots
+### Combined plots
 ```{r}
            # Define data and aes for points
 pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
@@ -552,6 +605,7 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
   
            # Adjust X and Y labels and add caption
            labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                title = "PCA with selected parameters",
                 caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
 
 # Print plot
@@ -569,7 +623,7 @@ ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov,
 
 
 # Line plots for STA with height maps with <10% NMP
-For comments on the code, see section [Line plots for height maps with <17% NMP](#line-plots-for-height-maps-with-17-nmp).
+For comments on the code, see section [Line plots for height maps with <17% NMP](#line-plots-of-sta-for-height-maps-with-17-nmp).
 
 ```{r}
 p_line_NMP10 <- vector(mode = "list", length = nrow(table_units))
