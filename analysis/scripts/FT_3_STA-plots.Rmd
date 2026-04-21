@@ -475,10 +475,13 @@ pca_all_mov_data <- merge(pca_FT_NMP17_all_scores_sd, mov, by = c("Specimen", "S
 pca_all_mov_data$Parameter <- factor(pca_all_mov_data$Parameter, 
                                      levels = c("Average_movement_CONV", "Total_abs_movement"), 
                                      labels = c("Average movement [cm]", "Total absolute movement [cm]"))
+pca_all_mov_data$Freeze.thaw_cycles <- as.factor(pca_all_mov_data$Freeze.thaw_cycles)
+
 str(pca_all_mov_data)
 head(pca_all_mov_data)
 
-pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, 
+                                                   color = Sediment, shape = Freeze.thaw_cycles)) +
                facet_wrap(~ Parameter, scales = "free_x") +
                geom_point(size = 2) +
                geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_rotation == "complete", ],
@@ -498,11 +501,12 @@ pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, color
                                     y = mean_sd - 0.1, yend = mean_sd + 0.1), 
                                 curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
                theme_bw() +
-               theme(legend.position = "bottom", legend.box = "vertical") +
+               theme(legend.position = "bottom", legend.box = "vertical", legend.margin = margin(t = -10)) +
                scale_color_brewer(palette = 'Set2') +
                labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
                     title = "PCA with all parameters",
-                    caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
+                    caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting",
+                    shape = "Number of cycles")
 print(pca_all_mov)
 
 ggsave(filename = "FT_PCA-mov-plot_NMP17_all-params.pdf", path = dir_plots, plot = pca_all_mov, 
@@ -553,6 +557,9 @@ pca_mov_data$Parameter <- factor(pca_mov_data$Parameter,
                                  levels = c("Average_movement_CONV", "Total_abs_movement"), 
                                  labels = c("Average movement [cm]", "Total absolute movement [cm]"))
 
+# Convert to factor for shapes
+pca_mov_data$Freeze.thaw_cycles <- as.factor(pca_mov_data$Freeze.thaw_cycles)
+
 # Check output
 str(pca_mov_data)
 head(pca_mov_data)
@@ -561,7 +568,7 @@ head(pca_mov_data)
 ### Combined plots
 ```{r}
            # Define data and aes for points
-pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
   
            # Facetting
            facet_wrap(~ Parameter, scales = "free_x") +
@@ -599,14 +606,16 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
                             curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Other settings (see above)
+           # legend.margin reduces the space between the plot and the legend
            theme_bw() +
-           theme(legend.position = "bottom", legend.box = "vertical") +
+           theme(legend.position = "bottom", legend.box = "vertical", legend.margin = margin(t = -10)) +
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
            labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
                 title = "PCA with selected parameters",
-                caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
+                caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting",
+                shape = "Number of cycles")
 
 # Print plot
 print(pca_mov)
