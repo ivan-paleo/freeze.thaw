@@ -1,7 +1,7 @@
 Create Research Compendium - Freeze-Thaw project
 ================
 Ivan Calandra
-2026-04-20 10:35:44 CEST
+2026-04-22 08:20:35 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Prerequisites](#prerequisites)
@@ -52,7 +52,7 @@ connected RStudio, Git and GitHub. For details on how to do it, check
 Before running this script, the first step is to [create a repository on
 GitHub and to download it to
 RStudio](https://happygitwithr.com/new-github-first.html). In this case,
-the repository is called “ISEA.usewear”.\
+the repository is called “freeze.thaw”.\
 Finally, open the RStudio project created.
 
 ------------------------------------------------------------------------
