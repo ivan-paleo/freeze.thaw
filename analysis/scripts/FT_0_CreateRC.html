@@ -1576,7 +1576,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Create Research Compendium - Freeze-Thaw
 project</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2026-04-22 08:20:30 CEST</h4>
+<h4 class="date">2026-04-22 10:56:33 CEST</h4>
 
 </div>
 
@@ -1638,12 +1638,12 @@ Make sure you render it to create the <code>README.md</code> file.</p>
 <p>Create a folder ‘analysis’ and subfolders to contain raw data,
 derived data, plots, statistics and scripts. Also create a folder for
 the Python analysis:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/raw_data&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis&quot;</span>,              <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/raw_data&quot;</span>,     <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/derived_data&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/plots&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/scripts&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/stats&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/plots&quot;</span>,        <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/scripts&quot;</span>,      <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/stats&quot;</span>,        <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>Note that the folders cannot be pushed to GitHub as long as they are
 empty.</p>
 </div>
@@ -1703,18 +1703,18 @@ attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
-[1] usethis_3.2.1  rrtools_0.1.6  renv_1.2.1     grateful_0.3.0
+[1] usethis_3.2.1  rrtools_0.1.6  renv_1.2.2     grateful_0.3.0
 
 loaded via a namespace (and not attached):
  [1] vctrs_0.7.3       crayon_1.5.3      cli_3.6.6         knitr_1.51       
  [5] clisymbols_1.2.0  rlang_1.2.0       xfun_0.57         otel_0.2.0       
- [9] purrr_1.2.2       pkgload_1.5.1     jsonlite_2.0.0    glue_1.8.0       
+ [9] purrr_1.2.2       pkgload_1.5.1     jsonlite_2.0.0    glue_1.8.1       
 [13] git2r_0.36.2      rprojroot_2.1.1   htmltools_0.5.9   pkgbuild_1.4.8   
 [17] sass_0.4.10       rmarkdown_2.31    evaluate_1.0.5    jquerylib_0.1.4  
 [21] ellipsis_0.3.3    fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  
-[25] memoise_2.0.1     compiler_4.5.3    sessioninfo_1.2.3 fs_2.0.1         
+[25] memoise_2.0.1     compiler_4.5.3    sessioninfo_1.2.3 fs_2.1.0         
 [29] here_1.0.2        rstudioapi_0.18.0 digest_0.6.39     R6_2.6.1         
-[33] magrittr_2.0.5    bslib_0.10.0      tools_4.5.3       devtools_2.5.0   
+[33] magrittr_2.0.5    bslib_0.10.0      tools_4.5.3       devtools_2.5.1   
 [37] cachem_1.1.0     </code></pre>
 <hr />
 </div>
@@ -1743,7 +1743,7 @@ used</h1>
 </tr>
 <tr class="odd">
 <td align="left">renv</td>
-<td align="left">1.2.1</td>
+<td align="left">1.2.2</td>
 <td align="left"><span class="citation">Ushey and Wickham
 (2026)</span></td>
 </tr>
@@ -1785,7 +1785,7 @@ Rodriguez-Sanchez, Francisco, and Connor P. Jackson. 2025. <em><span class="noca
 Packages</em>. <a href="https://pakillo.github.io/grateful/">https://pakillo.github.io/grateful/</a>.
 </div>
 <div id="ref-renv" class="csl-entry">
-Ushey, Kevin, and Hadley Wickham. 2026. <em><span class="nocase">renv</span>: Project Environments</em>. <a href="https://doi.org/10.32614/CRAN.package.renv">https://doi.org/10.32614/CRAN.package.renv</a>.
+Ushey, Kevin, and Hadley Wickham. 2026. <em><span class="nocase">renv</span>: Project Environments</em>. <a href="https://rstudio.github.io/renv/">https://rstudio.github.io/renv/</a>.
 </div>
 <div id="ref-usethis" class="csl-entry">
 Wickham, Hadley, Jennifer Bryan, Malcolm Barrett, and Andy Teucher.

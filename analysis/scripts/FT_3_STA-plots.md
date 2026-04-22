@@ -1,7 +1,7 @@
 Plots for the the Freeze-thaw project
 ================
 Ivan Calandra
-2026-04-20 10:13:02 CEST
+2026-04-22 10:39:04 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -55,6 +55,10 @@ Ivan Calandra
       surfaces](#calculate-variability-of-pc-scores-per-specimen-and-sediment-using-only-used-surfaces)
     - [Combine data](#combine-data)
     - [Combined plots](#combined-plots)
+      - [Plots showing lithic rotation and
+        tilt](#plots-showing-lithic-rotation-and-tilt)
+      - [Plots identifying specimens](#plots-identifying-specimens)
+    - [Patch plots together and print](#patch-plots-together-and-print)
     - [Save to PDF](#save-to-pdf)
 - [Line plots for STA with height maps with \<10%
   NMP](#line-plots-for-sta-with-height-maps-with-10-nmp)
@@ -90,7 +94,9 @@ Rmd file will be located in the same folder as the Rmd file
 library(doBy)
 library(factoextra)
 library(ggarrow)
+library(ggh4x)
 library(ggplot2)
+library(ggrepel)
 library(grateful)
 library(knitr)
 library(patchwork)
@@ -1018,6 +1024,8 @@ pca_all_mov_data <- merge(pca_FT_NMP17_all_scores_sd, mov, by = c("Specimen", "S
 pca_all_mov_data$Parameter <- factor(pca_all_mov_data$Parameter, 
                                      levels = c("Average_movement_CONV", "Total_abs_movement"), 
                                      labels = c("Average movement [cm]", "Total absolute movement [cm]"))
+pca_all_mov_data$Freeze.thaw_cycles <- as.factor(pca_all_mov_data$Freeze.thaw_cycles)
+
 str(pca_all_mov_data)
 ```
 
@@ -1030,7 +1038,7 @@ str(pca_all_mov_data)
      $ PC4.sd                      : num [1:20] 2.507 2.507 2.876 2.876 0.435 ...
      $ mean_sd                     : Named num [1:20] 3.49 3.49 1.89 1.89 1.96 ...
       ..- attr(*, "names")= chr [1:20] "1" "1" "2" "2" ...
-     $ Freeze.thaw_cycles          : int [1:20] 600 600 330 330 276 276 600 600 330 330 ...
+     $ Freeze.thaw_cycles          : Factor w/ 3 levels "276","330","600": 3 3 2 2 1 1 3 3 2 2 ...
      $ Original_depth_bottom_point1: int [1:20] 5 5 5 5 5 5 5 5 5 5 ...
      $ Original_depth_bottom_point2: int [1:20] 5 5 5 5 5 5 5 5 5 5 ...
      $ Original_depth_top_point1   : num [1:20] 8 8 8 8 9 9 8 8 7 7 ...
@@ -1053,13 +1061,13 @@ head(pca_all_mov_data)
 
     # A tibble: 6 × 23
       Specimen Sediment    PC1.sd PC2.sd PC3.sd PC4.sd mean_sd Freeze.thaw_cycles
-      <chr>    <chr>        <dbl>  <dbl>  <dbl>  <dbl>   <dbl>              <int>
-    1 Scra11   Quincay       1.24  4.38    5.84  2.51     3.49                600
-    2 Scra11   Quincay       1.24  4.38    5.84  2.51     3.49                600
-    3 Scra12   Coarse sand   2.33  0.916   1.45  2.88     1.89                330
-    4 Scra12   Coarse sand   2.33  0.916   1.45  2.88     1.89                330
-    5 Scra14   Clay          3.62  2.07    1.72  0.435    1.96                276
-    6 Scra14   Clay          3.62  2.07    1.72  0.435    1.96                276
+      <chr>    <chr>        <dbl>  <dbl>  <dbl>  <dbl>   <dbl> <fct>             
+    1 Scra11   Quincay       1.24  4.38    5.84  2.51     3.49 600               
+    2 Scra11   Quincay       1.24  4.38    5.84  2.51     3.49 600               
+    3 Scra12   Coarse sand   2.33  0.916   1.45  2.88     1.89 330               
+    4 Scra12   Coarse sand   2.33  0.916   1.45  2.88     1.89 330               
+    5 Scra14   Clay          3.62  2.07    1.72  0.435    1.96 276               
+    6 Scra14   Clay          3.62  2.07    1.72  0.435    1.96 276               
     # ℹ 15 more variables: Original_depth_bottom_point1 <int>,
     #   Original_depth_bottom_point2 <int>, Original_depth_top_point1 <dbl>,
     #   Original_depth_top_point2 <dbl>, Final_depth_top_point1 <dbl>,
@@ -1069,7 +1077,8 @@ head(pca_all_mov_data)
     #   Parameter <fct>, Value <dbl>
 
 ``` r
-pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+pca_all_mov <- ggplot(data = pca_all_mov_data, 
+                      aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
                facet_wrap(~ Parameter, scales = "free_x") +
                geom_point(size = 2) +
                geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_rotation == "complete", ],
@@ -1089,19 +1098,44 @@ pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, color
                                     y = mean_sd - 0.1, yend = mean_sd + 0.1), 
                                 curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
                theme_bw() +
-               theme(legend.position = "bottom", legend.box = "vertical") +
                scale_color_brewer(palette = 'Set2') +
                labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
                     title = "PCA with all parameters",
-                    caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
-print(pca_all_mov)
+                    caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting",
+                    shape = "Number of cycles")
+
+plot_xlims_all <- list(scale_x_continuous(limits = layer_scales(pca_all_mov, 1, 1)$x$range$range),
+                  scale_x_continuous(limits = layer_scales(pca_all_mov, 1, 2)$x$range$range))
+plot_ylims_all <- list(scale_y_continuous(limits = layer_scales(pca_all_mov, 1, 1)$y$range$range),
+                  scale_y_continuous(limits = layer_scales(pca_all_mov, 1, 2)$y$range$range))
+
+pca_mov_all_ID <- ggplot(data = pca_all_mov_data, 
+                         aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
+                  facet_wrap(~ Parameter, scales = "free_x") +
+                  geom_point(size = 2) +
+                  theme_bw() +
+                  scale_color_brewer(palette = 'Set2') +
+                  labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                       shape = "Number of cycles") +
+                  facetted_pos_scales(x = plot_xlims_all, y = plot_ylims_all) +
+                  geom_text_repel(aes(label = Specimen), point.padding = 4, show.legend = FALSE)
+```
+
+    Warning: Attempting to add facetted y scales, while y scales are not free.
+    ℹ Try adding `scales = "free_y"` to the facet.
+
+``` r
+pca_mov_all_patch <- pca_all_mov / pca_mov_all_ID + plot_layout(guides = 'collect') & 
+                     theme(legend.position = 'bottom', legend.box = "vertical", legend.margin = margin(t = -10))
+
+print(pca_mov_all_patch)
 ```
 
 ![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
-ggsave(filename = "FT_PCA-mov-plot_NMP17_all-params.pdf", path = dir_plots, plot = pca_all_mov, 
-       width = 190, units = "mm")
+ggsave(filename = "FT_PCA-mov-plot_NMP17_all-params.pdf", path = dir_plots, plot = pca_mov_all_patch, 
+       width = 190, height = 200, units = "mm")
 ```
 
 ## PCA with selected parameters
@@ -1201,6 +1235,9 @@ pca_mov_data$Parameter <- factor(pca_mov_data$Parameter,
                                  levels = c("Average_movement_CONV", "Total_abs_movement"), 
                                  labels = c("Average movement [cm]", "Total absolute movement [cm]"))
 
+# Convert to factor for shapes
+pca_mov_data$Freeze.thaw_cycles <- as.factor(pca_mov_data$Freeze.thaw_cycles)
+
 # Check output
 str(pca_mov_data)
 ```
@@ -1214,7 +1251,7 @@ str(pca_mov_data)
      $ PC4.sd                      : num [1:20] 2.092 2.092 1.606 1.606 0.347 ...
      $ mean_sd                     : Named num [1:20] 2.49 2.49 1.14 1.14 1.21 ...
       ..- attr(*, "names")= chr [1:20] "1" "1" "2" "2" ...
-     $ Freeze.thaw_cycles          : int [1:20] 600 600 330 330 276 276 600 600 330 330 ...
+     $ Freeze.thaw_cycles          : Factor w/ 3 levels "276","330","600": 3 3 2 2 1 1 3 3 2 2 ...
      $ Original_depth_bottom_point1: int [1:20] 5 5 5 5 5 5 5 5 5 5 ...
      $ Original_depth_bottom_point2: int [1:20] 5 5 5 5 5 5 5 5 5 5 ...
      $ Original_depth_top_point1   : num [1:20] 8 8 8 8 9 9 8 8 7 7 ...
@@ -1237,13 +1274,13 @@ head(pca_mov_data)
 
     # A tibble: 6 × 23
       Specimen Sediment    PC1.sd PC2.sd PC3.sd PC4.sd mean_sd Freeze.thaw_cycles
-      <chr>    <chr>        <dbl>  <dbl>  <dbl>  <dbl>   <dbl>              <int>
-    1 Scra11   Quincay      0.427  4.56   2.87   2.09     2.49                600
-    2 Scra11   Quincay      0.427  4.56   2.87   2.09     2.49                600
-    3 Scra12   Coarse sand  1.68   1.06   0.211  1.61     1.14                330
-    4 Scra12   Coarse sand  1.68   1.06   0.211  1.61     1.14                330
-    5 Scra14   Clay         2.30   0.642  1.55   0.347    1.21                276
-    6 Scra14   Clay         2.30   0.642  1.55   0.347    1.21                276
+      <chr>    <chr>        <dbl>  <dbl>  <dbl>  <dbl>   <dbl> <fct>             
+    1 Scra11   Quincay      0.427  4.56   2.87   2.09     2.49 600               
+    2 Scra11   Quincay      0.427  4.56   2.87   2.09     2.49 600               
+    3 Scra12   Coarse sand  1.68   1.06   0.211  1.61     1.14 330               
+    4 Scra12   Coarse sand  1.68   1.06   0.211  1.61     1.14 330               
+    5 Scra14   Clay         2.30   0.642  1.55   0.347    1.21 276               
+    6 Scra14   Clay         2.30   0.642  1.55   0.347    1.21 276               
     # ℹ 15 more variables: Original_depth_bottom_point1 <int>,
     #   Original_depth_bottom_point2 <int>, Original_depth_top_point1 <dbl>,
     #   Original_depth_top_point2 <dbl>, Final_depth_top_point1 <dbl>,
@@ -1254,9 +1291,12 @@ head(pca_mov_data)
 
 ### Combined plots
 
+#### Plots showing lithic rotation and tilt
+
 ``` r
            # Define data and aes for points
-pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment)) +
+pca_mov <- ggplot(data = pca_mov_data, 
+                  aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
   
            # Facetting
            facet_wrap(~ Parameter, scales = "free_x") +
@@ -1295,25 +1335,66 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
   
            # Other settings (see above)
            theme_bw() +
-           theme(legend.position = "bottom", legend.box = "vertical") +
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
            labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
                 title = "PCA with selected parameters",
-                caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting")
-
-# Print plot
-print(pca_mov)
+                caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting",
+                shape = "Number of cycles")
 ```
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+#### Plots identifying specimens
+
+Same plot as before, but without arrows showing lithic rotation and
+tilt, and with specimen identified.
+
+``` r
+# Define x and y limits based on previous plot
+plot_xlims <- list(scale_x_continuous(limits = layer_scales(pca_mov, 1, 1)$x$range$range),
+                   scale_x_continuous(limits = layer_scales(pca_mov, 1, 2)$x$range$range))
+plot_ylims <- list(scale_y_continuous(limits = layer_scales(pca_mov, 1, 1)$y$range$range),
+                   scale_y_continuous(limits = layer_scales(pca_mov, 1, 2)$y$range$range))
+
+# Plot
+pca_mov_ID <- ggplot(data = pca_mov_data, 
+                     aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
+              facet_wrap(~ Parameter, scales = "free_x") +
+              geom_point(size = 2) +
+              theme_bw() +
+              scale_color_brewer(palette = 'Set2') +
+              labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                   shape = "Number of cycles") +
+  
+              # Set x-limits
+              # warning on y-scale can be ignored
+              facetted_pos_scales(x = plot_xlims, y = plot_ylims) +
+  
+              # Identify points
+              geom_text_repel(aes(label = Specimen), point.padding = 4, show.legend = FALSE)
+```
+
+    Warning: Attempting to add facetted y scales, while y scales are not free.
+    ℹ Try adding `scales = "free_y"` to the facet.
+
+### Patch plots together and print
+
+``` r
+pca_mov_patch <- pca_mov / pca_mov_ID + plot_layout(guides = 'collect') & 
+  
+                 # legend.margin reduces the space between the plot and the legends
+                 theme(legend.position = 'bottom', legend.box = "vertical", legend.margin = margin(t = -10))
+
+print(pca_mov_patch)
+```
+
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 ### Save to PDF
 
 ``` r
-ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov, 
-       width = 190, units = "mm")
+ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov_patch, 
+       width = 190, height = 200, units = "mm")
 ```
 
 ------------------------------------------------------------------------
@@ -1353,172 +1434,172 @@ print(p_line_NMP10)
 
     $`Sq [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
 
 
     $`Ssk [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-2.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-2.png)<!-- -->
 
 
     $`Sku [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-3.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-3.png)<!-- -->
 
 
     $`Sp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-4.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-4.png)<!-- -->
 
 
     $`Sv [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-5.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-5.png)<!-- -->
 
 
     $`Sz [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-6.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-6.png)<!-- -->
 
 
     $`Sa [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-7.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-7.png)<!-- -->
 
 
     $`Smr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-8.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-8.png)<!-- -->
 
 
     $`Smc [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-9.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-9.png)<!-- -->
 
 
     $`Sxp [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-10.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-10.png)<!-- -->
 
 
     $`Sal [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-11.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-11.png)<!-- -->
 
 
     $`Str [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-12.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-12.png)<!-- -->
 
 
     $`Std [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-13.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-13.png)<!-- -->
 
 
     $`Ssw [µm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-14.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-14.png)<!-- -->
 
 
     $`Sdq [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-15.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-15.png)<!-- -->
 
 
     $`Sdr [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-16.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-16.png)<!-- -->
 
 
     $`Vm [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-17.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-17.png)<!-- -->
 
 
     $`Vv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-18.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-18.png)<!-- -->
 
 
     $`Vmp [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-19.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-19.png)<!-- -->
 
 
     $`Vmc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-20.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-20.png)<!-- -->
 
 
     $`Vvc [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-21.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-21.png)<!-- -->
 
 
     $`Vvv [µm³/µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-22.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-22.png)<!-- -->
 
 
     $`First.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-23.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-23.png)<!-- -->
 
 
     $`Second.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-24.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-24.png)<!-- -->
 
 
     $`Third.direction [°]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-25.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-25.png)<!-- -->
 
 
     $`Texture.isotropy [%]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-26.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-26.png)<!-- -->
 
 
     $`Maximum.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-27.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-27.png)<!-- -->
 
 
     $`Mean.depth.of.furrows [nm]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-28.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-28.png)<!-- -->
 
 
     $`Mean.density.of.furrows [cm/cm2]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-29.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-29.png)<!-- -->
 
 
     $`epLsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-30.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-30.png)<!-- -->
 
 
     $`NewEplsar [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-31.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-31.png)<!-- -->
 
 
     $`Asfc [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-32.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-32.png)<!-- -->
 
 
     $`Smfc [µm²]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-33.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-33.png)<!-- -->
 
 
     $`HAsfc9 [no unit]`
 
-![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-34-34.png)<!-- -->
+![](FT_3_STA-plots_files/figure-gfm/unnamed-chunk-36-34.png)<!-- -->
 
 ``` r
 ggsave(filename = "FT_STA-plots_NMP10.pdf", path = dir_plots, plot = p_line_NMP10, 
@@ -1551,15 +1632,15 @@ sessionInfo()
     tzcode source: internal
 
     attached base packages:
-    [1] stats     graphics  grDevices utils     datasets  methods   base     
+    [1] stats     graphics  grDevices datasets  utils     methods   base     
 
     other attached packages:
      [1] lubridate_1.9.5    forcats_1.0.1      stringr_1.6.0      dplyr_1.2.1       
      [5] purrr_1.2.2        readr_2.2.0        tidyr_1.3.2        tibble_3.3.1      
      [9] tidyverse_2.0.0    rmarkdown_2.31     RColorBrewer_1.1-3 R.utils_2.13.0    
     [13] R.oo_1.27.1        R.methodsS3_1.8.2  patchwork_1.3.2    knitr_1.51        
-    [17] grateful_0.3.0     ggarrow_0.1.1      factoextra_2.0.0   ggplot2_4.0.2     
-    [21] doBy_4.7.1        
+    [17] grateful_0.3.0     ggrepel_0.9.8      ggh4x_0.3.1        ggarrow_0.1.1     
+    [21] factoextra_2.0.0   ggplot2_4.0.2      doBy_4.7.1        
 
     loaded via a namespace (and not attached):
      [1] tidyselect_1.2.1     timeDate_4052.112    farver_2.1.2        
@@ -1571,21 +1652,21 @@ sessionInfo()
     [19] abind_1.4-8          withr_3.0.2          polyclip_1.10-7     
     [22] grid_4.5.3           ggpubr_0.6.3         colorspace_2.1-2    
     [25] scales_1.4.0         MASS_7.3-65          cli_3.6.6           
-    [28] ragg_1.5.2           generics_0.1.4       otel_0.2.0          
-    [31] rstudioapi_0.18.0    modelr_0.1.11        tzdb_0.5.0          
-    [34] cachem_1.1.0         forecast_9.0.2       parallel_4.5.3      
-    [37] urca_1.3-4           vctrs_0.7.3          boot_1.3-32         
-    [40] Matrix_1.7-4         jsonlite_2.0.0       carData_3.0-6       
-    [43] car_3.1-5            hms_1.1.4            ggrepel_0.9.8       
+    [28] crayon_1.5.3         ragg_1.5.2           generics_0.1.4      
+    [31] otel_0.2.0           rstudioapi_0.18.0    modelr_0.1.11       
+    [34] tzdb_0.5.0           cachem_1.1.0         forecast_9.0.2      
+    [37] parallel_4.5.3       urca_1.3-4           vctrs_0.7.3         
+    [40] boot_1.3-32          Matrix_1.7-4         jsonlite_2.0.0      
+    [43] carData_3.0-6        car_3.1-5            hms_1.1.4           
     [46] rstatix_0.7.3        Formula_1.2-5        systemfonts_1.3.2   
     [49] jquerylib_0.1.4      glue_1.8.0           cowplot_1.2.0       
     [52] stringi_1.8.7        gtable_0.3.6         pillar_1.11.1       
     [55] htmltools_0.5.9      R6_2.6.1             microbenchmark_1.5.0
     [58] textshaping_1.0.5    rprojroot_2.1.1      evaluate_1.0.5      
     [61] lattice_0.22-9       backports_1.5.1      broom_1.0.12        
-    [64] fracdiff_1.5-3       bslib_0.10.0         Rcpp_1.1.1          
-    [67] nlme_3.1-168         xfun_0.57            zoo_1.8-15          
-    [70] pkgconfig_2.0.3     
+    [64] renv_1.2.1           fracdiff_1.5-3       bslib_0.10.0        
+    [67] Rcpp_1.1.1           nlme_3.1-168         xfun_0.57           
+    [70] zoo_1.8-15           pkgconfig_2.0.3     
 
 ------------------------------------------------------------------------
 
@@ -1596,7 +1677,9 @@ sessionInfo()
 | base | 4.5.3 | R Core Team (2026) |
 | doBy | 4.7.1 | Halekoh and Højsgaard (2025) |
 | factoextra | 2.0.0 | Kassambara and Mundt (2026) |
-| ggarrow | 0.1.1 | <span class="nocase">van den Brand</span> (2025) |
+| ggarrow | 0.1.1 | <span class="nocase">van den Brand</span> (2025a) |
+| ggh4x | 0.3.1 | <span class="nocase">van den Brand</span> (2025b) |
+| ggrepel | 0.9.8 | Slowikowski (2026) |
 | grateful | 0.3.0 | Rodriguez-Sanchez and Jackson (2025) |
 | knitr | 1.51 | Xie (2014); Xie (2015); Xie (2025) |
 | patchwork | 1.3.2 | Pedersen (2025) |
@@ -1705,12 +1788,29 @@ Packages*. <https://pakillo.github.io/grateful/>.
 
 </div>
 
+<div id="ref-ggrepel" class="csl-entry">
+
+Slowikowski, Kamil. 2026. *<span class="nocase">ggrepel</span>:
+Automatically Position Non-Overlapping Text Labels with
+“<span class="nocase">ggplot2</span>”*.
+<https://doi.org/10.32614/CRAN.package.ggrepel>.
+
+</div>
+
 <div id="ref-ggarrow" class="csl-entry">
 
-<span class="nocase">van den Brand, Teun</span>. 2025.
+<span class="nocase">van den Brand, Teun</span>. 2025a.
 *<span class="nocase">ggarrow</span>: Arrows for
 “<span class="nocase">ggplot2</span>”*.
 <https://doi.org/10.32614/CRAN.package.ggarrow>.
+
+</div>
+
+<div id="ref-ggh4x" class="csl-entry">
+
+<span class="nocase">van den Brand, Teun</span>. 2025b. *Ggh4x: Hacks
+for “<span class="nocase">ggplot2</span>”*.
+<https://github.com/teunbrand/ggh4x>.
 
 </div>
 

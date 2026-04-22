@@ -50,7 +50,9 @@ However, the HTML, MD and BIB files resulting from the rendering of this Rmd fil
 library(doBy)
 library(factoextra)
 library(ggarrow)
+library(ggh4x)
 library(ggplot2)
+library(ggrepel)
 library(grateful)
 library(knitr)
 library(patchwork)
@@ -480,8 +482,8 @@ pca_all_mov_data$Freeze.thaw_cycles <- as.factor(pca_all_mov_data$Freeze.thaw_cy
 str(pca_all_mov_data)
 head(pca_all_mov_data)
 
-pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd, 
-                                                   color = Sediment, shape = Freeze.thaw_cycles)) +
+pca_all_mov <- ggplot(data = pca_all_mov_data, 
+                      aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
                facet_wrap(~ Parameter, scales = "free_x") +
                geom_point(size = 2) +
                geom_arrow_curve(data = pca_all_mov_data[pca_all_mov_data$Lithic_rotation == "complete", ],
@@ -501,16 +503,35 @@ pca_all_mov <- ggplot(data = pca_all_mov_data, aes(x = Value, y = mean_sd,
                                     y = mean_sd - 0.1, yend = mean_sd + 0.1), 
                                 curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
                theme_bw() +
-               theme(legend.position = "bottom", legend.box = "vertical", legend.margin = margin(t = -10)) +
                scale_color_brewer(palette = 'Set2') +
                labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
                     title = "PCA with all parameters",
                     caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting",
                     shape = "Number of cycles")
-print(pca_all_mov)
 
-ggsave(filename = "FT_PCA-mov-plot_NMP17_all-params.pdf", path = dir_plots, plot = pca_all_mov, 
-       width = 190, units = "mm")
+plot_xlims_all <- list(scale_x_continuous(limits = layer_scales(pca_all_mov, 1, 1)$x$range$range),
+                  scale_x_continuous(limits = layer_scales(pca_all_mov, 1, 2)$x$range$range))
+plot_ylims_all <- list(scale_y_continuous(limits = layer_scales(pca_all_mov, 1, 1)$y$range$range),
+                  scale_y_continuous(limits = layer_scales(pca_all_mov, 1, 2)$y$range$range))
+
+pca_mov_all_ID <- ggplot(data = pca_all_mov_data, 
+                         aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
+                  facet_wrap(~ Parameter, scales = "free_x") +
+                  geom_point(size = 2) +
+                  theme_bw() +
+                  scale_color_brewer(palette = 'Set2') +
+                  labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                       shape = "Number of cycles") +
+                  facetted_pos_scales(x = plot_xlims_all, y = plot_ylims_all) +
+                  geom_text_repel(aes(label = Specimen), point.padding = 4, show.legend = FALSE)
+
+pca_mov_all_patch <- pca_all_mov / pca_mov_all_ID + plot_layout(guides = 'collect') & 
+                     theme(legend.position = 'bottom', legend.box = "vertical", legend.margin = margin(t = -10))
+
+print(pca_mov_all_patch)
+
+ggsave(filename = "FT_PCA-mov-plot_NMP17_all-params.pdf", path = dir_plots, plot = pca_mov_all_patch, 
+       width = 190, height = 200, units = "mm")
 ```
 
 
@@ -566,9 +587,11 @@ head(pca_mov_data)
 ```
 
 ### Combined plots
+#### Plots showing lithic rotation and tilt
 ```{r}
            # Define data and aes for points
-pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
+pca_mov <- ggplot(data = pca_mov_data, 
+                  aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
   
            # Facetting
            facet_wrap(~ Parameter, scales = "free_x") +
@@ -606,9 +629,7 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
                             curvature = 0, length_head = 3, linewidth = 0.5, show.legend = FALSE) +
   
            # Other settings (see above)
-           # legend.margin reduces the space between the plot and the legend
            theme_bw() +
-           theme(legend.position = "bottom", legend.box = "vertical", legend.margin = margin(t = -10)) +
            scale_color_brewer(palette = 'Set2') +
   
            # Adjust X and Y labels and add caption
@@ -616,15 +637,49 @@ pca_mov <- ggplot(data = pca_mov_data, aes(x = Value, y = mean_sd, color = Sedim
                 title = "PCA with selected parameters",
                 caption = "Curved arrows = lithic rotation, straight arrows = lithic tilting",
                 shape = "Number of cycles")
+```
 
-# Print plot
-print(pca_mov)
+#### Plots identifying specimens
+Same plot as before, but without arrows showing lithic rotation and tilt, and with specimen identified.
+```{r}
+# Define x and y limits based on previous plot
+plot_xlims <- list(scale_x_continuous(limits = layer_scales(pca_mov, 1, 1)$x$range$range),
+                   scale_x_continuous(limits = layer_scales(pca_mov, 1, 2)$x$range$range))
+plot_ylims <- list(scale_y_continuous(limits = layer_scales(pca_mov, 1, 1)$y$range$range),
+                   scale_y_continuous(limits = layer_scales(pca_mov, 1, 2)$y$range$range))
+
+# Plot
+pca_mov_ID <- ggplot(data = pca_mov_data, 
+                     aes(x = Value, y = mean_sd, color = Sediment, shape = Freeze.thaw_cycles)) +
+              facet_wrap(~ Parameter, scales = "free_x") +
+              geom_point(size = 2) +
+              theme_bw() +
+              scale_color_brewer(palette = 'Set2') +
+              labs(x = NULL, y = "Mean(sd(PC1)...sd(PC4))", 
+                   shape = "Number of cycles") +
+  
+              # Set x-limits
+              # warning on y-scale can be ignored
+              facetted_pos_scales(x = plot_xlims, y = plot_ylims) +
+  
+              # Identify points
+              geom_text_repel(aes(label = Specimen), point.padding = 4, show.legend = FALSE)
+```
+
+### Patch plots together and print
+```{r}
+pca_mov_patch <- pca_mov / pca_mov_ID + plot_layout(guides = 'collect') & 
+  
+                 # legend.margin reduces the space between the plot and the legends
+                 theme(legend.position = 'bottom', legend.box = "vertical", legend.margin = margin(t = -10))
+
+print(pca_mov_patch)
 ```
 
 ### Save to PDF
 ```{r}
-ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov, 
-       width = 190, units = "mm")
+ggsave(filename = "FT_PCA-mov-plot_NMP17.pdf", path = dir_plots, plot = pca_mov_patch, 
+       width = 190, height = 200, units = "mm")
 ```
 
 

@@ -1,7 +1,7 @@
 Create Research Compendium - Freeze-Thaw project
 ================
 Ivan Calandra
-2026-04-22 08:20:35 CEST
+2026-04-22 10:56:35 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Prerequisites](#prerequisites)
@@ -94,12 +94,12 @@ data, plots, statistics and scripts. Also create a folder for the Python
 analysis:
 
 ``` r
-dir.create("analysis", showWarnings = FALSE)
-dir.create("analysis/raw_data", showWarnings = FALSE)
+dir.create("analysis",              showWarnings = FALSE)
+dir.create("analysis/raw_data",     showWarnings = FALSE)
 dir.create("analysis/derived_data", showWarnings = FALSE)
-dir.create("analysis/plots", showWarnings = FALSE)
-dir.create("analysis/scripts", showWarnings = FALSE)
-dir.create("analysis/stats", showWarnings = FALSE)
+dir.create("analysis/plots",        showWarnings = FALSE)
+dir.create("analysis/scripts",      showWarnings = FALSE)
+dir.create("analysis/stats",        showWarnings = FALSE)
 ```
 
 Note that the folders cannot be pushed to GitHub as long as they are
@@ -169,18 +169,18 @@ sessionInfo()
     [1] stats     graphics  grDevices datasets  utils     methods   base     
 
     other attached packages:
-    [1] usethis_3.2.1  rrtools_0.1.6  renv_1.2.1     grateful_0.3.0
+    [1] usethis_3.2.1  rrtools_0.1.6  renv_1.2.2     grateful_0.3.0
 
     loaded via a namespace (and not attached):
      [1] vctrs_0.7.3       crayon_1.5.3      cli_3.6.6         knitr_1.51       
      [5] clisymbols_1.2.0  rlang_1.2.0       xfun_0.57         otel_0.2.0       
-     [9] purrr_1.2.2       pkgload_1.5.1     jsonlite_2.0.0    glue_1.8.0       
+     [9] purrr_1.2.2       pkgload_1.5.1     jsonlite_2.0.0    glue_1.8.1       
     [13] git2r_0.36.2      rprojroot_2.1.1   htmltools_0.5.9   pkgbuild_1.4.8   
     [17] sass_0.4.10       rmarkdown_2.31    evaluate_1.0.5    jquerylib_0.1.4  
     [21] ellipsis_0.3.3    fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  
-    [25] memoise_2.0.1     compiler_4.5.3    sessioninfo_1.2.3 fs_2.0.1         
+    [25] memoise_2.0.1     compiler_4.5.3    sessioninfo_1.2.3 fs_2.1.0         
     [29] here_1.0.2        rstudioapi_0.18.0 digest_0.6.39     R6_2.6.1         
-    [33] magrittr_2.0.5    bslib_0.10.0      tools_4.5.3       devtools_2.5.0   
+    [33] magrittr_2.0.5    bslib_0.10.0      tools_4.5.3       devtools_2.5.1   
     [37] cachem_1.1.0     
 
 ------------------------------------------------------------------------
@@ -191,7 +191,7 @@ sessionInfo()
 |:---------|:-------------|:-------------------------------------|
 | base     | 4.5.3        | R Core Team (2026)                   |
 | grateful | 0.3.0        | Rodriguez-Sanchez and Jackson (2025) |
-| renv     | 1.2.1        | Ushey and Wickham (2026)             |
+| renv     | 1.2.2        | Ushey and Wickham (2026)             |
 | rrtools  | 0.1.6        | Marwick (2019)                       |
 | usethis  | 3.2.1        | Wickham et al. (2025)                |
 | RStudio  | 2026.1.2.418 | Posit team (2026)                    |
@@ -235,7 +235,7 @@ Packages*. <https://pakillo.github.io/grateful/>.
 
 Ushey, Kevin, and Hadley Wickham. 2026.
 *<span class="nocase">renv</span>: Project Environments*.
-<https://doi.org/10.32614/CRAN.package.renv>.
+<https://rstudio.github.io/renv/>.
 
 </div>
 

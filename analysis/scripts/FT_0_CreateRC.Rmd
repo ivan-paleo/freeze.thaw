@@ -83,12 +83,12 @@ Make sure you render it to create the `README.md` file.
 ## Create a folders 
 Create a folder 'analysis' and subfolders to contain raw data, derived data, plots, statistics and scripts. Also create a folder for the Python analysis:
 ```{r}
-dir.create("analysis", showWarnings = FALSE)
-dir.create("analysis/raw_data", showWarnings = FALSE)
+dir.create("analysis",              showWarnings = FALSE)
+dir.create("analysis/raw_data",     showWarnings = FALSE)
 dir.create("analysis/derived_data", showWarnings = FALSE)
-dir.create("analysis/plots", showWarnings = FALSE)
-dir.create("analysis/scripts", showWarnings = FALSE)
-dir.create("analysis/stats", showWarnings = FALSE)
+dir.create("analysis/plots",        showWarnings = FALSE)
+dir.create("analysis/scripts",      showWarnings = FALSE)
+dir.create("analysis/stats",        showWarnings = FALSE)
 ```
 Note that the folders cannot be pushed to GitHub as long as they are empty.
 
