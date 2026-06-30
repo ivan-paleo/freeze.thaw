@@ -12,8 +12,11 @@ toc-depth: 2
 
 ```{r, echo = FALSE}
 # Please put your information here to include it in the file below.
-Title <- "TBD"
-Authors <- "TBD"
+Title <- "Frozen in Motion: long-term freeze–thaw experiments reveal lithic displacement and surface alteration while preserving use-wear traces"
+Authors <- "Leventi A, Baillet M, Roussel M, Rots V, Cnuts D, Calandra I, Marreiros J, Van Gijn A, Aldeias V & Soressi M"
+Authors_short <- "Leventi et al."
+Paper_date <- "to be submitted"
+Paper_DOI <- "https://doi.org/xxx/xxx"
 repo <- basename(getwd())
 ```
 
@@ -22,13 +25,13 @@ repo <- basename(getwd())
 
 This repository contains the data and code for our paper:
 
-> `r Authors` (to be submitted). `r Title`. *Name of journal: TBA* <https://doi.org/xxx/xxx>
+> `r Authors` (`r Paper_date`). `r Title`. *Scientific Reports*. <`r Paper_DOI`>
 
 
 # How to cite
 Please cite this compendium as:
 
-> `r Authors` (`r format(Sys.Date(), "%Y")`). Compendium of R code and data for *`r Title`*. Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/10.5281/zenodo.XXX>
+> Calandra I (`r format(Sys.Date(), "%Y")`). Compendium of R code and data for *`r Title`* by `r Authors_short` (`r Paper_date`, `r Paper_DOI`). Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/10.5281/zenodo.XXX>
 
 
 # Content

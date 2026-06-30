@@ -1,6 +1,6 @@
 # Freeze-Thaw project
 Ivan Calandra
-, 2026-04-20, 10:57:26
+, 2026-06-30, 16:23:30
 
 - [How to cite](#how-to-cite)
 - [Content](#content)
@@ -14,15 +14,21 @@ Ivan Calandra
 
 This repository contains the data and code for our paper:
 
-> TBD (to be submitted). TBD. *Name of journal: TBA*
-> <https://doi.org/xxx/xxx>
+> Leventi A, Baillet M, Roussel M, Rots V, Cnuts D, Calandra I,
+> Marreiros J, Van Gijn A, Aldeias V & Soressi M (to be submitted).
+> Frozen in Motion: long-term freeze–thaw experiments reveal lithic
+> displacement and surface alteration while preserving use-wear traces.
+> *Scientific Reports*. <https://doi.org/xxx/xxx>
 
 # How to cite
 
 Please cite this compendium as:
 
-> TBD (2026). Compendium of R code and data for *TBD*. Accessed 20 Apr
-> 2026. Online at <https://doi.org/10.5281/zenodo.XXX>
+> Calandra I (2026). Compendium of R code and data for *Frozen in
+> Motion: long-term freeze–thaw experiments reveal lithic displacement
+> and surface alteration while preserving use-wear traces* by Leventi et
+> al. (to be submitted, https://doi.org/xxx/xxx). Accessed 30 Jun 2026.
+> Online at <https://doi.org/10.5281/zenodo.XXX>
 
 # Content
 
@@ -33,7 +39,7 @@ The [DESCRIPTION](/DESCRIPTION) file contains information about the
 version, author, license and packages. For details on the license, see
 the [LICENSE](/LICENSE) file.
 
-The [freeze.thaw.Rproj](/freeze.thaw.Rproj) file is the RStudio project
+The [Downloads.Rproj](/Downloads.Rproj) file is the RStudio project
 file.
 
 The [analysis](/analysis) directory contains all files related to the R
@@ -101,7 +107,7 @@ and [RStudio Desktop](https://posit.co/download/rstudio-desktop).
 To work locally with the R analysis, either from the ZIP archive or from
 cloning the GitHub repository to your computer:
 
-- open the [freeze.thaw.Rproj](/freeze.thaw.Rproj) file in RStudio; this
+- open the [Downloads.Rproj](/Downloads.Rproj) file in RStudio; this
   takes some time the first time.  
 - run `renv::status()` and then `renv::restore()` to restore the state
   of your project from [renv.lock](/renv.lock).
@@ -113,7 +119,7 @@ available in any other project. If you want to globally
 install/remove/update packages, make sure you close the project first.
 
 You can also download the compendium as [a ZIP
-archive](https://github.com/ivan-paleo/freeze.thaw/archive/main.zip).  
+archive](https://github.com/ivan-paleo/Downloads/archive/main.zip).  
 Alternatively, if you use GitHub, you can [fork and
 clone](https://happygitwithr.com/fork-and-clone.html) the repository to
 your account. See also the [CONTRIBUTING.md](CONTRIBUTING.md) file.
