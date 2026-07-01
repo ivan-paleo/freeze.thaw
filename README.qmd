@@ -15,13 +15,16 @@ toc-depth: 2
 Title <- "Frozen in Motion: long-term freeze–thaw experiments reveal lithic displacement and surface alteration while preserving use-wear traces"
 Authors <- "Leventi A, Baillet M, Roussel M, Rots V, Cnuts D, Calandra I, Marreiros J, Van Gijn A, Aldeias V & Soressi M"
 Authors_short <- "Leventi et al."
-Paper_date <- "to be submitted"
-Paper_DOI <- "https://doi.org/xxx/xxx"
+Paper_date <- "to be submitted"        # To EDIT
+Paper_DOI <- "https://doi.org/xxx/xxx" # TO EDIT
+data_DOI <- "10.5281/zenodo.21072441"
+data_DOI_link <- paste0("https://doi.org/", data_DOI)
+data_DOI_badge <- paste0("https://zenodo.org/badge/DOI/", data_DOI, ".svg")
 repo <- basename(getwd())
 ```
 
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXX.svg)](https://doi.org/10.5281/zenodo.XXXX)
+[![DOI](`r data_DOI_badge`)](`r data_DOI_link`)
 
 This repository contains the data and code for our paper:
 
@@ -31,7 +34,7 @@ This repository contains the data and code for our paper:
 # How to cite
 Please cite this compendium as:
 
-> Calandra I (`r format(Sys.Date(), "%Y")`). Compendium of R code and data for *`r Title`* by `r Authors_short` (`r Paper_date`, `r Paper_DOI`). Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <https://doi.org/10.5281/zenodo.XXX>
+> Calandra I (`r format(Sys.Date(), "%Y")`). Compendium of R code and data for *`r Title`* by `r Authors_short` (`r Paper_date`, `r Paper_DOI`). Accessed `r format(Sys.Date(), "%d %b %Y")`. Online at <`r data_DOI_link`>
 
 
 # Content

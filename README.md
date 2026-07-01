@@ -1,6 +1,6 @@
 # Freeze-Thaw project
 Ivan Calandra
-, 2026-06-30, 16:23:30
+, 2026-07-01, 12:15:24
 
 - [How to cite](#how-to-cite)
 - [Content](#content)
@@ -10,7 +10,7 @@ Ivan Calandra
 - [Contributions](#contributions)
 - [References](#references)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXX.svg)](https://doi.org/10.5281/zenodo.XXXX)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21072441.svg)](https://doi.org/10.5281/zenodo.21072441)
 
 This repository contains the data and code for our paper:
 
@@ -27,8 +27,8 @@ Please cite this compendium as:
 > Calandra I (2026). Compendium of R code and data for *Frozen in
 > Motion: long-term freeze–thaw experiments reveal lithic displacement
 > and surface alteration while preserving use-wear traces* by Leventi et
-> al. (to be submitted, https://doi.org/xxx/xxx). Accessed 30 Jun 2026.
-> Online at <https://doi.org/10.5281/zenodo.XXX>
+> al. (to be submitted, https://doi.org/xxx/xxx). Accessed 01 Jul 2026.
+> Online at <https://doi.org/10.5281/zenodo.21072441>
 
 # Content
 
